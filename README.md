@@ -31,14 +31,14 @@ After saving, the tool removes defined files and folders from the image, shrinks
   - Shows partition tables, sizes, types, etc.
   - The grid updates dynamically when adjusting the target size
 - Existing partitions remain intact
-- Optional deletion of **selected** partitions before restore (configurable)
+- Optional deletion of **selected** partitions before restore
 - Backup is written directly to the chosen partition without overwriting others (except when deletion is enabled)
 - Automatically adjusts the filesystem to fit the size of the partition.
 
 ## Graphical Interface
 
 - Clear, self-explanatory GUI
-- Select target device via scrollbox
+- Select device via drop-down list
 - Partition preview via grid display
 - Progress indication during backup and restore
 - Clear status and error messages
@@ -55,8 +55,6 @@ This allows the backup to be cleaned of unnecessary or temporary data to save st
 - Comments or empty lines are ignored.
 - For examples, refer to the existing exclude files.
 ```
-
-In this example, the user `pi` cache folder, all log files, all SSH host keys, and the DHCP configuration will be excluded from the backup.
 
 ## Usage
 
