@@ -23,7 +23,7 @@ After saving, the tool removes defined files and folders from the image, shrinks
 ## Restore Features
 
 - Direct restore from **`.img`** or **`.img.zst`** files – no manual decompression needed
-- Target device selection via a **scrollbox (dropdown menu)**
+- Target device selection via a **drop-down list**
 - Target partition size adjustable via a **scrollbar**:
   - Range between the minimum image size and the maximum available storage
 - Preview of the planned target partition layout:
@@ -33,6 +33,7 @@ After saving, the tool removes defined files and folders from the image, shrinks
 - Existing partitions remain intact
 - Optional deletion of **selected** partitions before restore (configurable)
 - Backup is written directly to the chosen partition without overwriting others (except when deletion is enabled)
+- Automatically adjusts the filesystem to fit the size of the partition.
 
 ## Graphical Interface
 
@@ -52,14 +53,7 @@ This allows the backup to be cleaned of unnecessary or temporary data to save st
 - Each line contains a path (absolute from the root filesystem of the partition) to exclude.
 - Wildcards (e.g., `*`) are **not recommended**. Instead, use existing commands to delete multiple files or directories.
 - Comments or empty lines are ignored.
-
-### Example
-
-```
-/home/pi/.cache
-/var/log
-/etc/ssh/ssh_host_*
-/etc/dhcpcd.conf
+- For examples, refer to the existing exclude files.
 ```
 
 In this example, the user `pi` cache folder, all log files, all SSH host keys, and the DHCP configuration will be excluded from the backup.
