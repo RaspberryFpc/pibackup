@@ -89,6 +89,20 @@ Restore works directly from both file types.
 - `zstd` must be installed (`sudo apt install zstd`)
 - Root privileges required (start via `sudo`)
 
+## Build Information
+
+- The application was developed using **CodeTyphon** (https://www.pilotlogic.com/).
+- **Qt5** widgetset was used for the GUI.
+- Compilation target: 64-bit Linux.
+
+### Building from source
+
+1. Open the project in **CodeTyphon**.
+2. Set the widgetset to **Qt5**.
+3. Select **64-bit Linux** as the target platform.
+4. Compile using the CodeTyphon IDE.
+
+
 ## License
 
 MIT License – see [LICENSE](LICENSE)
