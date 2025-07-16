@@ -55,8 +55,6 @@ This allows the backup to be cleaned of unnecessary or temporary data to save st
 - Comments or empty lines are ignored.
 - For examples, refer to the existing exclude files.
 - For initial usage, use the raspberry.exclude file.
-
-- 
 ```
 
 ## Usage
@@ -91,17 +89,17 @@ Restore works directly from both file types.
 
 ## Build Information
 
-- The application was developed using **CodeTyphon** (https://www.pilotlogic.com/).
-- **Qt5** widgetset was used for the GUI.
-- Compilation target: 64-bit Linux.
+* The application was developed using **CodeTyphon** ([https://www.pilotlogic.com/](https://www.pilotlogic.com/)).
+* **Qt5** widgetset was used for the GUI.
+* Compilation target: **64-bit ARM Linux**.
 
 ### Building from source
 
-1. Open the project in **CodeTyphon**.
-2. Set the widgetset to **Qt5**.
-3. Select **64-bit Linux** as the target platform.
-4. Compile using the CodeTyphon IDE.
-
+```bash
+# Use CodeTyphon IDE
+# Set widgetset to Qt5  - may need recompiling CodeTyphon IDE
+# Compile as 64-bit ARM Linux application
+```
 
 ## License
 
