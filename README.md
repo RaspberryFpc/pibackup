@@ -92,14 +92,19 @@ Restore works directly from both file types.
 
 MIT License – see [LICENSE](LICENSE)
 
+This software is licensed under the MIT License. Additionally, please note: This program performs direct operations on storage devices and filesystems. Improper use may result in data loss. Use entirely at your own risk. The author assumes no responsibility for any damages or data loss – this also applies to damages caused by software bugs or implementation errors.
+
+Diese Software steht unter der MIT-Lizenz. Zusätzlich wird darauf hingewiesen: Dieses Programm arbeitet direkt auf Speichergeräten und Dateisystemen. Unsachgemäße Verwendung kann zu Datenverlust führen. Die Nutzung erfolgt vollständig auf eigenes Risiko. Der Autor übernimmt keine Haftung für Schäden oder Datenverluste – dies gilt auch für Schäden, die durch Programmierfehler oder Implementierungsfehler verursacht werden.
+
+
 ## Author
 
-- Your Name (you@example.com)
+- PiFpcHub
 
 ## Feedback
 
-Questions or issues?  
-Please open a GitHub issue or contact directly.
+Issues?  
+Please open a GitHub issue.
 
 ---
 
