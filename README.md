@@ -54,6 +54,9 @@ This allows the backup to be cleaned of unnecessary or temporary data to save st
 - Wildcards (e.g., `*`) are **not recommended**. Instead, use existing commands to delete multiple files or directories.
 - Comments or empty lines are ignored.
 - For examples, refer to the existing exclude files.
+- For initial usage, use the raspberry.exclude file.
+
+- 
 ```
 
 ## Usage
