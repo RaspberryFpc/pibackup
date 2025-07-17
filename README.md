@@ -62,7 +62,7 @@ This allows the backup to be cleaned of unnecessary or temporary data to save st
 1. Start the application in a terminal with root privileges:
 
 ```bash
-sudo /path/to/PiBackupTool/PiBackupTool
+sudo /path/to/pibackup/pibackup
 ```
 
 2. In the GUI:
