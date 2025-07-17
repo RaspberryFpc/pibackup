@@ -45,7 +45,7 @@ After saving, the tool removes defined files and folders from the image, shrinks
 
 ## Exclude File
 
-The **exclude file** is a configurable text file containing a list of files and folders to remove from the image before backup.  
+The **exclude file** is a configurable text file containing a list of files and folders to remove from the image.  
 This allows the backup to be cleaned of unnecessary or temporary data to save storage space and reduce image size.
 
 ### Exclude File Format
@@ -97,7 +97,7 @@ Restore works directly from both file types.
 
 ```bash
 # Use CodeTyphon IDE
-# Set widgetset to Qt5  - may need recompiling CodeTyphon IDE
+# Set widgetset to Qt5  - may needs recompiling CodeTyphon IDE
 # Compile as 64-bit ARM Linux application
 ```
 
