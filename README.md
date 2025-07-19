@@ -1,9 +1,12 @@
 # pibackup
+**pibackup** is a portable 64-bit backup and restore tool with a graphical user interface (GUI), specially designed for Raspberry Pi and similar Linux systems.
+Unlike typical SD card tools, it is optimized for large storage devices like SSDs and HDDs, but also works seamlessly with smaller devices.
+It creates backups of the first two partitions of any storage device and offers flexible, selective restoration.
+After creating a backup, pibackup automatically removes specified files and folders from the image, shrinks it, and compresses it efficiently using **Zstandard (.zst)** to save space.
 
-**pibackup** is a portable 64-bit backup and restore tool with a graphical user interface (GUI), specially designed for Raspberry Pi and similar Linux systems.  
-It backs up the first two partitions of any storage device (e.g., SD cards, SSDs, HDDs) and supports flexible restoration.
-
-After saving, the tool removes defined files and folders from the image, shrinks it, and efficiently compresses it using **Zstandard (.zst)**.
+Safe and Flexible Restore:
+By default, pibackup overwrites only the first two partitions of the target device during restoration. Other partitions and their data remain untouched – unless you choose to delete them during the restore process to free up space.
+Additionally, you can optionally change the device ID (MBR disk signature) during restore to avoid conflicts when using multiple cloned devices.
 
 ## Main Features
 
