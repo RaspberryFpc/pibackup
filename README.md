@@ -21,7 +21,7 @@ Additionally, you can optionally change the device ID (MBR disk signature) durin
 - Shrinks the image after creation to optimize storage usage
 - Efficient compression using **zstd**
 - Allows saving to other partitions on the same drive
-- The uncompressed `.img` backup file is **not deleted** and remains available
+- The uncompressed .img backup file remains available and is not deleted if the checkbox is left unchecked or if the compression process fails.
 - Compressed backups can be created directly as `.img.zst` and used for restoration
 - Supports SD cards, SSDs, HDDs, and other block devices
 
