@@ -34,6 +34,7 @@ type
     ButtonWriteImage: TButton;
     CheckBox1: TCheckBox;
     CheckBox12: TCheckBox;
+    CheckBox_Delimg: TCheckBox;
     CheckBox_exclude: TCheckBox;
     CheckBox_RemoveSSH: TCheckBox;
     CheckBox_RemoveDHCP: TCheckBox;
@@ -507,7 +508,6 @@ begin
 
 
 
-
 function TForm1.ModifyImage(mountpoint: string): boolean;
 var
   excludelist: Texcludelist;
@@ -563,7 +563,7 @@ begin
   ButtonCreateImage.Caption := 'cancel';
   ListBox1.Items.Clear;
   ListBox1.Items.Add('');
-  ListBox1.Items.Add('Create image');
+  ListBoxaddscroll(listbox1,'Create image');
   application.ProcessMessages;
 
 
@@ -665,8 +665,10 @@ begin
     Listboxaddscroll(listbox1,'image-size - all: ' + IntToStr(FileSize(filename)) + ' bytes');
 
     if (not terminate_all) and (CheckBox1.Checked) then
-
+    begin
     CompressFileZstdWithProgress(filename,filename+'.zst', SpinEdit1.Value,4,true,listbox1);
+    if checkbox_Delimg.Checked  and (not terminate_all) then deletefile(filename);
+    end;
 
     Listboxaddscroll(listbox1,starline('all done', 80));
 
