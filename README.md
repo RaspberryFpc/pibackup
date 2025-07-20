@@ -124,4 +124,11 @@ Please open a GitHub issue.
 
 ---
 
-**Note:** This project is currently under development. Features and functionality may change.
+## 📥 Download and Use
+
+Just download the full repository using the **Code → Download ZIP** button, or clone it via Git.
+
+- **Source code** is located in the [`source/`](source/) folder.
+- **Ready-to-use binaries** are located in the [`bin/`](bin/) folder.
+
+No separate releases are needed.
