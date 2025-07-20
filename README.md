@@ -1,4 +1,5 @@
 # pibackup
+**Version:** v1.2.0
 **pibackup** is a portable 64-bit backup and restore tool with a graphical user interface (GUI), specially designed for Raspberry Pi and similar Linux systems.
 Unlike typical SD card tools, it is optimized for large storage devices like SSDs and HDDs, but also works seamlessly with smaller devices.
 It creates backups of the first two partitions of any storage device and offers flexible, selective restoration.
