@@ -3,7 +3,7 @@
 All notable changes to this project are documented in this file.
 ---
 ## [v1.1.1] – 2025-07-20
-- fixed gui problem for restore.
+- Fixed GUI issue in restore process: corrected misplaced input field.
 ---
 ## [v1.1.0] – 2025-07-20
 - Added option to automatically delete the uncompressed image file after successful compression (checkbox in GUI).
