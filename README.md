@@ -82,7 +82,7 @@ The tool creates:
 - A full **.img** file
 - An additional **.img.zst** compressed backup
 
-Both files remain available.
+If you wish, both files remain available. The uncompressed .img file is not deleted if the checkbox is unchecked or compression is unsuccessful.
 
 Restore works directly from both file types.
 
