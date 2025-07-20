@@ -1130,226 +1130,16 @@ begin
 end;
 
 
-function WriteImagePlus(Source, Destination: string; DelPar3, DelPar4: boolean; box: TListBox): string;
-const
-  BufferSize = 65536; // optimal für ZSTD
-  BarWidth = 30;
-var
-  fsource, fdest: TFileStream;
-  dctx: TZSTD_DCtx;
-  InBuf, OutBuf: array[0..BufferSize - 1] of byte;
-  input: TZSTD_inBuffer;
-  output: TZSTD_outBuffer;
-  readBytes, WrittenCount: integer;
-  compressed, bootfound, rootfound: boolean;
-  totalRead, tocopy, done: int64;
-  startTime, lastUpdate: TDateTime;
-  percent, speedMBs, etaSecs, elapsedSecs: double;
-  filled: integer;
-  bar, etaStr, statustext, line: string;
-  etaHours, etaMinutes, etaSeconds, lastline: integer;
-  sl: TStringList;
-  i: integer;
-  mbr_image, mbr_alt: TMBR; // Annahme: MBR-Struktur ist verfügbar
-begin
-  Result := '';
-  try
-    compressed := LowerCase(ExtractFileExt(Source)) = '.zst';
-
-    // 🔍 Prüfen, ob root/boot Partition auf Destination gemountet ist
-    if not RunCommand('lsblk ' + Destination + ' -b -J -o MOUNTPOINT', line) then
-      raise Exception.Create('Error executing lsblk command.');
-
-    bootfound := False;
-    rootfound := False;
-
-    sl := TStringList.Create;
-    try
-      sl.Text := line;
-      for i := 0 to sl.Count - 1 do
-      begin
-        line := LowerCase(Trim(sl[i]));
-        if Pos('"mountpoint":', line) > 0 then
-        begin
-          if line = '"mountpoint": "/"' then rootfound := True;
-          if (line = '"mountpoint": "/boot"') or (line = '"mountpoint": "/boot/firmware"') then bootfound := True;
-        end;
-      end;
-    finally
-      sl.Free;
-    end;
-
-    if rootfound or bootfound then
-      raise Exception.Create('Partition mounted as root or boot detected. Writing canceled.');
-
-    if not FileExists(Source) then
-      raise Exception.Create('Source file not found: ' + Source);
-
-
-
-    // Zielgerät öffnen
-    fdest := TFileStream.Create(Destination, fmOpenWrite or fmShareDenyNone);
-    try
-      fdest.Position := 512;
-
-      box.Items.Add('');
-      box.Items.Add('');
-      lastline := box.Count - 1;
-      startTime := Now;
-      lastUpdate := startTime;
-
-      if compressed then
-      begin
-        fsource := TFileStream.Create(Source, fmOpenRead or fmShareDenyNone);
-        try
-          tocopy := fsource.Size;
-          totalRead := 0;
-
-          dctx := ZSTD_createDCtx;
-          if dctx = nil then raise Exception.Create('ZSTD_createDCtx failed');
-          ZSTD_initDStream(dctx);
-
-          input.src := @InBuf;
-          input.size := 0;
-          input.pos := 0;
-
-          repeat
-            if input.pos >= input.size then
-            begin
-              readBytes := fsource.Read(InBuf, BufferSize);
-              input.src := @InBuf;
-              input.size := readBytes;
-              input.pos := 0;
-              Inc(totalRead, readBytes);
-            end;
-
-            output.dst := @OutBuf;
-            output.size := BufferSize;
-            output.pos := 0;
-
-            if ZSTD_isError(ZSTD_decompressStream(dctx, output, input)) <> 0 then
-              raise Exception.Create('ZSTD_decompressStream failed');
-
-            WrittenCount := fdest.Write(OutBuf, output.pos);
-            if WrittenCount <> output.pos then
-              raise Exception.Create('Write error during decompression');
-
-            // Fortschritt (komprimiert)
-            percent := (totalRead / tocopy) * 100.0;
-            elapsedSecs := SecondSpan(startTime, Now);
-            if elapsedSecs < 0.001 then elapsedSecs := 0.001;
-            speedMBs := (totalRead / 1048576) / elapsedSecs;
-            if speedMBs > 0 then
-              etaSecs := ((tocopy - totalRead) / 1048576) / speedMBs
-            else
-              etaSecs := 0;
-
-            filled := Round((percent / 100.0) * BarWidth);
-            bar := StringOfChar('X', filled) + StringOfChar('-', BarWidth - filled);
-            etaHours := Trunc(etaSecs) div 3600;
-            etaMinutes := (Trunc(etaSecs) mod 3600) div 60;
-            etaSeconds := Trunc(etaSecs) mod 60;
-            etaStr := Format('%d:%.2d:%.2d', [etaHours, etaMinutes, etaSeconds]);
-            statustext := Format('%.1f MB (%.1f%%) [%s]  %.2f MB/s  ETA: %s', [totalRead / 1048576, percent, bar, speedMBs, etaStr]);
-
-            box.Items[lastline] := statustext;
-            Application.ProcessMessages;
-
-          until ((readBytes = 0) and (input.pos >= input.size)) or (terminate_all=true);
-
-          ZSTD_freeDCtx(dctx);
-        finally
-          fsource.Free;
-        end;
-      end
-      else
-
-      begin
-        // Unkomprimiertes Schreiben ab Offset 512
-        fsource := TFileStream.Create(Source, fmOpenRead or fmShareDenyNone);
-        try
-          fsource.Position := 512;
-          tocopy := fsource.Size - 512;
-          done := 0;
-
-          repeat
-            readBytes := fsource.Read(InBuf, BufferSize);
-            if readBytes > 0 then
-            begin
-              WrittenCount := fdest.Write(InBuf, readBytes);
-              if WrittenCount <> readBytes then
-                raise Exception.Create('Write error: Bytes written do not match bytes read.');
-
-              Inc(done, WrittenCount);
-
-              if SecondSpan(lastUpdate, Now) >= 0.3 then
-              begin
-                lastUpdate := Now;
-                elapsedSecs := SecondSpan(startTime, Now);
-                if elapsedSecs < 0.001 then elapsedSecs := 0.001;
-                percent := (done / tocopy) * 100.0;
-                speedMBs := (done / 1048576) / elapsedSecs;
-                if speedMBs > 0 then
-                  etaSecs := ((tocopy - done) / 1048576) / speedMBs
-                else
-                  etaSecs := 0;
-
-                filled := Round((percent / 100.0) * BarWidth);
-                bar := StringOfChar('X', filled) + StringOfChar('-', BarWidth - filled);
-                etaHours := Trunc(etaSecs) div 3600;
-                etaMinutes := (Trunc(etaSecs) mod 3600) div 60;
-                etaSeconds := Trunc(etaSecs) mod 60;
-                etaStr := Format('%d:%.2d:%.2d', [etaHours, etaMinutes, etaSeconds]);
-                statustext := Format('%.1f MB (%.1f%%) [%s]  %.2f MB/s  ETA: %s', [done / 1048576, percent, bar, speedMBs, etaStr]);
-
-                box.Items[lastline] := statustext;
-                Application.ProcessMessages;
-              end;
-            end;
-          until (readBytes = 0) or (done >= tocopy);
-        finally
-          fsource.Free;
-        end;
-      end;
-
-
-      if not Read_MBR(Source, mbr_image) then
-        raise Exception.Create('Failed to read MBR from source file.');
-
-      if not Read_MBR(Destination, mbr_alt) then
-        raise Exception.Create('Failed to read MBR from destination device.');
-
-
-      // MBR manipulieren  sollte man am ende machen
-      mbr_image.PartitionEntries[3] := mbr_alt.PartitionEntries[3];
-      mbr_image.PartitionEntries[4] := mbr_alt.PartitionEntries[4];
-
-      if DelPar3 then FillChar(mbr_image.PartitionEntries[3], SizeOf(mbr_image.PartitionEntries[3]), 0);
-      if DelPar4 then FillChar(mbr_image.PartitionEntries[4], SizeOf(mbr_image.PartitionEntries[4]), 0);
-
-      if not Write_MBR(mbr_image, Destination) then
-        raise Exception.Create('Failed to write updated MBR to destination device.');
-
-    finally
-      fdest.Free;
-    end;
-
-  except
-    on E: Exception do
-      Result := E.Message;
-  end;
-end;
-
-
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function PreCheckImageWrite(const Source, Destination: string): string;
 var
   bline: string;
   bsl: TStringList;
   bi: integer;
-
-function PreCheckImageWrite(const Source, Destination: string): string;
 begin
   if not FileExists(Source) then
     Exit('Source file not found: ' + Source);
@@ -1422,7 +1212,6 @@ var
   done, tocopy: int64;
   startTime, lastUpdate, elapsedSecs, percent, speedMBs, etaSecs: double;
   lastline: integer;
-//  buffer: array of byte;
   ReadCount: int64;
   WrittenCount: int64;
   etaStr, bar, status: string;
@@ -1603,9 +1392,6 @@ begin
             percent := Round((fin.Position / fin.Size) * 100)
             else
             percent := 0;
-
-
-
 
             status := Format('%.1f MB written [%d%%] %.2f MB/s ETA %s', [done / 1048576, percent, speedMBs, etaStr]);
             box.Items[lastline] := status;
