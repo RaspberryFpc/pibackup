@@ -188,7 +188,7 @@ object Form1: TForm1
       Left = 128
       Height = 31
       Top = 6
-      Width = 671
+      Width = 713
       Anchors = [akLeft, akRight]
       BorderSpacing.Left = 5
       BorderSpacing.Right = 8
@@ -200,7 +200,7 @@ object Form1: TForm1
     object Button5: TButton
       AnchorSideLeft.Control = ButtonCreateImage
       AnchorSideTop.Side = asrCenter
-      Left = 807
+      Left = 849
       Height = 23
       Top = 11
       Width = 134
@@ -237,10 +237,10 @@ object Form1: TForm1
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = Panel1
       AnchorSideRight.Side = asrBottom
-      Left = 807
+      Left = 849
       Height = 29
       Top = 44
-      Width = 232
+      Width = 190
       Anchors = [akTop, akRight]
       BorderSpacing.Right = 16
       Caption = 'Create image'
@@ -365,7 +365,7 @@ object Form1: TForm1
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = Edit3
       AnchorSideRight.Side = asrBottom
-      Left = 810
+      Left = 808
       Height = 26
       Top = 45
       Width = 174
