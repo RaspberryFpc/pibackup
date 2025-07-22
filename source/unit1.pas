@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, Grids,
-  Process, inifiles, fileutil, lazutf8, Unix, baseunix, LCLIntf, rkutils,zstd,
+  Process, inifiles, fileutil, lazutf8, Unix, baseunix, LCLIntf, rkutils, zstd,
   LCLType, MaskEdit, ExtCtrls, excludeParser, DateUtils, fpjson;
 
 type
@@ -71,10 +71,9 @@ type
     procedure RadioButton1Change(Sender: TObject);
     procedure RadioButton2Change(Sender: TObject);
     procedure ScrollBar1Change(Sender: TObject);
-    function ModifyImage(mountpoint: string): boolean;
+    procedure ModifyImage(mountpoint: string);
     function InstallMissingRoutines: boolean;
     procedure write_ini;
-    procedure checkboxClick(Sender: TObject);
     procedure CompressWithProgress(const infile: string; level: integer; LBox: TListBox);
     procedure readDeviceInfo(drive: string; var deviceinfo: Tdriveinfo);
     procedure GridUpdate(Sender: TObject);
@@ -191,10 +190,10 @@ end;
 
 procedure TForm1.Edit3KeyPress(Sender: TObject; var Key: char);
 begin
-  if (key=#127) or (key=#8) then exit;  // #127 = Delete   #8 = Backspace
+  if (key = #127) or (key = #8) then exit;  // #127 = Delete   #8 = Backspace
   Key := UpCase(Key);
   if (not CheckBox12.Checked) or (not (Key in ['0'..'9', 'A'..'F'])) then
-   Key := #0;  // ungültige Taste unterdrücken
+    Key := #0;  // ungültige Taste unterdrücken
 end;
 
 
@@ -204,24 +203,21 @@ begin
   GridUpdate(scrollbar1);
 end;
 
-
-
 var
   drive: string;
   p, y, col: integer;
   s: string;
   imagembr: tmbr;
   availableSectors, minimumSectors: int64;
-  minsec1MB,manuellsize,par2Size,scrollrange,av: int64;
+  minsec1MB, manuellsize, par2Size, scrollrange, av: int64;
 
-    procedure Tform1.GridUpdate(Sender: TObject);
-
+procedure Tform1.GridUpdate(Sender: TObject);
 begin
   // Bei ScrollBar-Änderung nur die Größe aktualisieren
   if Sender = ScrollBar1 then
   begin
-    manuellsize:=minsec1mb + ScrollBar1.Position;
-    Label_ManSelected.Caption := IntToStr(manuellsize)  + ' MB';
+    manuellsize := minsec1mb + ScrollBar1.Position;
+    Label_ManSelected.Caption := IntToStr(manuellsize) + ' MB';
     par2Size := manuellsize * 1024 * 1024 - imagembr.PartitionEntries[2].FirstLBA * 512;  // in bytes
     StringGrid1.Cells[parsize, par2] := PadLeft(IntToStr(par2Size), 16);
     Exit;
@@ -255,11 +251,13 @@ begin
     StringGrid1.Cells[5, y + 1] := s;
   end;
 
-  // Schreibe Image-Infos in Grid
-  if RadioButton2.Checked then
+  if radiobutton2.Checked then
   begin
-    if Read_MBR(Edit1.Text, imagembr) then
+    stringgrid1.Clean(0, 2, 5, 3, [gznormal]);
+    if fileexists(Edit1.Text) then
     begin
+      // Schreibe Image-Infos in Grid
+      imagembr := Read_MBR(Edit1.Text);
       // Partition 1 (Boot)
       StringGrid1.Cells[parname, par1] := 'File_P1';
       StringGrid1.Cells[parlabel, par1] := 'boot';
@@ -287,23 +285,23 @@ begin
           StringGrid1.Cells[col, par4] := '';
 
       // === Verfügbaren Platz berechnen ===
-      availableSectors  := StrToInt64(StringGrid1.Cells[parsize,1]) div 512; // Gerätegröße in Sektoren
-       if Trim(StringGrid1.Cells[parstart, par3]) <> '' then
-             begin
-             av:=StrToInt64(Trim(StringGrid1.Cells[parstart, par3]));
-             if availableSectors > AV then availableSectors := av;
-             end;
-       if Trim(StringGrid1.Cells[parstart, par4]) <> '' then
-             begin
-             av:=StrToInt64(Trim(StringGrid1.Cells[parstart, par4]));
-             if availableSectors > AV then  availableSectors := av;
-             end;
-     // Minimalplatz (für das gesamte Image bis Partition 2 Ende)
+      availableSectors := StrToInt64(StringGrid1.Cells[parsize, 1]) div 512; // Gerätegröße in Sektoren
+      if Trim(StringGrid1.Cells[parstart, par3]) <> '' then
+      begin
+        av := StrToInt64(Trim(StringGrid1.Cells[parstart, par3]));
+        if availableSectors > AV then availableSectors := av;
+      end;
+      if Trim(StringGrid1.Cells[parstart, par4]) <> '' then
+      begin
+        av := StrToInt64(Trim(StringGrid1.Cells[parstart, par4]));
+        if availableSectors > AV then  availableSectors := av;
+      end;
+      // Minimalplatz (für das gesamte Image bis Partition 2 Ende)
       minimumSectors := imagembr.PartitionEntries[2].FirstLBA + imagembr.PartitionEntries[2].PartitionSize;
 
-      minsec1MB:= (minimumSectors+2047) div 2048;    // min sector auf 1mb aufgerundet
+      minsec1MB := (minimumSectors + 2047) div 2048;    // min sector auf 1mb aufgerundet
 
-      if availableSectors < minsec1mb then
+      if availableSectors div 2048 < minsec1mb then
       begin
         ScrollBar1.Min := 0;
         ScrollBar1.Max := 0;
@@ -312,83 +310,54 @@ begin
         Exit;
       end;
 
-      scrollrange:= availableSectors div 2048 - minsec1mb; // 1mb steps
-      ScrollBar1.Min :=0;
-      ScrollBar1.Max := scrollrange;
+      scrollrange := availableSectors div 2048 - minsec1mb; // 1mb steps
+      ScrollBar1.Min := 0;
+      if scrollrange > 0 then  ScrollBar1.Max := scrollrange
+      else
+        ScrollBar1.Max := 0;
       ScrollBar1.Position := scrollrange;  // auf maximum
 
       // Anzeige & Größe aktualisieren
 
-      manuellsize:=minsec1mb + ScrollBar1.Position;
-      Label_ManSelected.Caption := IntToStr(manuellsize)  + ' MB';
+      manuellsize := minsec1mb + ScrollBar1.Position;
+      Label_ManSelected.Caption := IntToStr(manuellsize) + ' MB';
 
       par2Size := manuellsize * 1024 * 1024 - imagembr.PartitionEntries[2].FirstLBA * 512;  // in bytes
       StringGrid1.Cells[parsize, par2] := PadLeft(IntToStr(par2Size), 16);
+
+      // Disk Signature setzen
+      if not CheckBox12.Checked then
+      begin
+        s := IntToHex(imagembr.DiskSignature, 8);
+        Edit3.Text := s;
+      end;
     end;
   end;
-
-
-  // Disk Signature setzen
-  if not CheckBox12.Checked then
-  begin
-    s := IntToHex(imagembr.DiskSignature, 8);
-    Edit3.Text := s;
-  end;
 end;
-
-
 
 procedure TForm1.RadioButton1Change(Sender: TObject);
 begin
   if radiobutton1.Checked then
-     begin
-     panel1.Visible := true;
-     panel1.BringToFront;
-     end else
-     panel1.Visible := false;
+  begin
+    panel1.Visible := True;
+    panel1.BringToFront;
+  end
+  else
+    panel1.Visible := False;
   GridUpdate(Sender);
 end;
 
 procedure TForm1.RadioButton2Change(Sender: TObject);
 begin
   if radiobutton2.Checked then
-     begin
-     panel2.Visible := true;
-     panel2.BringToFront;
-     end else
-     panel2.Visible := false;
+  begin
+    panel2.Visible := True;
+    panel2.BringToFront;
+  end
+  else
+    panel2.Visible := False;
   GridUpdate(Sender);
 end;
-
-
-
-procedure TForm1.CheckBoxClick(Sender: TObject);
-var
-  i: integer;
-  Clicked: TCheckBox;
-begin
-  Clicked := TCheckBox(Sender);
-  if not Clicked.Checked then
-  begin
-    // Temporär OnClick-Handler entfernen, um Endlosschleife zu vermeiden
-    Clicked.OnClick := nil;
-    Clicked.Checked := True;
-    Clicked.OnClick := @CheckBoxClick;
-    Exit;
-  end;
-
-  // Alle anderen Checkboxen deaktivieren
-  for i := 0 to ComponentCount - 1 do
-  begin
-    if (Components[i] is TCheckBox) and (Components[i] <> Clicked) then
-    begin
-      TCheckBox(Components[i]).OnClick := nil;
-      TCheckBox(Components[i]).Checked := False;
-      TCheckBox(Components[i]).OnClick := @CheckBoxClick;
-    end;
-  end;
-end;
-
 
 
 procedure TForm1.write_ini;
@@ -400,7 +369,7 @@ begin
   ini.WriteString('Destination', 'Last', Edit1.Text);
   ini.WriteString('Exclude', 'Last', Edit2.Text);
   ini.WriteBool('Option', 'compress', checkbox1.Checked);
-  ini.Writeinteger('Option', 'compresslevel',spinedit1.value);
+  ini.Writeinteger('Option', 'compresslevel', spinedit1.Value);
   ini.Free;
 end;
 
@@ -419,21 +388,21 @@ begin
     if MessageDlg('Question', 'Zstd is used for compression.'#13#10'Zstd was not found on your system.'#13#10'Would you like to install it?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
     begin
 
-      Listboxaddscroll(listbox1,starline('Installing zstd', 80));
+      Listboxaddscroll(listbox1, starline('Installing zstd', 80));
 
-      PrexeBash('apt-get update && sudo apt upgrade -y',listbox1);
-      PrexeBash('apt-get -y -q install zstd',listbox1);
+      PrexeBash('apt-get update && sudo apt upgrade -y', listbox1);
+      PrexeBash('apt-get -y -q install zstd', listbox1);
       installdone := True;
     end;
   end;
   zstdinstalled := isproginstalled('zstd');
-  if not zstdinstalled then Listboxaddscroll(listbox1,starline('zstd is not installed - compression won' + #39 + 't work without it.', 80));
+  if not zstdinstalled then Listboxaddscroll(listbox1, starline('zstd is not installed - compression won' + #39 + 't work without it.', 80));
   Result := zstdinstalled;
   if Result then
   begin
     FirstAktiv := False;
   end;
-  if installdone then Listboxaddscroll(listbox1,starline('OK', 80));
+  if installdone then Listboxaddscroll(listbox1, starline('OK', 80));
 end;
 
 procedure TForm1.FormActivate(Sender: TObject);
@@ -446,9 +415,9 @@ end;
 
 procedure TForm1.CompressWithProgress(const infile: string; level: integer; LBox: TListBox);
 begin
-  Listboxaddscroll(listbox1,Starline('compressing with zstd', 80));
-  CompressFileZstdWithProgress(edit1.text,edit1.text+'.zst',spinedit1.Value,4,true,Listbox1);
-  Listboxaddscroll(listbox1,'filesize is now: ' + FileSizeAsString(filesize(infile + '.zst'), False) + '  /  ' + FileSizeAsString(filesize(infile + '.zst'), True));
+  Listboxaddscroll(listbox1, Starline('compressing with zstd', 80));
+  CompressFileZstdWithProgress(edit1.Text, edit1.Text + '.zst', spinedit1.Value, 4, True, Listbox1);
+  Listboxaddscroll(listbox1, 'filesize is now: ' + FileSizeAsString(filesize(infile + '.zst'), False) + '  /  ' + FileSizeAsString(filesize(infile + '.zst'), True));
 end;
 
 
@@ -498,20 +467,20 @@ begin
 
   s := ini.ReadString('Destination', 'Last', '');
   if s > '' then edit1.Text := s;
-  checkbox1.Checked := ini.ReadBool('Option','compress', False);
-  spinedit1.value:=ini.readinteger('Option','compresslevel',2);
+  checkbox1.Checked := ini.ReadBool('Option', 'compress', False);
+  spinedit1.Value := ini.readinteger('Option', 'compresslevel', 2);
   edit2.Text := ini.ReadString('Exclude', 'Last', '');
   ini.Free;
   runcommand('logname', user);
   Delete(user, Length(user), 1);
- end;
+  gridupdate(self);
+end;
 
 
 
-function TForm1.ModifyImage(mountpoint: string): boolean;
+procedure TForm1.ModifyImage(mountpoint: string);
 var
   excludelist: Texcludelist;
-
 begin
   ExcludeList := TExcludeList.Create;
 
@@ -519,20 +488,20 @@ begin
     ExcludeList.LogTarget := ListBox1;
     if CheckBox_exclude.Checked then
     begin
-    ExcludeList.LoadFromFile(Edit2.Text, mountpoint);
-    ExcludeList.ExecuteAll;
+      ExcludeList.LoadFromFile(Edit2.Text, mountpoint);
+      ExcludeList.ExecuteAll;
     end;
 
     if CheckBox_RemoveSSH.Checked then
     begin
-    ExcludeList.LoadFromFile(extractfilepath(application.ExeName)+'ssh-cleanup.exclude', mountpoint);
-    ExcludeList.ExecuteAll;
+      ExcludeList.LoadFromFile(extractfilepath(application.ExeName) + 'ssh-cleanup.exclude', mountpoint);
+      ExcludeList.ExecuteAll;
     end;
 
     if CheckBox_RemoveDHCP.Checked then
     begin
-     ExcludeList.LoadFromFile(Edit2.Text, mountpoint);
-     ExcludeList.ExecuteAll;
+      ExcludeList.LoadFromFile(Edit2.Text, mountpoint);
+      ExcludeList.ExecuteAll;
     end;
 
   finally
@@ -555,7 +524,7 @@ begin
   begin
     terminate_all := True;
     listbox1.items.add('Operation canceled by user.');
-    ButtonCreateImage.Enabled:=false;
+    ButtonCreateImage.Enabled := False;
     exit;
   end;
 
@@ -563,7 +532,7 @@ begin
   ButtonCreateImage.Caption := 'cancel';
   ListBox1.Items.Clear;
   ListBox1.Items.Add('');
-  ListBoxaddscroll(listbox1,'Create image');
+  ListBoxaddscroll(listbox1, 'Create image');
   application.ProcessMessages;
 
 
@@ -589,20 +558,15 @@ begin
     ListBox1.Items.Add(starline(Sourcedrive + ' -> ' + ExtractFileName(Filename), 80));
     ListBox1.Items.Add('');
 
-    if terminate_all or (not MakeImageFirst2Partitions(sourcedrive, filename,listbox1)) then
-      begin
-         raise Exception.Create('Failed to create image from source drive');
-      end;
+    if terminate_all then  raise Exception.Create('Failed to create image from source drive');
 
-    if not Read_MBR(sourcedrive, mbrwork) then
-      raise Exception.Create('Failed to read mbr from source drive');
+    MakeImageFirst2Partitions(sourcedrive, filename, listbox1);
+    mbrwork := Read_MBR(sourcedrive);
     FillChar(mbrwork.PartitionEntries[3], SizeOf(mbrwork.PartitionEntries[3]), 0);
     FillChar(mbrwork.PartitionEntries[4], SizeOf(mbrwork.PartitionEntries[4]), 0);
-    if not Write_MBR(mbrwork, filename) then
-      raise Exception.Create('Failed to write mbr to ' + filename);
+    Write_MBR(mbrwork, filename);
 
-
-    device := PrexeBash('losetup --partscan --nooverlap --find --show ' + filename,listbox1);
+    device := PrexeBash('losetup --partscan --nooverlap --find --show ' + filename, listbox1);
     device := Trim(device);
     if device = '' then
       raise Exception.Create('Failed to setup loop device for image');
@@ -611,7 +575,7 @@ begin
     runbash('rm -rf ' + mpoint);
     runbash('mkdir -p ' + mpoint);
 
-    s := PrexeBash('mount ' + part2 + ' ' + mpoint,listbox1);
+    s := PrexeBash('mount ' + part2 + ' ' + mpoint, listbox1);
     if Pos('failed', LowerCase(s)) > 0 then
       raise Exception.Create('Mount failed: ' + s);
 
@@ -622,27 +586,26 @@ begin
     ListBox1.Items.Add('Removed unnecessary files from the image');
     ListBox1.Items.Add('Check the file system consistency of the image and correct it if necessary');
 
-    s := PrexeBash('/sbin/e2fsck -fy ' + part2,listbox1);
+    s := PrexeBash('/sbin/e2fsck -fy ' + part2, listbox1);
     if Pos('errors', LowerCase(s)) > 0 then
-      Listboxaddscroll(listbox1,'Filesystem check reported errors');
+      Listboxaddscroll(listbox1, 'Filesystem check reported errors');
 
-    s := PrexeBash('/sbin/resize2fs -P ' + part2,listbox1);
+    s := PrexeBash('/sbin/resize2fs -P ' + part2, listbox1);
     minsize := GetValueAfterKeyword(s, 'filesystem:');
     if minsize = 0 then
       raise Exception.Create('Could not determine minimum filesystem size');
 
     Inc(minsize, 500);
 
-    s := PrexeBash('/sbin/resize2fs -p ' + part2 + ' ' + IntToStr(minsize),listbox1);
+    s := PrexeBash('/sbin/resize2fs -p ' + part2 + ' ' + IntToStr(minsize), listbox1);
     NewBlockCount := GetValueAfterKeyword(s, 'is now');
     if NewBlockCount = 0 then
       raise Exception.Create('Failed to resize filesystem');
 
     mbrwork.PartitionEntries[2].PartitionSize := NewBlockCount * sectorsperblock;
-     if not Write_MBR(mbrwork, filename) then
-      raise Exception.Create('Failed to write mbr to ' + filename);
+    Write_MBR(mbrwork, filename);
     runbash('/sbin/partprobe ' + device);
-    PrexeBash('/sbin/e2fsck -fy ' + part2,Listbox1);
+    PrexeBash('/sbin/e2fsck -fy ' + part2, Listbox1);
     runbash('losetup -d ' + device);
 
     try
@@ -661,29 +624,29 @@ begin
     fpchown(filename, 1000, 1000);
     fpchmod(filename, &755);
 
-    Listboxaddscroll(listbox1,'image-size - root only: ' + IntToStr(mbrwork.PartitionEntries[2].PartitionSize * 512) + ' bytes');
-    Listboxaddscroll(listbox1,'image-size - all: ' + IntToStr(FileSize(filename)) + ' bytes');
+    Listboxaddscroll(listbox1, 'image-size - root only: ' + IntToStr(mbrwork.PartitionEntries[2].PartitionSize * 512) + ' bytes');
+    Listboxaddscroll(listbox1, 'image-size - all: ' + IntToStr(FileSize(filename)) + ' bytes');
 
     if (not terminate_all) and (CheckBox1.Checked) then
     begin
-    CompressFileZstdWithProgress(filename,filename+'.zst', SpinEdit1.Value,4,true,listbox1);
-    if checkbox_Delimg.Checked  and (not terminate_all) then deletefile(filename);
+      CompressFileZstdWithProgress(filename, filename + '.zst', SpinEdit1.Value, 4, True, listbox1);
+      if checkbox_Delimg.Checked and (not terminate_all) then deletefile(filename);
     end;
 
-    Listboxaddscroll(listbox1,starline('all done', 80));
+    Listboxaddscroll(listbox1, starline('all done', 80));
 
 
   except
     on E: Exception do
     begin
-      Listboxaddscroll(listbox1,'Error: ' + E.Message);
+      Listboxaddscroll(listbox1, 'Error: ' + E.Message);
       if device <> '' then
         runbash('losetup -d ' + device);
     end;
   end;
 
   ButtonCreateImage.Caption := 'create image';
-  ButtonCreateImage.Enabled := true;
+  ButtonCreateImage.Enabled := True;
 end;
 
 
@@ -720,7 +683,7 @@ begin
       terminate_all := True;
       listbox1.items.add('Operation canceled by user.');
       ButtonWriteImage.Caption := 'write image to device';
-      ButtonWriteImage.Enabled:=false;
+      ButtonWriteImage.Enabled := False;
       Exit;
     end;
 
@@ -733,19 +696,9 @@ begin
 
     selecteddrive := '/dev/' + stringgrid1.Cells[0, 1];
 
+    Listboxaddscroll(listbox1, 'write image to device');
 
-
-    Listboxaddscroll(listbox1,'write image');
-
-   // s:=ImageToDevice(edit1.Text, selecteddrive,CheckBox_DelPartition3.Checked,CheckBox_DelPartition4.Checked,listbox1);
-    s:=ImageToDeviceImgAndZstd(edit1.Text, selecteddrive,CheckBox_DelPartition3.Checked,CheckBox_DelPartition4.Checked,listbox1);
-
-    if s>'' then
-      begin
-      Listboxaddscroll(listbox1,s);
-      raise Exception.Create('Failed to write image to device.');
-      end;
-
+    ImageToDeviceImgAndZstd(edit1.Text, selecteddrive, CheckBox_DelPartition3.Checked, CheckBox_DelPartition4.Checked, listbox1);
 
     // Get partition 2 name
     par2name := PartitionNamefromDevice(selecteddrive, 2);
@@ -756,66 +709,74 @@ begin
     runcommand('umount -f ' + par2name, s);
     Sleep(2000);
 
-    s := Prexebash('e2fsck -fy ' + par2name,listbox1);
+    s := Prexebash('e2fsck -fy ' + par2name, listbox1);
     ListBox1.Items.Add(s);
     if Pos('error', LowerCase(s)) > 0 then
       raise Exception.Create('Filesystem errors detected – please check manually.');
 
     // Update MBR to resize partition 2
-    Read_MBR(selecteddrive, workmbr);
-    workmbr.PartitionEntries[2].PartitionSize := strtoint64(stringgrid1.Cells[parsize,par2]) div 512;  // neue grösse in sectors
+    workmbr := Read_MBR(selecteddrive);
+    workmbr.PartitionEntries[2].PartitionSize := strtoint64(stringgrid1.Cells[parsize, par2]) div 512;  // neue grösse in sectors
     Write_MBR(workmbr, selecteddrive);
 
     ListBox1.Items.Add('partprobe - reloading partition table');
-    s := Prexebash('partprobe ' + selecteddrive,listbox1);
+    s := Prexebash('partprobe ' + selecteddrive, listbox1);
 
-    Prexebash('e2fsck -fy ' + par2name,listbox1);
+    Prexebash('e2fsck -fy ' + par2name, listbox1);
     ListBox1.Items.Add('resize...');
-    s := Prexebash('resize2fs ' + par2name,listbox1);
+    s := Prexebash('resize2fs ' + par2name, listbox1);
     ListBox1.Items.Add('partprobe - reloading partition table');
-    s := Prexebash('partprobe ' + selecteddrive,listbox1);
+    s := Prexebash('partprobe ' + selecteddrive, listbox1);
 
     Application.ProcessMessages;
 
     if CheckBox12.Checked then
     begin
-     // ListBox1.Items.Add('Changing device signature');
+      // ListBox1.Items.Add('Changing device signature');
       s := Trim(edit3.Text);
       sig := StrToInt('$' + s);
       sigtext := LowerCase(HexStr(sig, 8));
 
-       ListBox1.Items.Add('Change device signature in cmdline.txt');
-      s:= ReplacePartUUIDInCmdline(selecteddrive, sigtext+'-02');
-      if s>'' then ListBox1.Items.Add(s);
+      ListBox1.Items.Add('Change device signature in cmdline.txt');
+      s := ReplacePartUUIDInCmdline(selecteddrive, sigtext + '-02');
+      if s > '' then ListBox1.Items.Add(s);
 
-       ListBox1.Items.Add('Change device signature in fstab');
-       s:= ReplacePartUUIDInFstab(selecteddrive, sigtext);
-       if s>'' then ListBox1.Items.Add(s);
+      ListBox1.Items.Add('Change device signature in fstab');
+      s := ReplacePartUUIDInFstab(selecteddrive, sigtext);
+      if s > '' then ListBox1.Items.Add(s);
 
-       ListBox1.Items.Add('Change device signature in mbr');
-       s:= ReplacePartUUIDinMbr(selecteddrive, sig);
-       if s>'' then ListBox1.Items.Add(s);
+      ListBox1.Items.Add('Change device signature in mbr');
+      ReplacePartUUIDinMbr(selecteddrive, sig);
+
     end;
 
-    Listboxaddscroll(listbox1,'---------- all done ----------');
+    Listboxaddscroll(listbox1, '---------- all done ----------');
 
   except
     on E: Exception do
     begin
-      ListBox1.Items.Add('❌ Error: ' + E.Message);
+       listboxaddscroll(listbox1,'❌ Error: ' + E.Message);
     end;
   end;
 
   ButtonWriteImage.Caption := 'write image to device';
-  ButtonWriteImage.Enabled:=true;
+  ButtonWriteImage.Enabled := True;
 end;
 
 
 
 procedure TForm1.Edit1DblClick(Sender: TObject);
 begin
-  if radiobutton1.Checked then if savedialog1.Execute then destname := savedialog1.FileName;
-  if radiobutton2.Checked then if opendialog1.Execute then destname := opendialog1.FileName;
+  if radiobutton1.Checked then
+  begin
+    if edit1.Text > '' then  SaveDialog1.InitialDir := extractfilepath(edit1.Text);
+    if savedialog1.Execute then destname := savedialog1.FileName;
+  end;
+  if radiobutton2.Checked then
+  begin
+    if edit1.Text > '' then openDialog1.InitialDir := extractfilepath(edit1.Text);
+    if opendialog1.Execute then destname := opendialog1.FileName;
+  end;
   edit1.Text := Destname;
   write_ini;
 end;
@@ -837,13 +798,13 @@ var
   s: string;
 begin
 
-  Listboxaddscroll(listbox1,'The program is shutting down. This may take a moment...');
+  Listboxaddscroll(listbox1, 'The program is shutting down. This may take a moment...');
 
   terminate_all := True;
   sleep(3000);
-  PrexeBash('umount ' + device,listbox1);  // optional, wenn es gemountet war
-  PrexeBash('losetup -d ' + device,listbox1);
-  PrexeBash('rm -rf ' + mpoint,listbox1);
+  PrexeBash('umount ' + device, listbox1);  // optional, wenn es gemountet war
+  PrexeBash('losetup -d ' + device, listbox1);
+  PrexeBash('rm -rf ' + mpoint, listbox1);
   runcommand('sudo systemctl start udisks2', s);
   write_ini;
 end;
