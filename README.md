@@ -133,4 +133,11 @@ Just download the full repository using the **Code → Download ZIP** button, or
 - **Source code** is located in the [`source/`](source/) folder.
 - **Ready-to-use binaries** are located in the [`bin/`](bin/) folder.
 
+- Download the full repository using Code → Download ZIP or clone it via Git.
+- Important:If you download the repository as a ZIP archive, the executable permissions of the files in the bin/ folder will be lost (this is a limitation of ZIP files).After unpacking, manually make the binary executable:
+
+```bash
+chmod +x /path/to/pibackup/pibackup
+```
+
 No separate releases are needed.
