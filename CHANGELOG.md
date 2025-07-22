@@ -2,6 +2,10 @@
 
 All notable changes to this project are documented in this file.
 ---
+## [v1.2.0] – 2025-07-22
+- Improved error handling using exceptions.
+- Improved partition display in the grid.
+---
 ## [v1.1.1] – 2025-07-20
 - Fixed GUI issue in restore process: corrected misplaced input field.
 ---
