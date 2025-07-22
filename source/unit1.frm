@@ -3,9 +3,9 @@ object Form1: TForm1
   Left = 171
   Height = 502
   Top = 115
-  Width = 1081
+  Width = 1080
   ClientHeight = 502
-  ClientWidth = 1081
+  ClientWidth = 1080
   DesignTimePPI = 102
   Position = poDesktopCenter
   LCLVersion = '8.6'
@@ -34,7 +34,7 @@ object Form1: TForm1
     OnChange = GridUpdate
   end
   object Button2: TButton
-    Left = 775
+    Left = 774
     Height = 24
     Top = 8
     Width = 134
@@ -43,7 +43,7 @@ object Form1: TForm1
     OnClick = Button2Click
   end
   object Button4: TButton
-    Left = 775
+    Left = 774
     Height = 24
     Top = 46
     Width = 134
@@ -120,7 +120,7 @@ object Form1: TForm1
   object RadioButton1: TRadioButton
     AnchorSideTop.Control = StringGrid1
     AnchorSideTop.Side = asrBottom
-    Left = 192
+    Left = 193
     Height = 29
     Top = 214
     Width = 262
@@ -136,7 +136,7 @@ object Form1: TForm1
     AnchorSideLeft.Control = RadioButton1
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = RadioButton1
-    Left = 486
+    Left = 487
     Height = 29
     Top = 214
     Width = 262
@@ -174,7 +174,7 @@ object Form1: TForm1
     object CheckBox_RemoveDHCP: TCheckBox
       AnchorSideTop.Control = CheckBox_RemoveSSH
       AnchorSideTop.Side = asrCenter
-      Left = 144
+      Left = 145
       Height = 29
       Top = 44
       Width = 135
@@ -187,7 +187,7 @@ object Form1: TForm1
       AnchorSideRight.Control = ButtonCreateImage
       Left = 128
       Height = 31
-      Top = 6
+      Top = 7
       Width = 713
       Anchors = [akLeft, akRight]
       BorderSpacing.Left = 5
@@ -202,7 +202,7 @@ object Form1: TForm1
       AnchorSideTop.Side = asrCenter
       Left = 849
       Height = 23
-      Top = 11
+      Top = 12
       Width = 134
       Anchors = [akLeft]
       Caption = 'select'
@@ -249,7 +249,7 @@ object Form1: TForm1
       OnClick = ButtonCreateImageClick
     end
     object CheckBox_exclude: TCheckBox
-      Left = 40
+      Left = 41
       Height = 29
       Top = 8
       Width = 84
@@ -260,7 +260,7 @@ object Form1: TForm1
     end
     object CheckBox_Delimg: TCheckBox
       AnchorSideTop.Control = CheckBox_RemoveSSH
-      Left = 552
+      Left = 553
       Height = 29
       Top = 44
       Width = 218
@@ -290,9 +290,9 @@ object Form1: TForm1
     TabOrder = 9
     Visible = False
     object ScrollBar1: TScrollBar
-      Left = 40
-      Height = 11
-      Top = 18
+      Left = 152
+      Height = 10
+      Top = 16
       Width = 458
       PageSize = 0
       TabOrder = 0
@@ -302,9 +302,9 @@ object Form1: TForm1
       AnchorSideLeft.Side = asrCenter
       AnchorSideTop.Control = ScrollBar1
       AnchorSideTop.Side = asrCenter
-      Left = 518
+      Left = 632
       Height = 19
-      Top = 14
+      Top = 12
       Width = 146
       AutoSize = False
       Caption = '0 MB'
@@ -314,7 +314,7 @@ object Form1: TForm1
     object CheckBox12: TCheckBox
       AnchorSideTop.Control = CheckBox_DelPartition3
       AnchorSideTop.Side = asrCenter
-      Left = 503
+      Left = 502
       Height = 29
       Top = 44
       Width = 150
@@ -339,7 +339,7 @@ object Form1: TForm1
     object CheckBox_DelPartition4: TCheckBox
       AnchorSideTop.Control = CheckBox_DelPartition3
       AnchorSideTop.Side = asrCenter
-      Left = 265
+      Left = 264
       Height = 29
       Top = 44
       Width = 152
@@ -365,7 +365,7 @@ object Form1: TForm1
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = Edit3
       AnchorSideRight.Side = asrBottom
-      Left = 808
+      Left = 809
       Height = 26
       Top = 45
       Width = 174
@@ -381,7 +381,7 @@ object Form1: TForm1
     Top = 15
   end
   object OpenDialog1: TOpenDialog
-    Left = 622
+    Left = 621
     Top = 15
   end
 end
