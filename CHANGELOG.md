@@ -1,6 +1,12 @@
 # Changelog
 
 All notable changes to this project are documented in this file.
+## [1.3.0] – 2025-07-23
+### Added
+- New `start_pibackup.sh` script:
+  - Starts `pibackup` with `sudo` in the background
+  - Automatically closes the launching terminal window
+- Recommended `.desktop` usage with clean startup behavior
 ---
 ## [v1.2.0] – 2025-07-22
 - Improved error handling using exceptions.

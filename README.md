@@ -1,5 +1,5 @@
 # pibackup
-**Version:** v1.2.0 
+**Version:** v1.3.0 
 
 **pibackup** is a portable 64-bit backup and restore tool with a graphical user interface (GUI), specially designed for Raspberry Pi and similar Linux systems.
 Unlike typical SD card tools, it is optimized for large storage devices like SSDs and HDDs, but also works seamlessly with smaller devices.
@@ -64,13 +64,79 @@ This allows the backup to be cleaned of unnecessary or temporary data to save st
 
 ## Usage
 
-1. Start the application in a terminal with root privileges:
+Start the application using the provided launch script:
 
-```bash
-sudo /path/to/pibackup/pibackup
+    /path/to/pibackup/start_pibackup.sh
+
+This script:
+
+- Launches `pibackup` with `sudo` and required environment variables
+- Runs the application in the background
+- Closes the terminal window automatically after launching
+
+You can start it:
+- From a terminal, by typing:
+  
+      /path/to/pibackup/start_pibackup.sh
+
+- By double-clicking the script in a file manager (make sure it is executable)
+- Or via a `.desktop` launcher
+
+
+## Desktop Launcher
+
+To launch PiBackup from the desktop or applications menu, you can create a `.desktop` file:
+
+### Example: `PiBackup.desktop`
+
+```ini
+[Desktop Entry]
+Name=PiBackup
+Comment=Start the PiBackup tool
+Exec=/home/pi/PiBackup/start_pibackup.sh
+Icon=utilities-terminal
+Terminal=true
+Type=Application
+Categories=Utility;
 ```
 
-2. In the GUI:
+### Instructions:
+
+1. Save this content as a file named `PiBackup.desktop` in your home folder or on the desktop:
+
+    `/home/pi/Desktop/PiBackup.desktop`
+
+2. Make the file executable:
+
+    ```bash
+    chmod +x /home/pi/Desktop/PiBackup.desktop
+    ```
+
+3. Optional: If you want to use a custom icon, replace the `Icon=` line with:
+
+    ```ini
+    Icon=/home/pi/PiBackup/icon.png
+    ```
+
+4. You can also copy the file to `~/.local/share/applications/` to make it appear in the main applications menu.
+
+---
+
+> This launcher uses the `start_pibackup.sh` script, which starts the backup application with the necessary privileges and closes the terminal automatically.
+
+
+
+
+
+Tip: Make sure both files are executable:
+
+    chmod +x start_pibackup.sh
+    chmod +x pibackup
+
+---
+
+
+##In the GUI:
 
 - Select the device to back up
 - Choose target partition and storage location
