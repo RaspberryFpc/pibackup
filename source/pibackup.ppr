@@ -14,16 +14,11 @@ uses
 const
   libc = 'c';
 
-function setenv(name: PChar; value: PChar; overwrite: cint): cint; cdecl; external libc name 'setenv';
+//function setenv(name: PChar; value: PChar; overwrite: cint): cint; cdecl; external libc name 'setenv';
 
 {$R *.res}
 
 begin
-  {$IFDEF UNIX}
-  //setenv(PChar('XDG_RUNTIME_DIR'), PChar('/run/user/0'), 1);
-  //setenv(PChar('DISPLAY'), PChar(':0'), 1);
-  //setenv(PChar('QT_QPA_PLATFORM'), PChar('xcb'), 1);
-  {$ENDIF}
 
   RequireDerivedFormResource := True;
 

@@ -94,7 +94,7 @@ implementation
 { TForm1 }
 
 const
-  appname = 'PiBackupTool';
+  appname = 'PiBackup  v1.3.0';
   ininame = 'pbt.ini';
   mpoint = '/images/pbt_img';
 
