@@ -1,43 +1,42 @@
-program pibackup;
+ program pibackup;
 {$mode objfpc}{$H+}
 
 uses
   {$IFDEF UNIX}
-  cthreads,unix,
+  cthreads, unix,
   {$ENDIF}
-  {$IFDEF HASAMIGA}
-  athreads,
-  {$ENDIF}
-  Interfaces, // this includes the CT adLCL widgetset
+  Interfaces, // includes LCL widgetset (Qt in deinem Fall)
   Forms,
   unit1,
   rkutils,
   Dialogs;
 
+const
+  libc = 'c';
 
+function setenv(name: PChar; value: PChar; overwrite: cint): cint; cdecl; external libc name 'setenv';
 
-  {$R *.res}
+{$R *.res}
 
 begin
   {$IFDEF UNIX}
-
-   // Umgebungsvariablen über den Systemaufruf setzen
-  fpsystem('export XDG_RUNTIME_DIR=/run/user/0');
-  fpsystem('export DISPLAY=:0');
-  fpsystem('export QT_QPA_PLATFORM=xcb');
+  //setenv(PChar('XDG_RUNTIME_DIR'), PChar('/run/user/0'), 1);
+  //setenv(PChar('DISPLAY'), PChar(':0'), 1);
+  //setenv(PChar('QT_QPA_PLATFORM'), PChar('xcb'), 1);
   {$ENDIF}
 
   RequireDerivedFormResource := True;
+
   if not RunsAsRoot then
   begin
-    MessageDlg('Error', 'This program requires root privileges.'+#13+#10+'Please run it using sudo, su,'+#13+#10+'or as the root user.',
-      mtError, [mbOK], 0);
+    MessageDlg('Error', 'This program requires root privileges.' + sLineBreak +
+      'Please run it using sudo, su, or as the root user.', mtError, [mbOK], 0);
     Halt(1);
   end;
+
   Application.Scaled := True;
   Application.Initialize;
   Application.CreateForm(TForm1, Form1);
   Application.Run;
 end.
-Application.Run;
-end.
+
