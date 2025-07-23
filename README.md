@@ -60,7 +60,7 @@ This allows the backup to be cleaned of unnecessary or temporary data to save st
 - Comments or empty lines are ignored.
 - For examples, refer to the existing exclude files.
 - For initial usage, use the raspberry.exclude file.
-```
+
 
 ## Usage
 
@@ -82,12 +82,10 @@ You can start it:
 - By double-clicking the script in a file manager (make sure it is executable)
 - Or via a `.desktop` launcher
 
-
 ## Desktop Launcher
-
 To launch PiBackup from the desktop or applications menu, you can create a `.desktop` file:
 
-### Example: `PiBackup.desktop`
+#### Example: `PiBackup.desktop`
 
 ```ini
 [Desktop Entry]
@@ -100,7 +98,7 @@ Type=Application
 Categories=Utility;
 ```
 
-### Instructions:
+#### Instructions:
 
 1. Save this content as a file named `PiBackup.desktop` in your home folder or on the desktop:
 
@@ -120,20 +118,16 @@ Categories=Utility;
 
 4. You can also copy the file to `~/.local/share/applications/` to make it appear in the main applications menu.
 
----
-
-> This launcher uses the `start_pibackup.sh` script, which starts the backup application with the necessary privileges and closes the terminal automatically.
-
-
-
-
+This launcher uses the `start_pibackup.sh` script, which starts the backup application with the necessary privileges and closes the terminal automatically.
 
 Tip: Make sure both files are executable:
-
+ ```bash
     chmod +x start_pibackup.sh
     chmod +x pibackup
-
----
+```
+> ⚠️ **Note:**  
+> Adjust the `Exec=` and `Icon=` paths if your project is located in a different directory.  
+> For example, replace `/home/pi/PiBackup/` with your actual installation path.
 
 
 ##In the GUI:
