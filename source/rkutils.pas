@@ -57,6 +57,7 @@ function starLine(s: ansistring; len: integer): ansistring;
 procedure Listboxupdate(listbox: tlistbox; item: string);
 procedure ImageToDeviceImgAndZstd(Source, Destination: string; delpar3, delpar4: boolean; box: TListBox);
 procedure PreCheckImageWrite(const Source, Destination: string);
+procedure FillFreeSpaceWithByte(const FilePath: string; FillValue: Byte;listbox:tlistbox);
 function RunsAsRoot:boolean;
 
 var
@@ -84,14 +85,16 @@ end;
 
 procedure Listboxaddscroll(listbox: tlistbox; item: string);
 var
-  pos: integer;
-  n: integer;
-begin
+  topindex: integer;
+  visible,ih: integer;
+begin  // qt5 itemheight immer 0  - selbst messen oder ownerdrawfixed
   listbox.Items.add(item);
-  n := ListBox.ClientHeight div ListBox.ItemHeight;
-  pos := ListBox.Items.Count - n + 2;
-  if pos < 0 then pos := 0;
-  ListBox.TopIndex := pos;
+//  ih := listbox.Canvas.TextHeight('Wy') + 4;
+  ih:=listbox.ItemHeight;
+  visible := ListBox.ClientHeight div ih;
+  topindex := ListBox.Items.Count - visible + 2;
+  if topindex < 0 then topindex := 0;
+  ListBox.TopIndex := topindex;
   listbox.Repaint;
 end;
 
@@ -1405,6 +1408,55 @@ begin
     ImageToDeviceStandard(Source, Destination, delpar3, delpar4, box);
     end;
 end;
+
+
+
+
+var
+  Stream: TFileStream;
+  BlockSize: Integer;
+  WrittenBytes,written: Int64;
+  isDone: Boolean;
+
+
+procedure FillFreeSpaceWithByte(const FilePath: string; FillValue: Byte;listbox:tlistbox);
+const
+  InitialBlockSize = 1024 * 1024; // 1 MiB
+
+
+begin
+  BlockSize := InitialBlockSize;
+//  SetLength(Buffer, BlockSize);
+  Fillchar(buffer,blocksize,FillValue);
+
+  listboxaddscroll(listbox,'Overwriting empty sectors');
+
+//  listboxaddscroll(listbox,'Creating file: '+ FilePath);
+  Stream := TFileStream.Create(FilePath, fmCreate or fmOpenWrite);
+  try
+    WrittenBytes := 0;
+    isDone := False;
+
+    repeat
+      written:=Stream.Write(Buffer[0], BlockSize);
+      Inc(writtenBytes,written);
+    until written <  BlockSize;
+
+
+    listboxaddscroll(listbox,'Sectors erased: '+inttostr( WrittenBytes div 512)+' = '+
+                                         FileSizeAsString(WrittenBytes,True));
+  finally
+    Stream.Free;
+  end;
+
+   if not DeleteFile(FilePath) then
+           listboxaddscroll(listbox,'Warning: Could not delete temporary file.');
+
+  // Call system sync
+  ExecuteProcess('/bin/sync', '', []);
+  Writeln('System sync done.');
+end;
+
 
 
 end.

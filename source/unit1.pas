@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, Grids,
   Process, inifiles, fileutil, lazutf8, Unix, baseunix, LCLIntf, rkutils, zstd,
-  LCLType, MaskEdit, ExtCtrls, excludeParser, DateUtils, fpjson;
+  LCLType, MaskEdit, ExtCtrls, excludeParser, DateUtils ,fpjson,jsonparser;
 
 type
   partitioninfo = record
@@ -94,7 +94,7 @@ implementation
 { TForm1 }
 
 const
-  appname = 'PiBackup  v1.3.0';
+  appname = 'PiBackup  v1.4.0';
   ininame = 'pbt.ini';
   mpoint = '/images/pbt_img';
 
@@ -477,7 +477,6 @@ begin
 end;
 
 
-
 procedure TForm1.ModifyImage(mountpoint: string);
 var
   excludelist: Texcludelist;
@@ -580,6 +579,8 @@ begin
       raise Exception.Create('Mount failed: ' + s);
 
     ModifyImage(mpoint);
+
+
     runbash('umount ' + mpoint);
     Sleep(5000);
 
@@ -590,13 +591,14 @@ begin
     if Pos('errors', LowerCase(s)) > 0 then
       Listboxaddscroll(listbox1, 'Filesystem check reported errors');
 
+ //   if not CheckBox_shrinkmin.Checked then
+ //   begin
     s := PrexeBash('/sbin/resize2fs -P ' + part2, listbox1);
     minsize := GetValueAfterKeyword(s, 'filesystem:');
     if minsize = 0 then
       raise Exception.Create('Could not determine minimum filesystem size');
 
-    Inc(minsize, 500);
-
+//    Inc(minsize, 500);     nicht nötig
     s := PrexeBash('/sbin/resize2fs -p ' + part2 + ' ' + IntToStr(minsize), listbox1);
     NewBlockCount := GetValueAfterKeyword(s, 'is now');
     if NewBlockCount = 0 then
@@ -606,7 +608,34 @@ begin
     Write_MBR(mbrwork, filename);
     runbash('/sbin/partprobe ' + device);
     PrexeBash('/sbin/e2fsck -fy ' + part2, Listbox1);
+   //end else
+   //begin
+   // s := PrexeBash('/sbin/resize2fs -M ' + part2 + ' ' + IntToStr(minsize), listbox1);
+   // NewBlockCount := GetValueAfterKeyword(s, 'is now');
+   // if NewBlockCount = 0 then
+   //   raise Exception.Create('Failed to resize filesystem');
+   //
+   // mbrwork.PartitionEntries[2].PartitionSize := NewBlockCount * sectorsperblock;
+   // Write_MBR(mbrwork, filename);
+   // runbash('/sbin/partprobe ' + device);
+   // PrexeBash('/sbin/e2fsck -fy ' + part2, Listbox1);
+   //end;
+
+
+
+
+
+    // mount and write empty blocks to 255 - increases compression;
+    s := PrexeBash('mount ' + part2 + ' ' + mpoint, listbox1);
+    if Pos('failed', LowerCase(s)) > 0 then
+      raise Exception.Create('Mount failed: ' + s);
+     FillFreeSpaceWithByte(mpoint+'/overwrite.ff',255,listbox1);
+          runbash('umount ' + mpoint);
+     Sleep(5000);
+
+
     runbash('losetup -d ' + device);
+
 
     try
       deststream := TFileStream.Create(filename, fmOpenReadWrite or fmShareDenyNone);

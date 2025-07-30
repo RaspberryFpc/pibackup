@@ -15,7 +15,7 @@ const
 
   const
   ZSTD_c_compressionLevel = 100;
-  ZSTD_c_nbWorkers = 400; // 🔁 Diese Zeile brauchst du!
+  ZSTD_c_nbWorkers = 400;
   ZSTD_c_enableLongDistanceMatching = 160;
 
   ZSTD_e_continue = 0;
