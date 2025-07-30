@@ -7,12 +7,11 @@ uses
   {$ENDIF}
   Interfaces, // includes LCL widgetset (Qt in deinem Fall)
   Forms,
-  unit1,
-  rkutils,
-  Dialogs;
+  Dialogs,rkutils,
+  unit1;
 
-const
-  libc = 'c';
+//const
+//  libc = 'c';
 
 //function setenv(name: PChar; value: PChar; overwrite: cint): cint; cdecl; external libc name 'setenv';
 

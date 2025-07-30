@@ -124,11 +124,6 @@
         <UnitName Value="ExcludeParser"/>
       </Unit>
       <Unit>
-        <Filename Value="../pi_image/dhcp-cleanup.exclude"/>
-        <FRMtype Value="0"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
         <Filename Value="rkutils.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
@@ -136,11 +131,6 @@
         <Filename Value="zstd.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Zstd"/>
-      </Unit>
-      <Unit>
-        <Filename Value="copyfilethread.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="CopyFileThread"/>
       </Unit>
     </Units>
   </ProjectOptions>
