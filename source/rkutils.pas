@@ -1423,12 +1423,10 @@ procedure FillFreeSpaceWithByte(const FilePath: string; FillValue: Byte;listbox:
 const
   InitialBlockSize = 1024 * 1024; // 1 MiB
 
-
 begin
   BlockSize := InitialBlockSize;
 //  SetLength(Buffer, BlockSize);
   Fillchar(buffer,blocksize,FillValue);
-
   listboxaddscroll(listbox,'Overwriting empty sectors');
 
 //  listboxaddscroll(listbox,'Creating file: '+ FilePath);
@@ -1443,8 +1441,7 @@ begin
     until written <  BlockSize;
 
 
-    listboxaddscroll(listbox,'Sectors erased: '+inttostr( WrittenBytes div 512)+' = '+
-                                         FileSizeAsString(WrittenBytes,True));
+    listboxaddscroll(listbox,'Sectors erased: '+inttostr( WrittenBytes div 512)+' = '+ FileSizeAsString(WrittenBytes,True));
   finally
     Stream.Free;
   end;

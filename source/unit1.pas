@@ -96,7 +96,7 @@ implementation
 const
   appname = 'PiBackup  v1.4.0';
   ininame = 'pbt.ini';
-  mpoint = '/images/pbt_img';
+  mpoint = '/images/pibackup_img';
 
   par1 = 2;
   par2 = 3;
@@ -477,6 +477,8 @@ begin
 end;
 
 
+
+
 procedure TForm1.ModifyImage(mountpoint: string);
 var
   excludelist: Texcludelist;
@@ -485,7 +487,7 @@ begin
 
   try
     ExcludeList.LogTarget := ListBox1;
-    if CheckBox_exclude.Checked then
+    if (CheckBox_exclude.Checked) and (fileexists(Edit2.Text)) then
     begin
       ExcludeList.LoadFromFile(Edit2.Text, mountpoint);
       ExcludeList.ExecuteAll;
@@ -516,8 +518,9 @@ var
   minsize, NewBlockCount: int64;
   blocksize: integer;
   deststream: TFileStream;
-  mbrwork: TMbr;
-  sectorsperblock: integer;
+  mbrwork,mbr: TMbr;
+  sectorsperblock,p,p1: integer;
+  offset:string;
 begin
   if ButtonCreateImage.Caption = 'cancel' then
   begin
@@ -540,13 +543,6 @@ begin
     sourcedrive := copy(sourcedrive, 1, pos(':', sourcedrive) - 1);
     filename := Trim(ChangeFileExt(Edit1.Text, '.img'));
 
-    s := runbash('LC_ALL=C stat -f /');
-    blocksize := GetValueAfterKeyword(s, 'Block size:');
-    if blocksize <= 0 then
-      raise Exception.Create('Error reading block size');
-
-    sectorsperblock := blocksize div 512;
-
     if not DirectoryExists(ExtractFilePath(filename)) then
       raise Exception.Create('Destination path does not exist');
 
@@ -564,6 +560,9 @@ begin
     FillChar(mbrwork.PartitionEntries[3], SizeOf(mbrwork.PartitionEntries[3]), 0);
     FillChar(mbrwork.PartitionEntries[4], SizeOf(mbrwork.PartitionEntries[4]), 0);
     Write_MBR(mbrwork, filename);
+
+     s := PrexeBash('umount ' + mpoint, listbox1);
+
 
     device := PrexeBash('losetup --partscan --nooverlap --find --show ' + filename, listbox1);
     device := Trim(device);
@@ -604,37 +603,27 @@ begin
     if NewBlockCount = 0 then
       raise Exception.Create('Failed to resize filesystem');
 
+
+      blocksize:=-1;
+      s := runbash('blkid '+ part2);
+      p:=pos('BLOCK_SIZE="',s);
+      inc (p,12);
+      p1:=pos('"',s,p+1);
+      s:=copy(s,p,p1-p);
+      if not trystrtoint(s,blocksize) then
+                      raise Exception.Create('Error reading block size');
+
+      Listboxaddscroll(listbox1,'Blocksize: '+ inttostr(blocksize));
+
+      sectorsperblock := blocksize div 512;
+
+
     mbrwork.PartitionEntries[2].PartitionSize := NewBlockCount * sectorsperblock;
     Write_MBR(mbrwork, filename);
     runbash('/sbin/partprobe ' + device);
     PrexeBash('/sbin/e2fsck -fy ' + part2, Listbox1);
-   //end else
-   //begin
-   // s := PrexeBash('/sbin/resize2fs -M ' + part2 + ' ' + IntToStr(minsize), listbox1);
-   // NewBlockCount := GetValueAfterKeyword(s, 'is now');
-   // if NewBlockCount = 0 then
-   //   raise Exception.Create('Failed to resize filesystem');
-   //
-   // mbrwork.PartitionEntries[2].PartitionSize := NewBlockCount * sectorsperblock;
-   // Write_MBR(mbrwork, filename);
-   // runbash('/sbin/partprobe ' + device);
-   // PrexeBash('/sbin/e2fsck -fy ' + part2, Listbox1);
-   //end;
 
-
-
-
-
-    // mount and write empty blocks to 255 - increases compression;
-    s := PrexeBash('mount ' + part2 + ' ' + mpoint, listbox1);
-    if Pos('failed', LowerCase(s)) > 0 then
-      raise Exception.Create('Mount failed: ' + s);
-     FillFreeSpaceWithByte(mpoint+'/overwrite.ff',255,listbox1);
-          runbash('umount ' + mpoint);
-     Sleep(5000);
-
-
-    runbash('losetup -d ' + device);
+     runbash('losetup -d ' + device);
 
 
     try
@@ -662,9 +651,37 @@ begin
       if checkbox_Delimg.Checked and (not terminate_all) then deletefile(filename);
     end;
 
+
+
+     // neu mounten
+     device:='';
+     //offset holen
+     mbr:=read_mbr(edit1.Text);
+     offset:=inttostr(mbr.PartitionEntries[2].FirstLBA * 512);
+     device:=PrexeBash('losetup --find --show --offset=' + OFFSET + ' ' + filename,listbox1);
+     device := Trim(device);
+    if device = '' then
+      raise Exception.Create('Failed to setup loop device for image');
+
+    s := PrexeBash('mount ' + device + ' ' + mpoint, listbox1);
+    if Pos('failed', LowerCase(s)) > 0 then
+               raise Exception.Create('Mount failed: ' + s);
+
+
+    FillFreeSpaceWithByte(mpoint+'/wipe.255',255,listbox1);
+
+    runcommand('umount -l ' + device, s);
+    Sleep(1000);
+    runcommand('umount -f ' + device, s);
+    Sleep(2000);
+
+    s := Prexebash('e2fsck -fy ' + device, listbox1);
+
+
+   // loop beenden
+
+
     Listboxaddscroll(listbox1, starline('all done', 80));
-
-
   except
     on E: Exception do
     begin
