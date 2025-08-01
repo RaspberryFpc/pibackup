@@ -3,7 +3,7 @@
 All notable changes to this project are documented in this file.
 
 ## [1.4.0] – 2025-07-30
-### Added
+### Added  and removed on 2025-08-01
 - Empty sectors are now overwritten with **0xFF** after shrinking with `resize2fs`:
   - Improves compression of image files
   - Ensures no residual data remains for security reasons

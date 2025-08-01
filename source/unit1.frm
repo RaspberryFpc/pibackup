@@ -7,7 +7,7 @@ object Form1: TForm1
   ClientHeight = 504
   ClientWidth = 1016
   Position = poDesktopCenter
-  LCLVersion = '8.6'
+  LCLVersion = '8.7'
   OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
