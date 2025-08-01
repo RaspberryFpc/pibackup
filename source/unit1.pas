@@ -668,7 +668,7 @@ begin
                raise Exception.Create('Mount failed: ' + s);
 
 
-    FillFreeSpaceWithByte(mpoint+'/wipe.255',255,listbox1);
+//    FillFreeSpaceWithByte(mpoint+'/wipe.255',255,listbox1);
 
     runcommand('umount -l ' + device, s);
     Sleep(1000);
