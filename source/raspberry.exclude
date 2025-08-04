@@ -25,9 +25,6 @@ rait = /var/lib/systemd/random-seed
 rait = /var/lib/systemd/coredump
 rf   = /var/swap
 
-# Paketverwaltung
-rait = /var/lib/dpkg/info
-
 # Protokolle & Backups
 rait = /var/log
 rfid = /var/backups/*

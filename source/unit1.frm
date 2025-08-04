@@ -1,10 +1,10 @@
 object Form1: TForm1
   AnchorSideRight.Side = asrBottom
   Left = 171
-  Height = 504
+  Height = 561
   Top = 115
   Width = 1016
-  ClientHeight = 504
+  ClientHeight = 561
   ClientWidth = 1016
   Position = poDesktopCenter
   LCLVersion = '8.7'
@@ -24,7 +24,7 @@ object Form1: TForm1
   object ComboBox1: TComboBox
     Left = 112
     Height = 30
-    Top = 4
+    Top = 6
     Width = 608
     Anchors = [akLeft]
     ItemHeight = 22
@@ -73,7 +73,7 @@ object Form1: TForm1
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 8
-    Height = 163
+    Height = 220
     Top = 337
     Width = 995
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -314,7 +314,7 @@ object Form1: TForm1
       Font.Height = 16
       ParentFont = False
     end
-    object CheckBox12: TCheckBox
+    object CheckBoxChangeDeviceID: TCheckBox
       AnchorSideTop.Control = CheckBox_DelPartition3
       AnchorSideTop.Side = asrCenter
       Left = 471
@@ -368,7 +368,7 @@ object Form1: TForm1
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = Edit3
       AnchorSideRight.Side = asrBottom
-      Left = 760
+      Left = 761
       Height = 24
       Top = 56
       Width = 164
@@ -377,6 +377,17 @@ object Form1: TForm1
       TabOrder = 5
       OnClick = ButtonWriteImageClick
     end
+  end
+  object BtSaveLog: TButton
+    AnchorSideTop.Control = RadioButton1
+    AnchorSideTop.Side = asrCenter
+    Left = 904
+    Height = 25
+    Top = 205
+    Width = 75
+    Caption = 'Save Log'
+    TabOrder = 10
+    OnClick = BtSaveLogClick
   end
   object SaveDialog1: TSaveDialog
     DefaultExt = '.img'

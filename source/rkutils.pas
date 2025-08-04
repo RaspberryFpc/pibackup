@@ -5,7 +5,60 @@ unit rkutils;
 interface
 
 uses
-  Classes, SysUtils, process, baseunix, LazUTF8, fileutil, dateutils, StdCtrls, Forms, ctypes, Dialogs;
+  Classes, SysUtils, process, baseunix, unix, LazUTF8, fileutil, dateutils, StdCtrls, Forms, Dialogs, UnixType;
+
+type
+  TExt4Superblock = packed record
+    s_inodes_count: uint32;
+    s_blocks_count: uint32;
+    s_r_blocks_count: uint32;
+    s_free_blocks_count: uint32;
+    s_free_inodes_count: uint32;
+    s_first_data_block: uint32;
+    s_log_block_size: uint32;
+    s_log_frag_size: int32;
+    s_blocks_per_group: uint32;
+    s_frags_per_group: uint32;
+    s_inodes_per_group: uint32;
+    s_mtime: uint32;
+    s_wtime: uint32;
+    s_mnt_count: uint16;
+    s_max_mnt_count: int16;
+    s_magic: uint16;
+    s_state: uint16;
+    s_errors: uint16;
+    s_minor_rev_level: uint16;
+    s_lastcheck: uint32;
+    s_checkinterval: uint32;
+    s_creator_os: uint32;
+    s_rev_level: uint32;
+    s_def_resuid: uint16;
+    s_def_resgid: uint16;
+    s_first_ino: uint32;
+    s_inode_size: uint16;
+    s_block_group_nr: uint16;
+    s_feature_compat: uint32;
+    s_feature_incompat: uint32;
+    s_feature_ro_compat: uint32;
+    s_uuid: array[0..15] of byte;
+    s_volume_name: array[0..15] of ansichar;
+    s_last_mounted: array[0..63] of ansichar;
+    s_algorithm_usage_bitmap: uint32;
+    // ... weitere Felder ausgelassen
+  end;
+
+  TExt4BlockGroupDescriptor = packed record
+    bg_block_bitmap: uint32;
+    bg_inode_bitmap: uint32;
+    bg_inode_table: uint32;
+    bg_free_blocks_count: uint16;
+    bg_free_inodes_count: uint16;
+    bg_used_dirs_count: uint16;
+    bg_pad: uint16;
+    bg_reserved: array[0..2] of uint32;
+  end;
+
+
 
 type
   TMBRPartition = packed record
@@ -45,7 +98,7 @@ function ReplacePartUUIDInCmdline(Device: string; NewID: string): string;
 function ReplacePartUUIDInFstab(device: string; newsignatur: string): string;
 procedure ReplacePartuuidinmbr(device: string; NewSignature: dword);
 function GetMBRPartitionTypeName(PartType: byte): string;
-function Read_Mbr(const filename: string):tmbr;
+function Read_Mbr(const filename: string): tmbr;
 procedure Write_mbr(mbr: tmbr; filename: string);
 function PartitionNamefromDevice(device: string; PartitionNumber: integer): string;
 procedure ImageToDevice(Source, Destination: string; keep3, keep4: boolean; box: tlistbox);
@@ -57,8 +110,13 @@ function starLine(s: ansistring; len: integer): ansistring;
 procedure Listboxupdate(listbox: tlistbox; item: string);
 procedure ImageToDeviceImgAndZstd(Source, Destination: string; delpar3, delpar4: boolean; box: TListBox);
 procedure PreCheckImageWrite(const Source, Destination: string);
-procedure FillFreeSpaceWithByte(const FilePath: string; FillValue: Byte;listbox:tlistbox);
-function RunsAsRoot:boolean;
+procedure FillFreeSpaceWithByte(const FilePath: string; FillValue: byte; Count: integer; listbox: tlistbox);
+function RunsAsRoot: boolean;
+procedure SaveUmount(mount: string; listbox: TListBox);
+procedure CloseDevice(dev: string; listbox: TListBox);
+function is_mounted(mount: string; var mountpoint: string; var device: string): boolean;
+function CreateLoopDeviceFromFile(filename: string): string;
+procedure mountloopdevice(loopdevice, mountpoint: string);
 
 var
   terminate_all: boolean;
@@ -76,32 +134,227 @@ var
   Buffer: array[0..buffersize - 1] of byte;
   cBuffer: array[0..prexeBytesToRead - 1] of char;
 
-function RunsAsRoot:boolean;
+function RunsAsRoot: boolean;
 begin
   if fpGetEUID = 0 then
-   result:=true else result:=false;
+    Result := True
+  else
+    Result := False;
+end;
+
+
+function CreateLoopDeviceFromFile(filename: string): string;
+var
+  loopoffset: string;
+  loopdevice: string;
+  s: string;
+  mbr: tmbr;
+begin
+  Result := '';
+  mbr := read_mbr(filename);
+  loopoffset := IntToStr(mbr.PartitionEntries[2].FirstLBA * 512);
+  runcommand('losetup --find --show --offset=' + loopoffset + ' ' + filename, s);
+  loopdevice := trim(s);
+  if loopdevice = '' then raise Exception.Create('Failed to setup loop device for image');
+  Result := loopdevice;
+end;
+
+
+procedure mountloopdevice(loopdevice, mountpoint: string);
+var
+  s: string;
+begin
+  runcommand('mount ' + loopdevice + ' ' + mountpoint, s);
+  if Pos('failed', LowerCase(s)) > 0 then
+    raise Exception.Create('Mount failed:  mounting ' + loopdevice + ' to ' + mountpoint);
 end;
 
 
 procedure Listboxaddscroll(listbox: tlistbox; item: string);
 var
   topindex: integer;
-  visible,ih: integer;
+  Visible, ih: integer;
 begin  // qt5 itemheight immer 0  - selbst messen oder ownerdrawfixed
   listbox.Items.add(item);
-//  ih := listbox.Canvas.TextHeight('Wy') + 4;
-  ih:=listbox.ItemHeight;
-  visible := ListBox.ClientHeight div ih;
-  topindex := ListBox.Items.Count - visible + 2;
+  //  ih := listbox.Canvas.TextHeight('Wy') + 4;
+  ih := listbox.ItemHeight;
+  Visible := ListBox.ClientHeight div ih;
+  topindex := ListBox.Items.Count - Visible + 2;
   if topindex < 0 then topindex := 0;
   ListBox.TopIndex := topindex;
   listbox.Repaint;
 end;
 
+
+
+
 procedure Listboxupdate(listbox: tlistbox; item: string);
 begin
   listbox.Items[ListBox.Items.Count - 1] := item;
   listbox.Repaint;
+end;
+
+
+function is_mounted(mount: string; var mountpoint: string; var device: string): boolean;
+var
+  sl: TStringList;
+  line: string;
+  parts: TStringArray;
+  i: integer;
+begin
+  mountpoint := '';
+  device := '';
+  Result := False;
+
+  sl := TStringList.Create;
+  try
+    sl.LoadFromFile('/proc/mounts');
+    for i := 0 to sl.Count - 1 do
+    begin
+      line := sl[i];
+      parts := line.Split([' ']);
+      if Length(parts) >= 2 then
+      begin
+        if (parts[0] = mount) or (parts[1] = mount) then
+        begin
+          device := parts[0];
+          mountpoint := parts[1];
+          Result := True;
+          Exit;
+        end;
+      end;
+    end;
+  finally
+    sl.Free;
+  end;
+end;
+
+
+
+procedure SaveUmount(mount: string; listbox: TListBox);
+var
+  s: string;
+  dev, mountpt: string;
+  i: integer;
+begin
+  if not is_mounted(mount, dev, mountpt) then
+  begin
+    listboxaddscroll(listbox, 'Not mounted: ' + mount);
+    Exit;
+  end;
+
+  listboxaddscroll(listbox, 'Trying to unmount: ' + mountpt + ' (' + dev + ')');
+
+  for i := 0 to 4 do
+  begin
+    if not is_mounted(mount, dev, mountpt) then
+    begin
+      listboxaddscroll(listbox, 'Unmounted successfully.');
+      Exit;
+    end;
+
+    case i of
+      0: begin
+        listboxaddscroll(listbox, '→ umount');
+        runcommand('umount ' + mountpt, s);
+      end;
+      1: begin
+        listboxaddscroll(listbox, '→ lazy umount (-l)');
+        runcommand('umount -l ' + mountpt, s);
+      end;
+      2: begin
+        listboxaddscroll(listbox, '→ force umount (-f)');
+        runcommand('umount -f ' + mountpt, s);
+      end;
+      3: begin
+        listboxaddscroll(listbox, '→ killing blocking processes (fuser -km)');
+        runcommand('fuser -km ' + mountpt, s);
+      end;
+      else
+      begin
+        listboxaddscroll(listbox, '→ final force umount');
+        runcommand('umount -f ' + mountpt, s);
+      end;
+    end;
+
+    Sleep(1000);
+  end;
+
+  if is_mounted(mount, dev, mountpt) then
+    listboxaddscroll(listbox, 'ERROR: Still mounted: ' + mountpt)
+  else
+    listboxaddscroll(listbox, 'Successfully unmounted after retries.');
+end;
+
+
+
+
+procedure CloseDevice(dev: string; listbox: TListBox);
+var
+  sl: TStringList;
+  line: string;
+  parts: TStringArray;
+  foundMounts: array of string;
+  i: integer;
+  s, realdev: string;
+begin
+  listboxaddscroll(listbox, '🔄 Starting device cleanup: ' + dev);
+  RunCommand('sync', s);
+  listboxaddscroll(listbox, '✓ Initial sync done.');
+
+  // Resolve real device path (resolves symlinks)
+  RunCommand('readlink -f ' + dev, realdev);
+  realdev := Trim(realdev);
+
+  // Find all mount points for this device
+  sl := TStringList.Create;
+  try
+    sl.LoadFromFile('/proc/mounts');
+    for i := 0 to sl.Count - 1 do
+    begin
+      line := sl[i];
+      parts := line.Split([' ']);
+      if Length(parts) >= 2 then
+      begin
+        if (parts[0] = dev) or (parts[0] = realdev) then
+        begin
+          SetLength(foundMounts, Length(foundMounts) + 1);
+          foundMounts[High(foundMounts)] := parts[1];
+        end;
+      end;
+    end;
+  finally
+    sl.Free;
+  end;
+
+  if Length(foundMounts) = 0 then
+  begin
+    listboxaddscroll(listbox, 'No active mount points for: ' + dev);
+  end
+  else
+  begin
+    for i := High(foundMounts) downto 0 do
+      SaveUmount(foundMounts[i], listbox);
+  end;
+
+  // Flush write buffers
+  if FileExists(realdev) then
+  begin
+    RunCommand('blockdev --flushbufs ' + realdev, s);
+    listboxaddscroll(listbox, '✓ Write buffers flushed: ' + realdev);
+  end;
+
+  // Detach loop device
+  if Pos('/dev/loop', realdev) = 1 then
+  begin
+    RunCommand('losetup -d ' + realdev, s);
+    listboxaddscroll(listbox, '✓ Loop device detached: ' + realdev);
+  end;
+
+  RunCommand('sync', s);
+  listboxaddscroll(listbox, '✓ Final sync done.');
+  listboxaddscroll(listbox, '✅ Device cleanup finished: ' + realdev);
+  listboxaddscroll(listbox, '');
 end;
 
 
@@ -537,7 +790,7 @@ begin
 end;
 
 
-function Read_Mbr(const filename: string):tmbr;
+function Read_Mbr(const filename: string): tmbr;
 var
   Header: array[0..3] of byte;
   IsZstd, IsDevice: boolean;
@@ -545,12 +798,12 @@ var
   FD: cint;
   BytesRead: ssize_t;
   Proc: TProcess;
-  mbr:tmbr;
+  mbr: tmbr;
 begin
   FillChar(Mbr, 512, 0);
 
   if not FileExists(filename) then           //  and ) not FileExists('/dev/' + ExtractFileName(filename)
-    raise exception.Create('reading mbr - file not existing: '+filename  );
+    raise Exception.Create('reading mbr - file not existing: ' + filename);
 
   IsDevice := Pos('/dev/', filename) = 1;
 
@@ -558,48 +811,48 @@ begin
   if IsDevice then
   begin
     FD := fpOpen(PChar(filename), O_RDONLY);
-    if FD < 0 then  raise exception.Create('reading mbr - can''''t file open: '+filename  );
+    if FD < 0 then  raise Exception.Create('reading mbr - can''''t file open: ' + filename);
 
     BytesRead := fpRead(FD, @Mbr, 512);
     fpClose(FD);
-    if BytesRead <> 512 then raise exception.Create('reading mbr - error reading file: '+filename  );
+    if BytesRead <> 512 then raise Exception.Create('reading mbr - error reading file: ' + filename);
 
-    if (Mbr.Signature <> $aa55)then raise exception.Create('reading mbr - error mbr signature: '+filename  );
+    if (Mbr.Signature <> $aa55) then raise Exception.Create('reading mbr - error mbr signature: ' + filename);
 
     Result := mbr;
     Exit;
   end;
 
   // Zstandard-Magic prüfen
-   F := TFileStream.Create(filename, fmOpenRead or fmShareDenyNone);
-    try
-      if F.Read(Header, 4) <> 4 then Exit;   // 4byte lesen
-      IsZstd := (Header[0] = $28) and (Header[1] = $B5) and (Header[2] = $2F) and (Header[3] = $FD);
-    finally
-      F.Free;
-    end;
+  F := TFileStream.Create(filename, fmOpenRead or fmShareDenyNone);
+  try
+    if F.Read(Header, 4) <> 4 then Exit;   // 4byte lesen
+    IsZstd := (Header[0] = $28) and (Header[1] = $B5) and (Header[2] = $2F) and (Header[3] = $FD);
+  finally
+    F.Free;
+  end;
 
- ////////////////////////////  ist Datei  ////////////////////////////////////////////////
+  ////////////////////////////  ist Datei  ////////////////////////////////////////////////
   if not IsZstd then
   begin
     F := TFileStream.Create(filename, fmOpenRead or fmShareDenyNone);
-      try
-        if F.Size < 512 then
-                      raise exception.Create('reading mbr - file to small: '+filename  );
+    try
+      if F.Size < 512 then
+        raise Exception.Create('reading mbr - file to small: ' + filename);
 
-        F.Position := 0;
-        Bytesread := F.Read(mbr, 512);
-         if bytesread <>  512 then raise exception.Create('reading mbr - error reading file: '+filename  );
-         if (Mbr.Signature <> $aa55)then raise exception.Create('reading mbr - error mbr signature: '+filename  );
-         Result := mbr;
-      finally
-        F.Free;
-      end;
+      F.Position := 0;
+      Bytesread := F.Read(mbr, 512);
+      if bytesread <> 512 then raise Exception.Create('reading mbr - error reading file: ' + filename);
+      if (Mbr.Signature <> $aa55) then raise Exception.Create('reading mbr - error mbr signature: ' + filename);
+      Result := mbr;
+    finally
+      F.Free;
+    end;
   end
   else
   begin
     try
-    Proc := TProcess.Create(nil);
+      Proc := TProcess.Create(nil);
 
       Proc.Executable := '/bin/sh';
       Proc.Parameters.Add('-c');
@@ -607,8 +860,8 @@ begin
       Proc.Options := [poUsePipes];
       Proc.Execute;
       BytesRead := Proc.Output.Read(Mbr, SizeOf(Mbr));
-      if bytesread <>  512 then raise exception.Create('reading mbr - error reading file: '+filename  );
-      if (Mbr.Signature <> $aa55)then raise exception.Create('reading mbr - error mbr signature: '+filename  );
+      if bytesread <> 512 then raise Exception.Create('reading mbr - error reading file: ' + filename);
+      if (Mbr.Signature <> $aa55) then raise Exception.Create('reading mbr - error mbr signature: ' + filename);
       Result := mbr;
     finally
       Proc.Free;
@@ -619,28 +872,24 @@ end;
 
 
 
-
-
-
-
 procedure Write_mbr(mbr: tmbr; filename: string);
 var
   mbr_writestream: tfilestream;
 begin
   try
-  try
-    mbr_writestream := tfilestream.Create(Filename, fmOpenReadWrite or fmShareDenyNone);
-  except
-    on E: Exception do
-    begin
-      raise exception.Create('error opening file/device for writing mbr to: '+filename);
+    try
+      mbr_writestream := tfilestream.Create(Filename, fmOpenReadWrite or fmShareDenyNone);
+    except
+      on E: Exception do
+      begin
+        raise Exception.Create('error opening file/device for writing mbr to: ' + filename);
+      end;
     end;
-  end;
-  mbr_writestream.position := 0;
-  if mbr_writestream.Write(mbr, 512) <> 512 then raise exception.Create('error writing mbr to file/device: ' +filename);
+    mbr_writestream.position := 0;
+    if mbr_writestream.Write(mbr, 512) <> 512 then raise Exception.Create('error writing mbr to file/device: ' + filename);
   finally
-  freeandnil(mbr_writestream);
- end;
+    FreeAndNil(mbr_writestream);
+  end;
 end;
 
 
@@ -833,9 +1082,9 @@ procedure replacePartuuidinmbr(device: string; NewSignature: dword);
 var
   uMBR: TMbr;
 begin
-   uMBR:=Read_MBR(device);
-   uMBR.DiskSignature := NewSignature;
-    Write_MBR(uMBR, device);
+  uMBR := Read_MBR(device);
+  uMBR.DiskSignature := NewSignature;
+  Write_MBR(uMBR, device);
 end;
 
 
@@ -894,7 +1143,7 @@ begin
     if not FileExists(Source) then
       raise Exception.Create('Source file not found: ' + Source);
 
-    mbr_image:=Read_MBR(Source);
+    mbr_image := Read_MBR(Source);
 
     mbr_image.PartitionEntries[3] := mbr_alt.PartitionEntries[3];
     mbr_image.PartitionEntries[4] := mbr_alt.PartitionEntries[4];
@@ -906,77 +1155,75 @@ begin
     Write_MBR(mbr_image, Destination);
 
     try
-    fsource := TFileStream.Create(Source, fmOpenRead or fmShareDenyNone);
+      fsource := TFileStream.Create(Source, fmOpenRead or fmShareDenyNone);
     except
       on E: Exception do
         raise Exception.Create('Cannot open file for reading: ' + E.Message);
-      end;
+    end;
 
     try
-        fdest := TFileStream.Create(Destination, fmOpenWrite or fmShareDenyNone);
+      fdest := TFileStream.Create(Destination, fmOpenWrite or fmShareDenyNone);
     except
       on E: Exception do
         raise Exception.Create('Cannot open file for writing: ' + E.Message);
+    end;
+
+    fsource.Position := 512;
+    fdest.Position := 512;
+
+    tocopy := FileSize(Source) - 512;
+    done := 0;
+    startTime := Now;
+    lastUpdate := startTime;
+    box.Items.Add('');
+    box.Items.Add('');
+    lastline := box.Count - 1;
+    repeat
+      ReadCount := fsource.Read(buffer, BufferSize);
+      if ReadCount > 0 then
+      begin
+        WrittenCount := fdest.Write(buffer, ReadCount);
+        if WrittenCount <> ReadCount then
+          raise Exception.Create('Write error: Bytes written do not match bytes read.');
+        Inc(done, WrittenCount);
+
+        if SecondSpan(lastUpdate, Now) >= UpdateIntervalSec then
+        begin
+          lastUpdate := Now;
+          elapsedSecs := SecondSpan(startTime, Now);
+          if elapsedSecs < 0.001 then elapsedSecs := 0.001;
+
+          percent := (done / tocopy) * 100.0;
+          speedMBs := (done / 1048576) / elapsedSecs;
+          if speedMBs > 0 then
+            etaSecs := ((tocopy - done) / 1048576) / speedMBs
+          else
+            etaSecs := 0;
+
+          filled := Round((percent / 100.0) * BarWidth);
+          bar := StringOfChar('X', filled) + StringOfChar('-', BarWidth - filled);
+
+          etaHours := Trunc(etaSecs) div 3600;
+          etaMinutes := (Trunc(etaSecs) mod 3600) div 60;
+          etaSeconds := Trunc(etaSecs) mod 60;
+          etaStr := Format('%d:%.2d:%.2d', [etaHours, etaMinutes, etaSeconds]);
+
+          StatusText := Format('%.1f MB (%.1f%%) [%s]  %.2f MB/s  ETA: %s', [done / 1048576, percent, bar, speedMBs, etaStr]);
+          box.Items[lastline] := statustext;// optional: callback oder logging
+          application.ProcessMessages;
+        end;
       end;
 
-      fsource.Position := 512;
-      fdest.Position := 512;
+      if terminate_all then raise Exception.Create('image write operation terminated');
+    until (ReadCount = 0) or (done >= tocopy);
 
-      tocopy := FileSize(Source) - 512;
-      done := 0;
-      startTime := Now;
-      lastUpdate := startTime;
-      box.Items.Add('');
-      box.Items.Add('');
-      lastline := box.Count - 1;
-      repeat
-        ReadCount := fsource.Read(buffer, BufferSize);
-        if ReadCount > 0 then
-        begin
-          WrittenCount := fdest.Write(buffer, ReadCount);
-          if WrittenCount <> ReadCount then
-            raise Exception.Create('Write error: Bytes written do not match bytes read.');
-          Inc(done, WrittenCount);
-
-          if SecondSpan(lastUpdate, Now) >= UpdateIntervalSec then
-          begin
-            lastUpdate := Now;
-            elapsedSecs := SecondSpan(startTime, Now);
-            if elapsedSecs < 0.001 then elapsedSecs := 0.001;
-
-            percent := (done / tocopy) * 100.0;
-            speedMBs := (done / 1048576) / elapsedSecs;
-            if speedMBs > 0 then
-              etaSecs := ((tocopy - done) / 1048576) / speedMBs
-            else
-              etaSecs := 0;
-
-            filled := Round((percent / 100.0) * BarWidth);
-            bar := StringOfChar('X', filled) + StringOfChar('-', BarWidth - filled);
-
-            etaHours := Trunc(etaSecs) div 3600;
-            etaMinutes := (Trunc(etaSecs) mod 3600) div 60;
-            etaSeconds := Trunc(etaSecs) mod 60;
-            etaStr := Format('%d:%.2d:%.2d', [etaHours, etaMinutes, etaSeconds]);
-
-            StatusText := Format('%.1f MB (%.1f%%) [%s]  %.2f MB/s  ETA: %s', [done / 1048576, percent, bar, speedMBs, etaStr]);
-            box.Items[lastline] := statustext;// optional: callback oder logging
-            application.ProcessMessages;
-          end;
-        end;
-
-      if terminate_all then raise exception.create('image write operation terminated');
-      until (ReadCount = 0) or (done >= tocopy);
-
-      if done <> tocopy then
-        raise Exception.Create('Incomplete image write operation.');
-    finally
-      fsource.Free;
-      fdest.Free;
-    end;
- end;
-
-
+    if done <> tocopy then
+      raise Exception.Create('Incomplete image write operation.');
+  finally
+    fsource.Free;
+    fdest.Free;
+  end;
+end;
 
 
 
@@ -988,7 +1235,7 @@ var
   loop: string;
   bps: double;
   makeImageStart: int64;
-   makeImageEnd: int64;
+  makeImageEnd: int64;
   readnr: int64;
   remain: int64;
   bytestocopy: int64;
@@ -1001,9 +1248,8 @@ var
   dis_time: int64;
   gelesen: ssize_t;
   geschrieben: ssize_t;
-   MBR: TMbr;
+  MBR: TMbr;
   SourceStream, DestStream: TFileStream;
-
 begin
   try
     bps := 0;
@@ -1015,13 +1261,13 @@ begin
 
 
     // Read MBR and calculate size
-    MBR:=Read_MBR(SourceDrive);
+    MBR := Read_MBR(SourceDrive);
     bytestocopy := (MBR.PartitionEntries[2].FirstLBA + MBR.PartitionEntries[2].PartitionSize) * 512;
     tocopy := bytestocopy;
     toread := tocopy;
 
-      DestStream := TFileStream.Create(Filename, fmCreate or fmOpenWrite or fmShareDenyNone);
-      SourceStream := TFileStream.Create(Sourcedrive, fmOpenRead or fmShareDenyNone);
+    DestStream := TFileStream.Create(Filename, fmCreate or fmOpenWrite or fmShareDenyNone);
+    SourceStream := TFileStream.Create(Sourcedrive, fmOpenRead or fmShareDenyNone);
 
     // Read MBR for safety (again)
     gelesen := SourceStream.Read(MBR, 512);
@@ -1074,40 +1320,32 @@ begin
           s := IntToStr(remain) + ' seconds';
 
         info := Format('%d MB  %d%%  speed: %.1f MB/sec  ETA: %s', [all div 1000000, all * 100 div tocopy, bps / 1000, s]);
-          Listboxupdate(ListBox, info);
-        end;
+        Listboxupdate(ListBox, info);
+      end;
 
       application.ProcessMessages;
 
       if terminate_all then
-          begin
-           freeandnil(SourceStream);
-           freeandnil(DestStream);
-           deletefile(filename);
-          raise exception.Create('writing image is terminated');
-          end;
+      begin
+        FreeAndNil(SourceStream);
+        FreeAndNil(DestStream);
+        deletefile(filename);
+        raise Exception.Create('writing image is terminated');
+      end;
 
     until (toread = 0);
 
     makeImageEnd := GetTickCount64;
     ListBox.Items.Add(IntToStr(all) + ' of ' + IntToStr(tocopy) + ' bytes copied in ' + ms2t(makeImageEnd - makeImageStart));
 
-    // Attach loopback device and fix filesystem
-    if RunCommand('losetup', ['-f', '--show', '-o', IntToStr(MBR.PartitionEntries[2].FirstLBA * 512), Filename], loop) then
-    begin
-      loop := Trim(loop);
-      PrexeBash('e2fsck -fy ' + loop, listbox);
-      PrexeBash('losetup -d ' + loop, listbox);
-    end
-    else
-     raise exception.Create('Warning: failed to create loopback device.');
+    RunCommand('sync', s);
 
   finally
-    freeandnil(SourceStream);
-    freeandnil(DestStream);
+    FreeAndNil(SourceStream);
+    FreeAndNil(DestStream);
   end;
 
-  end;
+end;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1119,15 +1357,15 @@ var
   bi: integer;
 begin
   if not FileExists(Source) then
-    raise exception.Create('Source file not found: ' + Source);
+    raise Exception.Create('Source file not found: ' + Source);
 
   if not FileExists(Destination) then
-     raise exception.Create('Destination device not found: ' + Destination);
+    raise Exception.Create('Destination device not found: ' + Destination);
 
   // Check for mounted partitions
 
   if not RunCommand('lsblk ' + Destination + ' -b -J -o MOUNTPOINT', line) then
-     raise exception.Create('Error executing lsblk command.');
+    raise Exception.Create('Error executing lsblk command.');
 
   sl := TStringList.Create;
   try
@@ -1138,9 +1376,9 @@ begin
       if Pos('"mountpoint":', bline) > 0 then
       begin
         if bline = '"mountpoint": "/"' then
-          raise exception.Create('Partition mounted as root. Writing canceled.');
+          raise Exception.Create('Partition mounted as root. Writing canceled.');
         if (bline = '"mountpoint": "/boot"') or (line = '"mountpoint": "/boot/firmware"') then
-          raise exception.Create('Partition mounted as boot. Writing canceled.');
+          raise Exception.Create('Partition mounted as boot. Writing canceled.');
       end;
     end;
   finally
@@ -1152,8 +1390,8 @@ procedure FinalizeMBRUpdate(Source, Destination: string; delpar3, delpar4: boole
 var
   mbr_image, mbr_old: TMBR;
 begin
-   mbr_image:=Read_MBR(Source);
-   mbr_old:= Read_MBR(Destination);
+  mbr_image := Read_MBR(Source);
+  mbr_old := Read_MBR(Destination);
   if not delpar3 then
     mbr_image.PartitionEntries[3] := mbr_old.PartitionEntries[3]
   else
@@ -1168,8 +1406,6 @@ end;
 
 
 
-var
-ibuffer: array of byte;
 
 procedure ImageToDeviceStandard(Source, Destination: string; delpar3, delpar4: boolean; box: TListBox);
 const
@@ -1234,10 +1470,8 @@ begin
           s := totalSecs mod 60;
           etaStr := Format('%.2d:%.2d:%.2d', [h, m, s]);
 
-          bar := StringOfChar('X', Round(percent * 40 / 100)) +
-                 StringOfChar('-', 40 - Round(percent * 40 / 100));
-          status := Format('%.1f MB (%.1f%%) [%s]  %.2f MB/s  ETA: %s',
-                           [done / 1048576, percent, bar, speedMBs, etaStr]);
+          bar := StringOfChar('X', Round(percent * 40 / 100)) + StringOfChar('-', 40 - Round(percent * 40 / 100));
+          status := Format('%.1f MB (%.1f%%) [%s]  %.2f MB/s  ETA: %s', [done / 1048576, percent, bar, speedMBs, etaStr]);
 
           box.Items[lastline] := status;
           Application.ProcessMessages;
@@ -1260,7 +1494,6 @@ end;
 
 
 
-
 function ImageToDeviceZstd(Source, Destination: string; delpar3, delpar4: boolean; box: TListBox): string;
 const
   BufferSize = 32 * 1024 * 1024;
@@ -1271,13 +1504,13 @@ var
   OutBuffer: TZSTD_outBuffer;
   InData: array of byte;
   OutData: array of byte;
-  done: Int64 = 0;
+  done: int64 = 0;
   startTime, lastUpdate, elapsedSecs, etaSecs: double;
   lastline, res: integer;
   speedMBs: double;
   etaStr, status: string;
   totalSecs, h, m, s, percent: integer;
-  tocopy: Int64;
+  tocopy: int64;
   skipBytes: integer = 512;
 begin
   Result := '';
@@ -1285,175 +1518,193 @@ begin
   try
     fin := TFileStream.Create(Source, fmOpenRead or fmShareDenyNone);
     fout := TFileStream.Create(Destination, fmOpenWrite or fmShareDenyNone);
-      // Quelle vollständig lesen (inkl. MBR), Zielposition auf 512 setzen
-      fin.Position := 0;
-      fout.Position := 512;
+    // Quelle vollständig lesen (inkl. MBR), Zielposition auf 512 setzen
+    fin.Position := 0;
+    fout.Position := 512;
 
-      // Fortschrittsberechnung auf Basis des Zieldatenbereichs (ab Byte 512)
-      tocopy := fin.Size;  // Komplette Datei
-      if tocopy > 512 then
-        tocopy := tocopy - 512
-      else
-        tocopy := 0;
+    // Fortschrittsberechnung auf Basis des Zieldatenbereichs (ab Byte 512)
+    tocopy := fin.Size;  // Komplette Datei
+    if tocopy > 512 then
+      tocopy := tocopy - 512
+    else
+      tocopy := 0;
 
-      dctx := ZSTD_createDCtx();
+    dctx := ZSTD_createDCtx();
 
-      SetLength(InData, BufferSize);
-      SetLength(OutData, BufferSize);
+    SetLength(InData, BufferSize);
+    SetLength(OutData, BufferSize);
 
-      done := 0;
-      startTime := Now;
-      lastUpdate := startTime;
-      listboxaddscroll(box,'');
-      lastline := box.Count-1;
+    done := 0;
+    startTime := Now;
+    lastUpdate := startTime;
+    listboxaddscroll(box, '');
+    lastline := box.Count - 1;
 
-      repeat
-        // Eingabe lesen
-        InBuffer.size := fin.Read(InData[0], BufferSize);
-        InBuffer.src := @InData[0];
-        InBuffer.pos := 0;
+    repeat
+      // Eingabe lesen
+      InBuffer.size := fin.Read(InData[0], BufferSize);
+      InBuffer.src := @InData[0];
+      InBuffer.pos := 0;
 
-        while InBuffer.pos < InBuffer.size do
+      while InBuffer.pos < InBuffer.size do
+      begin
+        OutBuffer.dst := @OutData[0];
+        OutBuffer.size := BufferSize;
+        OutBuffer.pos := 0;
+
+        res := ZSTD_decompressStream(dctx, OutBuffer, InBuffer);
+        if ZSTD_isError(res) <> 0 then
+          raise Exception.Create('ZSTD decompress error: ' + ZSTD_getErrorName(res));
+
+        if OutBuffer.pos > 0 then
         begin
-          OutBuffer.dst := @OutData[0];
-          OutBuffer.size := BufferSize;
-          OutBuffer.pos := 0;
-
-          res := ZSTD_decompressStream(dctx, OutBuffer, InBuffer);
-          if ZSTD_isError(res) <> 0 then
-            raise Exception.Create('ZSTD decompress error: ' + ZSTD_getErrorName(res));
-
-          if OutBuffer.pos > 0 then
+          if skipBytes > 0 then
           begin
-            if skipBytes > 0 then
+            if OutBuffer.pos > skipBytes then
             begin
-              if OutBuffer.pos > skipBytes then
-              begin
-                fout.Write(PByte(@OutData[0] + skipBytes)^, OutBuffer.pos - skipBytes);
-                Inc(done, OutBuffer.pos - skipBytes);
-                skipBytes := 0;
-              end
-              else
-              begin
-                // Noch im Überspringbereich
-                Dec(skipBytes, OutBuffer.pos);
-              end;
+              fout.Write(pbyte(@OutData[0] + skipBytes)^, OutBuffer.pos - skipBytes);
+              Inc(done, OutBuffer.pos - skipBytes);
+              skipBytes := 0;
             end
             else
             begin
-              fout.Write(OutData[0], OutBuffer.pos);
-              Inc(done, OutBuffer.pos);
+              // Noch im Überspringbereich
+              Dec(skipBytes, OutBuffer.pos);
             end;
-          end;
-
-          // Fortschrittsanzeige alle 1 Sekunden
-          if SecondSpan(lastUpdate, Now) >= 1.0 then
+          end
+          else
           begin
-            lastUpdate := Now;
-            elapsedSecs := SecondSpan(startTime, Now);
-            if elapsedSecs < 0.001 then elapsedSecs := 0.001;
-
-            speedMBs := (fin.Position / 1048576) / elapsedSecs;
-
-           if (speedMBs > 0) and (fin.Size > 0) then
-                         etaSecs := ((fin.Size - fin.Position) / 1048576) / speedMBs
-           else
-            etaSecs := 0;
-
-            totalSecs := Trunc(etaSecs);
-            h := totalSecs div 3600;
-            m := (totalSecs mod 3600) div 60;
-            s := totalSecs mod 60;
-            etaStr := Format('%.2d:%.2d:%.2d', [h, m, s]);
-
-
-            if fin.Size > 0 then
-            percent := Round((fin.Position / fin.Size) * 100)
-            else
-            percent := 0;
-
-            status := Format('%.1f MB written [%d%%] %.2f MB/s ETA %s', [done / 1048576, percent, speedMBs, etaStr]);
-            box.Items[lastline] := status;
-            Application.ProcessMessages;
+            fout.Write(OutData[0], OutBuffer.pos);
+            Inc(done, OutBuffer.pos);
           end;
         end;
 
-      if terminate_all then raise exception.Create('Writing image to device is terminated');
-      until (res = 0) ;
+        // Fortschrittsanzeige alle 1 Sekunden
+        if SecondSpan(lastUpdate, Now) >= 1.0 then
+        begin
+          lastUpdate := Now;
+          elapsedSecs := SecondSpan(startTime, Now);
+          if elapsedSecs < 0.001 then elapsedSecs := 0.001;
 
-      ZSTD_freeDCtx(dctx);
+          speedMBs := (fin.Position / 1048576) / elapsedSecs;
+
+          if (speedMBs > 0) and (fin.Size > 0) then
+            etaSecs := ((fin.Size - fin.Position) / 1048576) / speedMBs
+          else
+            etaSecs := 0;
+
+          totalSecs := Trunc(etaSecs);
+          h := totalSecs div 3600;
+          m := (totalSecs mod 3600) div 60;
+          s := totalSecs mod 60;
+          etaStr := Format('%.2d:%.2d:%.2d', [h, m, s]);
+
+
+          if fin.Size > 0 then
+            percent := Round((fin.Position / fin.Size) * 100)
+          else
+            percent := 0;
+
+          status := Format('%.1f MB written [%d%%] %.2f MB/s ETA %s', [done / 1048576, percent, speedMBs, etaStr]);
+          box.Items[lastline] := status;
+          Application.ProcessMessages;
+        end;
+      end;
+
+      if terminate_all then raise Exception.Create('Writing image to device is terminated');
+    until (res = 0);
+
+    ZSTD_freeDCtx(dctx);
 
 
     // Nachbearbeitung (z. B. MBR anpassen)
-     FinalizeMBRUpdate(Source, Destination, delpar3, delpar4);
+    FinalizeMBRUpdate(Source, Destination, delpar3, delpar4);
 
-     finally
-      fin.Free;
-      fout.Free;
-    end;
+  finally
+    fin.Free;
+    fout.Free;
   end;
+end;
+
+
 
 
 procedure ImageToDeviceImgAndZstd(Source, Destination: string; delpar3, delpar4: boolean; box: TListBox);
 begin
- PreCheckImageWrite(Source, Destination);
+  PreCheckImageWrite(Source, Destination);
 
   if LowerCase(ExtractFileExt(Source)) = '.zst' then
-                 ImageToDeviceZstd(Source, Destination, delpar3, delpar4, box)
+    ImageToDeviceZstd(Source, Destination, delpar3, delpar4, box)
 
   else
-    begin
-       if FileSize(source) mod 512 <> 0 then
-                    raise Exception.Create('Image size is not a multiple of 512 bytes (sector size).');
+  begin
+    if FileSize(Source) mod 512 <> 0 then
+      raise Exception.Create('Image size is not a multiple of 512 bytes (sector size).');
     ImageToDeviceStandard(Source, Destination, delpar3, delpar4, box);
-    end;
+  end;
 end;
 
 
 
-
+procedure FillFreeSpaceWithByte(const FilePath: string; FillValue: Byte; Count: Integer; listbox: TListBox);
+const
+  BlockSize = 16 * 1024 * 1024; // 16 MiB
 var
   Stream: TFileStream;
-  BlockSize: Integer;
-  WrittenBytes,written: Int64;
-  isDone: Boolean;
-
-
-procedure FillFreeSpaceWithByte(const FilePath: string; FillValue: Byte;listbox:tlistbox);
-const
-  InitialBlockSize = 1024 * 1024; // 1 MiB
-
+  BytesWritten, TotalWritten: Int64;
+  s: string;
 begin
-  BlockSize := InitialBlockSize;
-//  SetLength(Buffer, BlockSize);
-  Fillchar(buffer,blocksize,FillValue);
-  listboxaddscroll(listbox,'Overwriting empty sectors');
+  listboxaddscroll(listbox, '');
+  listboxaddscroll(listbox, 'Filling file with byte ' + IntToStr(FillValue));
 
-//  listboxaddscroll(listbox,'Creating file: '+ FilePath);
-  Stream := TFileStream.Create(FilePath, fmCreate or fmOpenWrite);
+  // Puffer füllen
+  FillChar(Buffer[0], BlockSize, FillValue);
+
   try
-    WrittenBytes := 0;
-    isDone := False;
+    // Datei anlegen
+    try
+      Stream := TFileStream.Create(FilePath, fmCreate);
+    except
+      on E: Exception do
+      begin
+        listboxaddscroll(listbox, 'ERROR: Failed to create file: ' + E.Message);
+        Exit;
+      end;
+    end;
 
+    // Schreiben bis kein Platz mehr
+    TotalWritten := 0;
     repeat
-      written:=Stream.Write(Buffer[0], BlockSize);
-      Inc(writtenBytes,written);
-    until written <  BlockSize;
+      try
+        BytesWritten := Stream.Write(Buffer[0], BlockSize);
+        Inc(TotalWritten, BytesWritten);
+        listboxupdate(listbox, Format('Written: %.2f MiB', [TotalWritten / (1024 * 1024)]));
+      except
+        on E: Exception do
+        begin
+          listboxaddscroll(listbox, 'Write error: ' + E.Message);
+          Break;
+        end;
+      end;
+    until BytesWritten <> BlockSize;
 
-
-    listboxaddscroll(listbox,'Sectors erased: '+inttostr( WrittenBytes div 512)+' = '+ FileSizeAsString(WrittenBytes,True));
   finally
-    Stream.Free;
+    if Assigned(Stream) then
+    begin
+      try
+        Stream.Free;
+      except
+        on E: Exception do
+          listboxaddscroll(listbox, 'Error closing file: ' + E.Message);
+      end;
+    end;
+
+    RunCommand('sync', s);
+    DeleteFile(FilePath);
+    RunCommand('sync', s);
+    listboxaddscroll(listbox, 'File deleted and system sync complete.');
   end;
-
-   if not DeleteFile(FilePath) then
-           listboxaddscroll(listbox,'Warning: Could not delete temporary file.');
-
-  // Call system sync
-  ExecuteProcess('/bin/sync', '', []);
-  Writeln('System sync done.');
 end;
 
-
-
 end.
+
