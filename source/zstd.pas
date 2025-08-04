@@ -104,7 +104,7 @@ var
   fIn, fOut: TFileStream;
   cctx: Pointer;
   readBytes: Integer;
-  totalRead, totalWritten, fileSize,fsize: Int64;
+  totalRead, totalWritten, fileSize: Int64;
   ret: SizeUInt;
   startTime, lastUpdateTime: TDateTime;
   elapsedSecs, etaSecs, speed: Double;
