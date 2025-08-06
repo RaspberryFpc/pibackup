@@ -389,7 +389,7 @@ object Form1: TForm1
     Height = 27
     Top = 219
     Width = 105
-    Anchors = [akTop, akLeft, akRight]
+    Anchors = [akTop, akRight]
     Caption = 'Save Log'
     TabOrder = 10
     OnClick = BtSaveLogClick
