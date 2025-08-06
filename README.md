@@ -23,7 +23,9 @@ Additionally, you can optionally change the device ID (MBR disk signature) durin
 - Allows saving to other partitions on the same drive
 - The uncompressed .img backup file remains available and is not deleted if the checkbox is left unchecked or if the compression process fails.
 - Compressed backups can be created directly as `.img.zst` and used for restoration
-- Supports SD cards, SSDs, HDDs, and other block devices
+- Supports SD cards, SSDs, HDDs, and other block devices Empty sectors are overwritten with **0xFF** what improves compression of image files and ensures no residual data remains for security reasons
+- Empty sectors are filled with 0xFF to enhance compression and prevent residual data for security.
+
 
 ## Restore Features
 
