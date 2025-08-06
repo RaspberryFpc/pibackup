@@ -2,32 +2,110 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="pibackup is a backup and restore tool with GUI for Raspberry Pi. Shrinks, compresses and restores partitions safely."/>
-  <title>pibackup – Raspberry Pi Backup Tool</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="pibackup – Portable backup and restore tool for Raspberry Pi and similar Linux systems. Creates compressed or raw images, offers a simple GUI, and supports selective restore.">
+  <title>pibackup – Backup & Restore for Linux & Raspberry Pi</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f6f8fa;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    header {
+      background: #24292e;
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    h1 {
+      margin: 0;
+      font-size: 2.2rem;
+    }
+    main {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 1.5rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    section {
+      margin-bottom: 2rem;
+    }
+    h2 {
+      color: #0366d6;
+    }
+    ul {
+      line-height: 1.6;
+      padding-left: 1.2rem;
+    }
+    a.button {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.6rem 1.2rem;
+      background: #28a745;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+    footer {
+      text-align: center;
+      color: #777;
+      padding: 2rem;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
 <body>
-  <h1>pibackup – Raspberry Pi Backup Tool</h1>
-  <p><strong>Version:</strong> v1.4.1</p>
-  <p><a href="https://github.com/RaspberryPiFpcHub/pibackup">View on GitHub</a></p>
+  <header>
+    <h1>pibackup</h1>
+    <p>Portable Backup & Restore for Linux and Raspberry Pi</p>
+  </header>
 
-  <h2>Key Features</h2>
-  <ul>
-    <li>GUI-based backup & restore for Raspberry Pi</li>
-    <li>Restores only selected partitions</li>
-    <li>Image shrinking and Zstandard compression</li>
-    <li>Exclude file support</li>
-    <li>No installation needed – portable tool</li>
-  </ul>
+  <main>
+    <section>
+      <h2>🔧 Main Features</h2>
+      <ul>
+        <li>Simple graphical user interface – no installation required</li>
+        <li>64-bit Linux application – runs directly</li>
+        <li>Automatically backs up the first two partitions (e.g., <code>/boot</code> and <code>/root</code>)</li>
+        <li>Exclude file support for removing unwanted data and folders</li>
+        <li>Optional removal of SSH and DHCP configs from the backup</li>
+        <li>Image is shrunk to reduce space, then compressed using <strong>zstd</strong></li>
+        <li>Compressed backups are saved as <code>.img.zst</code> (optionally)</li>
+        <li>Empty sectors are filled with <code>0xFF</code> to improve compression and security</li>
+        <li>Compatible with SD cards, SSDs, HDDs, and other block devices</li>
+      </ul>
+    </section>
 
-  <h2>Screenshots</h2>
-  <p><img src="screenshot1.png" alt="pibackup GUI" width="500"/></p>
+    <section>
+      <h2>🔁 Restore Highlights</h2>
+      <ul>
+        <li>Restore from <code>.img</code> or <code>.img.zst</code> directly – no manual steps</li>
+        <li>Target device selection via dropdown menu</li>
+        <li>Partition size adjustable via scrollbar or slider</li>
+        <li>Live preview of planned partition layout (grid view)</li>
+        <li>Selective partition deletion (optional)</li>
+        <li>File system auto-resized to fit the new partition size</li>
+      </ul>
+    </section>
 
-  <h2>Download</h2>
-  <p>Visit the <a href="https://github.com/RaspberryPiFpcHub/pibackup">GitHub repository</a> to download the latest version.</p>
+    <section>
+      <h2>📦 Download & Source Code</h2>
+      <p>Visit the GitHub repository to download the latest version, report issues, or contribute:</p>
+      <a class="button" href="https://github.com/RaspberryPiFpcHub/pibackup" target="_blank">GitHub Project</a>
+    </section>
+
+    <section>
+      <h2>💬 Contact</h2>
+      <p>Have questions or feedback? Feel free to open an issue on GitHub.</p>
+    </section>
+  </main>
 
   <footer>
-    <p>&copy; 2025 RaspberryPiFpcHub – MIT License</p>
+    &copy; 2025 pibackup – MIT Licensed
   </footer>
 </body>
 </html>
