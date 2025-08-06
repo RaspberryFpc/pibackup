@@ -39,6 +39,7 @@ Additionally, you can optionally change the device ID (MBR disk signature) durin
 - Optional deletion of **selected** partitions before restore
 - Backup is written directly to the chosen partition without overwriting others (except when deletion is enabled)
 - Automatically adjusts the filesystem to fit the size of the partition.
+- Alternatively, you can set the desired size manually using a slider.
 
 ## Graphical Interface
 
