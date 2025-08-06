@@ -74,8 +74,8 @@ object Form1: TForm1
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 8
-    Height = 235
-    Top = 357
+    Height = 232
+    Top = 360
     Width = 1057
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Top = 113
@@ -122,10 +122,11 @@ object Form1: TForm1
   object RadioButton1: TRadioButton
     AnchorSideTop.Control = StringGrid1
     AnchorSideTop.Side = asrBottom
-    Left = 194
+    Left = 192
     Height = 29
-    Top = 215
+    Top = 218
     Width = 262
+    BorderSpacing.Top = 3
     Caption = 'Create System Backup (Image)'
     Checked = True
     Font.Style = [fsBold]
@@ -138,9 +139,9 @@ object Form1: TForm1
     AnchorSideLeft.Control = RadioButton1
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = RadioButton1
-    Left = 488
+    Left = 486
     Height = 29
-    Top = 215
+    Top = 218
     Width = 262
     BorderSpacing.Left = 32
     Caption = 'Restore Backup or other Image'
@@ -157,7 +158,7 @@ object Form1: TForm1
     AnchorSideRight.Side = asrBottom
     Left = 8
     Height = 106
-    Top = 248
+    Top = 251
     Width = 1057
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Top = 4
@@ -166,9 +167,9 @@ object Form1: TForm1
     ClientWidth = 1057
     TabOrder = 8
     object CheckBox_RemoveSSH: TCheckBox
-      Left = 17
+      Left = 16
       Height = 29
-      Top = 44
+      Top = 57
       Width = 118
       Caption = 'remove SSH'
       TabOrder = 0
@@ -178,7 +179,7 @@ object Form1: TForm1
       AnchorSideTop.Side = asrCenter
       Left = 144
       Height = 29
-      Top = 44
+      Top = 57
       Width = 135
       Caption = 'Remove DHCP'
       TabOrder = 1
@@ -216,7 +217,7 @@ object Form1: TForm1
       AnchorSideTop.Side = asrCenter
       Left = 289
       Height = 29
-      Top = 44
+      Top = 57
       Width = 204
       Caption = 'Compress Image   Level'
       Checked = True
@@ -228,7 +229,7 @@ object Form1: TForm1
       AnchorSideTop.Side = asrCenter
       Left = 493
       Height = 32
-      Top = 42
+      Top = 55
       Width = 53
       Alignment = taCenter
       MaxValue = 19
@@ -243,7 +244,7 @@ object Form1: TForm1
       AnchorSideRight.Side = asrBottom
       Left = 849
       Height = 29
-      Top = 44
+      Top = 57
       Width = 190
       Anchors = [akTop, akRight]
       BorderSpacing.Right = 16
@@ -266,7 +267,7 @@ object Form1: TForm1
       AnchorSideTop.Control = CheckBox_RemoveSSH
       Left = 552
       Height = 29
-      Top = 44
+      Top = 57
       Width = 218
       Caption = 'If compressed delete .img'
       Checked = True
@@ -284,7 +285,7 @@ object Form1: TForm1
     AnchorSideBottom.Side = asrBottom
     Left = 8
     Height = 106
-    Top = 248
+    Top = 251
     Width = 1057
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Top = 4
@@ -382,10 +383,13 @@ object Form1: TForm1
   object BtSaveLog: TButton
     AnchorSideTop.Control = RadioButton1
     AnchorSideTop.Side = asrCenter
+    AnchorSideRight.Control = StringGrid1
+    AnchorSideRight.Side = asrBottom
     Left = 960
     Height = 27
-    Top = 216
-    Width = 80
+    Top = 219
+    Width = 105
+    Anchors = [akTop, akLeft, akRight]
     Caption = 'Save Log'
     TabOrder = 10
     OnClick = BtSaveLogClick
