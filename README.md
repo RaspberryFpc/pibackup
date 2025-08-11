@@ -180,7 +180,7 @@ Diese Software steht unter der MIT-Lizenz. Zusätzlich wird darauf hingewiesen: 
 
 ## Author
 
-- RaspberryPiFpcHub
+- RaspberryFpc
 
 ## Feedback
 
