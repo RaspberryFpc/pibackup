@@ -1,60 +1,55 @@
 # pibackup
-**Version:** v1.4.1 
+**Version:** v1.5.0  
 
-**pibackup** is a portable 64-bit backup and restore tool with a graphical user interface (GUI), specially designed for Raspberry Pi and similar Linux systems.
-Unlike typical SD card tools, it is optimized for large storage devices like SSDs and HDDs, but also works seamlessly with smaller devices.
-It creates backups of the first two partitions of any storage device and offers flexible, selective restoration.
-After creating a backup, pibackup automatically removes specified files and folders from the image, shrinks it, and compresses it efficiently using **Zstandard (.zst)** to save space.
+**pibackup** is a portable 64-bit **live backup tool** with a graphical user interface (GUI), specially designed for Raspberry Pi and similar Linux systems. It supports **live backups** of running systems, but can also create images from inactive drives. Restores are **safe and flexible**, offering various options.  
 
-Safe and Flexible Restore:
-By default, pibackup overwrites only the first two partitions of the target device during restoration. Other partitions and their data remain untouched – unless you choose to delete them during the restore process to free up space.
-Additionally, you can optionally change the device ID (MBR disk signature) during restore to avoid conflicts when using multiple cloned devices.
+Unlike typical SD card tools, it is optimized for large storage devices such as SSDs and HDDs, while still working seamlessly with smaller devices. It creates backups of the first two partitions of any storage device and provides selective restoration. After creating a backup, **pibackup** can automatically remove specified files and folders from the image, shrink it, and compress it efficiently using **Zstandard (.zst)** to save space.  
+
+---
 
 ## Main Features
-
 - **Simple graphical user interface (GUI)**
 - No installation required – runs directly
 - 64-bit application for Linux
 - Automatically backs up the first two partitions (typically `/boot` and `/root`) of the selected device
-- Flexible removal of unwanted files and folders via a freely configurable **exclude file**
+- Flexible exclusion of files and folders via a configurable **exclude file**
 - Optional removal of SSH and DHCP configurations from the backup
-- Shrinks the image after creation to optimize storage usage
+- Image shrinking after creation to optimize storage usage
 - Efficient compression using **zstd**
-- Allows saving to other partitions on the same drive
-- The uncompressed .img backup file remains available and is not deleted if the checkbox is left unchecked or if the compression process fails.
-- Compressed backups can be created directly as `.img.zst` and used for restoration
+- Backups can be saved to other partitions on the same drive
+- The uncompressed `.img` backup file remains available if compression is disabled or fails
+- Compressed backups (`.img.zst`) can be created directly and used for restoration
 - Supports SD cards, SSDs, HDDs, and other block devices
-- Empty sectors are filled with 0xFF to enhance compression and prevent residual data for security.
+- Empty sectors are filled with `0xFF` to improve compression and prevent recovery of residual data  
 
+---
 
 ## Restore Features
-
-- Direct restore from **`.img`** or **`.img.zst`** files – no manual decompression needed
+- Direct restore from **`.img`** or **`.img.zst`** files – no manual decompression required
 - Target device selection via a **drop-down list**
-- Target partition size adjustable via a **scrollbar**:
-  - Range between the minimum image size and the maximum available storage
-- Preview of the planned target partition layout:
-  - Displayed in a **grid** showing how the drive will look after restoration
-  - Shows partition tables, sizes, types, etc.
-  - The grid updates dynamically when adjusting the target size
-- Existing partitions remain intact
-- Optional deletion of **selected** partitions before restore
-- Backup is written directly to the chosen partition without overwriting others (except when deletion is enabled)
-- Automatically adjusts the filesystem to fit the size of the partition.
-- Alternatively, you can set the desired size manually using a slider.
+- Adjustable target partition size via a **slider**
+- Partition size can range between the minimum image size and the maximum available storage
+- Live preview of the planned target layout:
+  - Displayed in a **grid view** showing partitions, sizes, and types
+  - The preview updates dynamically when adjusting the target size
+- Existing partitions remain intact by default
+- Selective deletion of partitions before restore (optional)
+- Backup is written only to the chosen partition unless deletion is enabled
+- Filesystem automatically resized to fit the partition by default
+- Alternatively, manual partition size adjustment is possible  
+
+---
 
 ## Graphical Interface
-
-- Clear, self-explanatory GUI
-- Select device via drop-down list
-- Partition preview via grid display
-- Progress indication during backup and restore
-- Clear status and error messages
+- Clear, intuitive GUI
+- Device selection via drop-down list
+- Partition preview in grid view
+- Progress indicators during backup and restore
+- Clear status and error messages  
 
 ## Exclude File
 
-The **exclude file** is a configurable text file containing a list of files and folders to remove from the image.  
-This allows the backup to be cleaned of unnecessary or temporary data to save storage space and reduce image size.
+The **exclude file** is a configurable text file containing a list of files and folders to remove from the image. This allows the backup to be cleaned of unnecessary or temporary data to save storage space and reduce image size.
 
 ### Exclude File Format
 
@@ -63,7 +58,6 @@ This allows the backup to be cleaned of unnecessary or temporary data to save st
 - Comments or empty lines are ignored.
 - For examples, refer to the existing exclude files.
 - For initial usage, use the raspberry.exclude file.
-
 
 ## Usage
 
@@ -79,7 +73,7 @@ This script:
 
 You can start it:
 - From a terminal, by typing:
-  
+
       /path/to/pibackup/start_pibackup.sh
 
 - By double-clicking the script in a file manager (make sure it is executable)
@@ -132,8 +126,7 @@ Tip: Make sure both files are executable:
 > Adjust the `Exec=` and `Icon=` paths if your project is located in a different directory.  
 > For example, replace `/home/pi/PiBackup/` with your actual installation path.
 
-
-##In the GUI:
+## In the GUI:
 
 - Select the device to back up
 - Choose target partition and storage location
@@ -177,7 +170,6 @@ This software is licensed under the MIT License. Additionally, please note: This
 
 Diese Software steht unter der MIT-Lizenz. Zusätzlich wird darauf hingewiesen: Dieses Programm arbeitet direkt auf Speichergeräten und Dateisystemen. Unsachgemäße Verwendung kann zu Datenverlust führen. Die Nutzung erfolgt vollständig auf eigenes Risiko. Der Autor übernimmt keine Haftung für Schäden oder Datenverluste – dies gilt auch für Schäden, die durch Programmierfehler oder Implementierungsfehler verursacht werden.
 
-
 ## Author
 
 - RaspberryFpc
@@ -197,10 +189,15 @@ Just download the full repository using the **Code → Download ZIP** button, or
 - **Ready-to-use binaries** are located in the [`bin/`](bin/) folder.
 
 - Download the full repository using Code → Download ZIP or clone it via Git.
-- Important:If you download the repository as a ZIP archive, the executable permissions of the files in the bin/ folder will be lost (this is a limitation of ZIP files).After unpacking, manually make the binary executable:
+- Important: If you download the repository as a ZIP archive, the executable permissions of the files in the bin/ folder will be lost (this is a limitation of ZIP files). After unpacking, manually make the binary executable:
 
 ```bash
 chmod +x /path/to/pibackup/pibackup
 ```
 
-No separate releases are needed.
+No separate releases are needed.  
+
+> 💡 **Note on Live Backups:**  
+> Live backups have been successfully tested and work without problems. They are optional; you can also create backups from inactive drives.  
+> However, it is recommended to stop all running programs or perform the backup on a freshly booted system to avoid potential consistency issues.
+
