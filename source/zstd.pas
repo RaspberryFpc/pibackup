@@ -5,10 +5,9 @@ Unit Zstd;
 interface
 
 uses
-  baseunix,stdctrls,rkutils;
+  baseunix,stdctrls,rkutils,forms;
 
 procedure CompressFileZstdWithProgress(const InFile, OutFile: string; Level, ThreadCount: integer; UseLongMode: boolean;listbox:Tlistbox);
-procedure DecompressFileZstdWithProgress(const InFile, OutFile: string);
 
 const
   ZSTD_LIB = 'libzstd.so';
@@ -62,7 +61,7 @@ function ZSTD_getErrorName(code: NativeUInt): PChar; cdecl; external ZSTD_LIB;
 implementation
 
 uses
-  Classes, SysUtils, DateUtils;
+  Classes, SysUtils, DateUtils,unit1;
 
 function GetCPUCount: Integer;
 var
@@ -92,62 +91,80 @@ const
 var
 InBuf, OutBuf: array[0..BuSize - 1] of Byte;
 
+
+
 procedure CompressFileZstdWithProgress(const InFile, OutFile: string; Level, ThreadCount: integer; UseLongMode: boolean; Listbox: TListBox);
-const
-  BarWidth = 30;
 var
   input, output: record
     src: Pointer;
     size, pos: SizeUInt;
   end;
-  linepos, n: Integer;
+
   fIn, fOut: TFileStream;
   cctx: Pointer;
   readBytes: Integer;
-  totalRead, totalWritten, fileSize: Int64;
+  totalWritten, fileSize, totalRead: Int64;
   ret: SizeUInt;
   startTime, lastUpdateTime: TDateTime;
-  elapsedSecs, etaSecs, speed: Double;
-  progress, compressionRatio: Double;
-  bar, s: string;
-  i: Integer;
+  elapsedSecs, etaSecs, speedMBs: Double;
+  compressionRatio: Double;
+  s: string;
+
+
+  procedure Compressblock(endMode: Cardinal);
+  begin
+    repeat
+      application.ProcessMessages;
+      if terminate_all then raise exception.create('compressing terminated');
+      output.src := @OutBuf;
+      output.size := BuSize;
+      output.pos := 0;
+
+      ret := ZSTD_compressStream2(cctx, @output, @input, endMode);
+      if ZSTD_isError(ret) <> 0 then
+        raise Exception.Create('Compress error: ' + StrPas(ZSTD_getErrorName(ret)));
+
+      if output.pos > 0 then
+      begin
+        fOut.Write(OutBuf, output.pos);
+        Inc(totalWritten, output.pos);
+      end;
+    until ((endMode = ZSTD_e_continue) and (input.pos >= input.size))
+       or ((endMode = ZSTD_e_end)      and (ret = 0));
+  end;
+
 begin
-  // Threads auf maximalen Wert setzen, falls gewünscht
+  form1.ProgressBar1.Max := 1000;
+  form1.ProgressBar1.Position := 0;
+
   ThreadCount := GetCPUCount;
-
-  listbox.Items.Add('');
-  Listboxaddscroll(listbox,'');
-
-  n := ListBox.ClientHeight div ListBox.ItemHeight;
-  linepos := ListBox.Items.Count - n + 2;
-  if linepos < 0 then linepos := 0;
 
   fIn := TFileStream.Create(InFile, fmOpenRead);
   fOut := TFileStream.Create(OutFile, fmCreate);
   try
     fileSize := fIn.Size;
-    totalRead := 0;
     totalWritten := 0;
+    totalRead := 0;
     startTime := Now;
     lastUpdateTime := 0;
 
     cctx := ZSTD_createCCtx();
     if cctx = nil then raise Exception.Create('ZSTD_createCCtx failed');
 
-    // Version info (optional)
     Listbox.Items.Add('ZSTD_versionNumber: ' + IntToStr(ZSTD_versionNumber));
-    ListboxAddScroll(Listbox, '');
-    // Set compression level
+
+    Listbox.Items.Add(''); // leere Zeile für Status
+    listboxaddscroll(listbox,'');
+
+    // Parameter setzen
     ret := ZSTD_CCtx_setParameter(cctx, ZSTD_c_compressionLevel, Level);
     if ZSTD_isError(ret) <> 0 then
       raise Exception.Create('Set compression level failed: ' + StrPas(ZSTD_getErrorName(ret)));
 
-    // Set thread count
     ret := ZSTD_CCtx_setParameter(cctx, ZSTD_c_nbWorkers, ThreadCount);
     if ZSTD_isError(ret) <> 0 then
       raise Exception.Create('Set thread count failed: ' + StrPas(ZSTD_getErrorName(ret)));
 
-    // Enable long mode
     if UseLongMode then
     begin
       ret := ZSTD_CCtx_setParameter(cctx, ZSTD_c_enableLongDistanceMatching, 1);
@@ -155,181 +172,77 @@ begin
         raise Exception.Create('Enable long mode failed: ' + StrPas(ZSTD_getErrorName(ret)));
     end;
 
-     //  ret := ZSTD_CCtx_setParameter(cctx, ZSTD_c_ldmWindowLog, 27); // 2^27 = 128 MiB     ist default
-
     // Hauptschleife
-    repeat
+    while True do
+    begin
       if terminate_all then
         raise Exception.Create('Vorgang abgebrochen.');
 
       readBytes := fIn.Read(InBuf, BuSize);
+      if readBytes = 0 then
+        Break; // EOF
+
       input.src := @InBuf;
       input.size := readBytes;
       input.pos := 0;
 
-      repeat
-        output.src := @OutBuf;
-        output.size := BuSize;
-        output.pos := 0;
+      Inc(totalRead, readBytes);
+      Compressblock(ZSTD_e_continue);
 
-        ret := ZSTD_compressStream2(cctx, @output, @input, 0);
-        if ZSTD_isError(ret) <> 0 then
-          raise Exception.Create('Compress error: ' + StrPas(ZSTD_getErrorName(ret)));
+      // Fortschritt
+      form1.ProgressBar1.Position := totalRead * 1000 div fileSize;
 
-        fOut.Write(OutBuf, output.pos);
-        totalWritten += output.pos;
-      until input.pos >= input.size;
-
-      totalRead += input.pos;
-
-      // Nur einmal pro Sekunde aktualisieren
-      if SecondSpan(Now, lastUpdateTime) >= 1.0 then
+      // Statusanzeige (nur ab und zu aktualisieren)
+      elapsedSecs := (Now - startTime) * SecsPerDay;
+      if (Now - lastUpdateTime) * SecsPerDay > 0.5 then
       begin
-        lastUpdateTime := Now;
+        if elapsedSecs > 0 then
+          speedMBs := (totalRead / (1024*1024)) / elapsedSecs
+        else
+          speedMBs := 0;
 
-        progress := totalRead / fileSize;
-        elapsedSecs := SecondSpan(Now, startTime);
-        speed := totalRead / 1024 / 1024 / elapsedSecs; // MiB/s
-
-        if progress > 0 then
-          etaSecs := (elapsedSecs / progress) - elapsedSecs
+        if speedMBs > 0 then
+          etaSecs := ((fileSize - totalRead) / (1024*1024)) / speedMBs
         else
           etaSecs := 0;
 
-        if totalRead > 0 then
-          compressionRatio := totalWritten / totalRead
+        if totalWritten > 0 then
+          compressionRatio := totalRead / totalWritten
         else
-          compressionRatio := 1.0;
+          compressionRatio := 0;
 
-        // Fortschrittsbalken
-        bar := '[';
-        for i := 1 to BarWidth do
-          if i <= Round(progress * BarWidth) then bar += '█' else bar += ' ';
-        bar += ']';
+        s := Format('Speed: %.2f MB/s  ETA: %s  Ratio: %.2f:1',
+          [ speedMBs,
+            FormatDateTime('nn:ss', etaSecs / SecsPerDay),
+            compressionRatio ]);
 
-        s := Format('%6.1f MiB / %6.1f MiB  %3d%% %s  ETA: %s  %.1f MiB/s  %3d%%',
-          [totalRead / 1024 / 1024, fileSize / 1024 / 1024,
-           Round(progress * 100), bar,
-           FormatDateTime('nn:ss', etaSecs / 86400),
-           speed,
-           Round(compressionRatio * 100)]
-        );
-        listboxupdate(listbox,s);
+        Listboxupdate(listbox, s);
+        lastUpdateTime := Now;
       end;
-
-    until readBytes = 0;
+    end;
 
     // Stream beenden
-    repeat
-      output.src := @OutBuf;
-      output.size := BuSize;
-      output.pos := 0;
-
-      ret := ZSTD_compressStream2(cctx, @output, @input, 2); // ZSTD_e_end
-      if ZSTD_isError(ret) <> 0 then
-        raise Exception.Create('Compress end error: ' + StrPas(ZSTD_getErrorName(ret)));
-
-      fOut.Write(OutBuf, output.pos);
-      totalWritten += output.pos;
-    until ret = 0;
-
-    ZSTD_freeCCtx(cctx);
-
-   listboxaddscroll(listbox,'Size compressed file: ' +  inttostr(totalWritten div (1024*1024)) + ' MiB');
-
-  finally
-    fIn.Free;
-    fOut.Free;
-  end;
-end;
-
-
-
-
-
-procedure DecompressFileZstdWithProgress(const InFile, OutFile: string);
-const
-  BufferSize = 65536;
-  BarWidth = 30;
-var
-  fIn, fOut: TFileStream;
-  dctx: TZSTD_DCtx;
-  InBuf, OutBuf: array[0..BufferSize - 1] of byte;
-  input: TZSTD_inBuffer;
-  output: TZSTD_outBuffer;
-  readBytes: integer;
-  ret: SizeUInt;
-  totalRead, fileSize: Int64;
-  startTime: TDateTime;
-  elapsedSecs, etaSecs, progress: Double;
-  bar: string;
-  i: Integer;
-begin
-  fIn := TFileStream.Create(InFile, fmOpenRead);
-  fOut := TFileStream.Create(OutFile, fmCreate);
-  try
-    fileSize := fIn.Size;
-    totalRead := 0;
-    startTime := Now;
-
-    dctx := ZSTD_createDCtx;
-    if dctx = nil then raise Exception.Create('ZSTD_createDCtx failed');
-
-    ZSTD_initDStream(dctx);
-
-    input.src := @InBuf;
+    input.src := nil;
     input.size := 0;
     input.pos := 0;
+    Compressblock(ZSTD_e_end);
 
-    repeat
-      // Nur lesen, wenn alles aus input verarbeitet wurde
-      if input.pos >= input.size then
-      begin
-        readBytes := fIn.Read(InBuf, BufferSize);
-        input.src := @InBuf;
-        input.size := readBytes;
-        input.pos := 0;
-        totalRead += readBytes;
-      end;
-
-      output.dst := @OutBuf;
-      output.size := BufferSize;
-      output.pos := 0;
-
-      ret := ZSTD_decompressStream(dctx, output, input);
-      if ZSTD_isError(ret) <> 0 then
-        raise Exception.Create('Decompress error: ' + StrPas(ZSTD_getErrorName(ret)));
-
-      fOut.Write(OutBuf, output.pos);
-
-      // 📊 Fortschrittsanzeige auf Basis des komprimierten Inputs
-      progress := totalRead / fileSize;
-      elapsedSecs := SecondSpan(Now, startTime);
-      if progress > 0 then
-        etaSecs := (elapsedSecs / progress) - elapsedSecs
-      else
-        etaSecs := 0;
-
-      bar := '[';
-      for i := 1 to BarWidth do
-        if i <= Round(progress * BarWidth) then bar += '█' else bar += ' ';
-      bar += ']';
-
-      Write(#13);
-      Write(Format('%6.1f MiB / %6.1f MiB  %3d%% %s  ETA: %s',
-        [totalRead / 1024 / 1024, fileSize / 1024 / 1024,
-         Round(progress * 100), bar, FormatDateTime('nn:ss', etaSecs / 86400)]));
-
-    until (readBytes = 0) and (input.pos >= input.size);
-
-    ZSTD_freeDCtx(dctx);
-    WriteLn(#13 + 'Dekomprimierung abgeschlossen in ', FormatDateTime('hh:nn:ss', Now - startTime));
+    // Abschluss
+    form1.ProgressBar1.Position := form1.ProgressBar1.Max;
+    listboxaddscroll(Listbox,'');
+    listboxaddscroll(Listbox,'compressed file size is now: ' +  IntToStr(totalWritten div (1024*1024)) + ' MiB');
+    listboxaddscroll(Listbox,'');
 
   finally
+    ZSTD_freeCCtx(cctx);
     fIn.Free;
     fOut.Free;
   end;
 end;
+
+
+
+
 
 
 
