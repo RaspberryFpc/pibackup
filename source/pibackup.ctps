@@ -47,7 +47,7 @@
         <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="105"/>
-        <CursorPos X="29" Y="110"/>
+        <CursorPos X="60" Y="109"/>
         <UsageCount Value="203"/>
         <Loaded Value="True"/>
       </Unit>
@@ -69,7 +69,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="6"/>
         <CursorPos X="97" Y="15"/>
-        <UsageCount Value="180"/>
+        <UsageCount Value="179"/>
       </Unit>
       <Unit>
         <Filename Value="copyfilethread.pas"/>
@@ -78,7 +78,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="120"/>
         <CursorPos X="37" Y="131"/>
-        <UsageCount Value="131"/>
+        <UsageCount Value="130"/>
       </Unit>
       <Unit>
         <Filename Value="../pi_image/exclude.txt"/>
@@ -87,14 +87,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="18"/>
         <CursorPos Y="37"/>
-        <UsageCount Value="175"/>
+        <UsageCount Value="174"/>
       </Unit>
       <Unit>
         <Filename Value="createimagethread.pas"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="0"/>
         <CursorPos X="79"/>
-        <UsageCount Value="37"/>
+        <UsageCount Value="36"/>
       </Unit>
       <Unit>
         <Filename Value="/usr/local/codetyphon/fpcsrc/packages/fcl-process/src/processbody.inc"/>
@@ -103,7 +103,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="280"/>
         <CursorPos X="89" Y="283"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="4"/>
       </Unit>
       <Unit>
         <Filename Value="/usr/local/codetyphon/typhon/components/pl_Abbrevia/source/AbBrowse.pas"/>
@@ -112,7 +112,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="208"/>
         <CursorPos X="95" Y="218"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="0"/>
       </Unit>
       <Unit>
         <Filename Value="/usr/local/codetyphon/typhon/components/pl_Abbrevia/source/AbUtils.pas"/>
@@ -121,7 +121,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="19"/>
         <CursorPos X="13" Y="34"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="0"/>
       </Unit>
       <Unit>
         <Filename Value="/usr/local/codetyphon/typhon/lcl/grids.pas"/>
@@ -131,7 +131,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="138"/>
         <CursorPos X="35" Y="140"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="8"/>
       </Unit>
       <Unit>
         <Filename Value="/usr/local/codetyphon/typhon/lcl/stdctrls.pp"/>
@@ -141,7 +141,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="90"/>
         <CursorPos X="37" Y="98"/>
-        <UsageCount Value="80"/>
+        <UsageCount Value="79"/>
       </Unit>
       <Unit>
         <Filename Value="/usr/local/codetyphon/typhon/lcl/lclclasses.pp"/>
@@ -151,7 +151,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="19"/>
         <CursorPos X="10" Y="27"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="0"/>
       </Unit>
       <Unit>
         <Filename Value="/usr/local/codetyphon/typhon/lcl/include/scrollbar.inc"/>
@@ -160,7 +160,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="165"/>
         <CursorPos Y="98"/>
-        <UsageCount Value="80"/>
+        <UsageCount Value="79"/>
       </Unit>
       <Unit>
         <Filename Value="../pi_image/raspberry.exclude"/>
@@ -168,7 +168,7 @@
         <EditorIndex Value="-1"/>
         <WindowIndex Value="0"/>
         <CursorPos X="58" Y="73"/>
-        <UsageCount Value="60"/>
+        <UsageCount Value="59"/>
       </Unit>
       <Unit>
         <Filename Value="/usr/local/codetyphon/fpcsrc/rtl/objpas/classes/classesh.inc"/>
@@ -177,7 +177,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1413"/>
         <CursorPos X="42" Y="1419"/>
-        <UsageCount Value="30"/>
+        <UsageCount Value="29"/>
       </Unit>
       <Unit>
         <Filename Value="/usr/local/codetyphon/fpcsrc/rtl/unix/classes.pp"/>
@@ -187,14 +187,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="79"/>
         <CursorPos X="5" Y="146"/>
-        <UsageCount Value="30"/>
+        <UsageCount Value="29"/>
       </Unit>
       <Unit>
         <Filename Value="/usr/local/codetyphon/fpcsrc/rtl/objpas/classes/streams.inc"/>
         <FRMtype Value="0"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="0"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="/usr/local/codetyphon/typhon/components/BaseUtils/fileutil.pas"/>
@@ -204,14 +204,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="57"/>
         <CursorPos X="10" Y="64"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="/usr/local/codetyphon/fpcsrc/packages/rtl-objpas/src/inc/dateutil.inc"/>
         <FRMtype Value="0"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="0"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="/usr/local/codetyphon/fpcsrc/packages/rtl-objpas/src/inc/dateutils.pp"/>
@@ -220,7 +220,7 @@
         <EditorIndex Value="-1"/>
         <WindowIndex Value="0"/>
         <CursorPos X="13"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="/usr/local/codetyphon/fpcsrc/rtl/unix/unixtype.pp"/>
@@ -229,7 +229,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="10"/>
         <CursorPos X="9" Y="23"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit>
       <Unit>
         <Filename Value="/usr/local/codetyphon/typhon/lcl/interfaces/qt5/qt5objects.pas"/>
@@ -238,7 +238,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1743"/>
         <CursorPos Y="1762"/>
-        <UsageCount Value="35"/>
+        <UsageCount Value="34"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="24">
