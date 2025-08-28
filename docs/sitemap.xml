@@ -5,24 +5,4 @@
     <lastmod>2025-08-28</lastmod>
     <priority>1.0</priority>
   </url>
-  <url>
-    <loc>https://raspberryfpc.github.io/pibackup/#features</loc>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://raspberryfpc.github.io/pibackup/#restore</loc>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://raspberryfpc.github.io/pibackup/#screenshot</loc>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://raspberryfpc.github.io/pibackup/#download</loc>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://raspberryfpc.github.io/pibackup/#faq</loc>
-    <priority>0.5</priority>
-  </url>
 </urlset>
