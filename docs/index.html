@@ -1,10 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="pibackup – Portable backup and restore tool for Raspberry Pi and similar Linux systems. Creates compressed or raw images, offers a simple GUI, and supports selective restore.">
-  <title>pibackup – Backup & Restore for Linux & Raspberry Pi</title>
+
+  <!-- SEO Meta Tags -->
+  <title>pibackup – Portable Live Backup & Restore Tool for Raspberry Pi & Linux</title>
+  <meta name="description" content="pibackup is a portable 64-bit live backup and restore tool for Raspberry Pi, Linux PCs, SD cards, SSDs, and HDDs. Supports live backups, selective system partition restore, image shrinking with resize2fs, and efficient zstd compression (.img.zst).">
+  <meta name="keywords" content="pibackup, Raspberry Pi backup, Raspberry Pi restore, live backup Linux, SD card backup, SSD backup, HDD backup, .img backup, .img.zst backup, zstd compression, resize2fs, partition shrink, backup GUI Linux, selective restore, Linux backup tool">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://raspberryfpc.github.io/pibackup/">
+
+  <!-- Favicon -->
+  <link rel="icon" href="rkicon.ico" type="image/x-icon">
+
+  <!-- Google Site Verification -->
+  <meta name="google-site-verification" content="9R0_acOmUPXTuQXBqsgF1j8WIMsb0tLe0sQp7RPOBpU" />
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:title" content="pibackup – Live Backup & Restore for Raspberry Pi & Linux">
+  <meta property="og:description" content="Portable 64-bit live backup and restore tool for Raspberry Pi and Linux. Supports live backups, selective partition restore, image shrinking, and efficient zstd compression.">
+  <meta property="og:image" content="https://raspberryfpc.github.io/pibackup/screenshot1.png">
+  <meta property="og:url" content="https://raspberryfpc.github.io/pibackup/">
+  <meta property="og:type" content="website">
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "pibackup",
+    "url": "https://raspberryfpc.github.io/pibackup/",
+    "description": "pibackup is a portable 64-bit live backup and restore tool for Raspberry Pi and Linux PCs. Supports live backups, selective partition restore, image shrinking, and efficient zstd compression (.img.zst).",
+    "applicationCategory": "BackupApplication",
+    "operatingSystem": "Linux",
+    "softwareVersion": "1.5.0",
+    "screenshot": "https://raspberryfpc.github.io/pibackup/screenshot1.png",
+    "offers": {
+      "@type": "Offer",
+      "price": "0.00",
+      "priceCurrency": "USD"
+    },
+    "releaseNotes": [
+      {
+        "@type": "CreativeWork",
+        "datePublished": "2025-08-24",
+        "name": "pibackup v1.5.0",
+        "description": "Added live backup support, selective system partition restore, improved GUI layout, and enhanced zstd compression for .img.zst files."
+      }
+    ]
+  }
+  </script>
+
   <style>
     body {
       font-family: system-ui, sans-serif;
@@ -58,32 +107,35 @@
     }
   </style>
 </head>
+
 <body>
   <header>
     <h1>pibackup</h1>
-    <p>Portable Backup & Restore for Linux and Raspberry Pi</p>
+    <p>Portable Live Backup & Restore for Raspberry Pi, Linux, SD Cards & SSDs</p>
   </header>
 
   <main>
     <section>
-      <h2>🔧 Main Features</h2>
+      <h2>🔧 Main Features & Live Backup for Raspberry Pi & Linux</h2>
       <ul>
         <li>Simple graphical user interface – no installation required</li>
         <li>64-bit Linux application – runs directly</li>
         <li>Automatically backs up the first two partitions (e.g., <code>/boot</code> and <code>/root</code>)</li>
+        <li>Live backup support – backup running systems without shutdown</li>
         <li>Exclude file support for removing unwanted data and folders</li>
         <li>Optional removal of SSH and DHCP configs from the backup</li>
         <li>Image is shrunk to reduce space, then compressed using <strong>zstd</strong></li>
-        <li>Compressed backups are saved as <code>.img.zst</code> (optionally)</li>
+        <li>Compressed backups are saved as <code>.img.zst</code> (optional)</li>
         <li>Empty sectors are filled with <code>0xFF</code> to improve compression and security</li>
         <li>Compatible with SD cards, SSDs, HDDs, and other block devices</li>
       </ul>
     </section>
 
     <section>
-      <h2>🔁 Restore Highlights</h2>
+      <h2>🔁 Restore Options & Live Backup Support (Raspberry Pi & Linux)</h2>
       <ul>
         <li>Restore from <code>.img</code> or <code>.img.zst</code> directly – no manual steps</li>
+        <li>Restore only system partitions (e.g., <code>/boot</code> and <code>/root</code>) – other partitions remain intact</li>
         <li>Target device selection via dropdown menu</li>
         <li>Partition size adjustable via scrollbar or slider</li>
         <li>Live preview of planned partition layout (grid view)</li>
@@ -91,15 +143,15 @@
         <li>File system auto-resized to fit the new partition size</li>
       </ul>
     </section>
-    
-     <section id="screenshot" style="padding: 2em 0; text-align: center;">
-    <h2 style="font-size: 1.8em; margin-bottom: 0.5em;">📷 Screenshot</h2>
-    <p style="max-width: 700px; margin: 0 auto 1.5em auto; font-size: 1em; color: #555;">
-      This is how the <strong>pibackup</strong> graphical user interface looks.
-    </p>
-    <img src="screenshot1.png" alt="pibackup GUI Screenshot"
-         style="max-width: 90%; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border: 1px solid #ccc;">
-  </section>
+
+    <section id="screenshot" style="padding: 2em 0; text-align: center;">
+      <h2 style="font-size: 1.8em; margin-bottom: 0.5em;">📷 Screenshot</h2>
+      <p style="max-width: 700px; margin: 0 auto 1.5em auto; font-size: 1em; color: #555;">
+        This is how the <strong>pibackup</strong> graphical user interface looks.
+      </p>
+      <img src="screenshot1.png" alt="Screenshot of pibackup GUI – Live Backup and Restore Tool for Raspberry Pi and Linux"
+           style="max-width: 90%; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border: 1px solid #ccc;">
+    </section>
 
     <section>
       <h2>📦 Download & Source Code</h2>

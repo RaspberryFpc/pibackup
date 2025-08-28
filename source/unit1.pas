@@ -51,6 +51,7 @@ type
     Label_ManSelected: TLabel;
     ListBox1: TListBox;
     OpenDialog1: TOpenDialog;
+    OpenDialog2: TOpenDialog;
     Panel1: TPanel;
     Panel2: TPanel;
     ProgressBar1: TProgressBar;
@@ -78,7 +79,7 @@ type
     procedure ModifyImage(mountpoint: string);
     function InstallMissingRoutines: boolean;
     procedure write_ini;
- //   procedure CompressWithProgress(const infile: string; level: integer; LBox: TListBox);
+    //   procedure CompressWithProgress(const infile: string; level: integer; LBox: TListBox);
     procedure readDeviceInfo(drive: string; var deviceinfo: Tdriveinfo);
     procedure GridUpdate(Sender: TObject);
 
@@ -103,7 +104,7 @@ implementation
 { TForm1 }
 
 const
-  appname = 'PiBackup  v1.5.0';
+  appname = 'PiBackup  v1.5.1';
   ininame = 'pbt.ini';
   p2mpoint = '/pi_images/p2_pibackup_img';
   p1mpoint = '/pi_images/p1_pibackup_img';
@@ -518,7 +519,7 @@ begin
 
     if CheckBox_RemoveDHCP.Checked then
     begin
-      ExcludeList.LoadFromFile(Edit2.Text, mountpoint);
+      ExcludeList.LoadFromFile(extractfilepath(application.ExeName) + 'dhcp-cleanup.exclude', mountpoint);
       ExcludeList.ExecuteAll;
     end;
 
@@ -537,7 +538,6 @@ var
   deststream: TFileStream;
   mbrwork: TMbr;
   sectorsperblock, p, p1: integer;
-
 begin
   if ButtonCreateImage.Caption = 'cancel' then
   begin
@@ -561,10 +561,7 @@ begin
     sourcedrive := copy(sourcedrive, 1, pos(':', sourcedrive) - 1);
     filename := Trim(ChangeFileExt(Edit1.Text, '.img'));
 
-    if not DirectoryExists(ExtractFilePath(filename)) then
-      raise Exception.Create('Destination path does not exist');
-
-    mp := GetMountPointFromProc(filename);
+   mp := GetMountPointFromProc(filename);
     if (mp = '/') or (mp = '/boot') or (mp = '/boot/firmware') then
       raise Exception.Create('Destination is on a protected system partition: ' + mp);
 
@@ -595,6 +592,7 @@ begin
 
     // image ändern
     ModifyImage(p2mpoint);
+    RunCommand('sync', s);
     ListBoxaddscroll(listbox1, 'Removed unnecessary files from the image');
     ListBoxaddscroll(listbox1, '');
     ListBoxaddscroll(listbox1, 'Check the file system consistency of the image and correct it if necessary');
@@ -674,8 +672,8 @@ begin
 
     if (not terminate_all) and (CheckBox1.Checked) then
     begin
-      Listboxaddscroll(listbox1,'');
-      Listboxaddscroll(listbox1,'compressing with zstd');
+      Listboxaddscroll(listbox1, '');
+      Listboxaddscroll(listbox1, 'compressing with zstd');
 
       CompressFileZstdWithProgress(filename, filename + '.zst', SpinEdit1.Value, 4, True, listbox1);
       if checkbox_Delimg.Checked and (not terminate_all) then deletefile(filename);
@@ -716,7 +714,10 @@ end;
 
 procedure TForm1.Button5Click(Sender: TObject);
 begin
-  if opendialog1.Execute then edit2.Text := opendialog1.FileName;
+  OpenDialog2.Filter := 'Exclude files|*.exclude|All files|*.*';
+  OpenDialog2.FilterIndex := 1; // zeigt zuerst nur *.exclude
+
+  if opendialog2.Execute then edit2.Text := opendialog2.FileName;
   write_ini;
 end;
 
@@ -750,7 +751,7 @@ begin
 
     selecteddrive := '/dev/' + stringgrid1.Cells[0, 1];
 
-    Listboxaddscroll(listbox1, '---------- write image to device: '+ selecteddrive+' ----------');
+    Listboxaddscroll(listbox1, '---------- write image to device: ' + selecteddrive + ' ----------');
     Listboxaddscroll(listbox1, '');
 
     ImageToDeviceImgAndZstd(edit1.Text, selecteddrive, CheckBox_DelPartition3.Checked, CheckBox_DelPartition4.Checked, listbox1);

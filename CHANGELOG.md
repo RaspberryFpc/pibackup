@@ -2,8 +2,19 @@
 
 All notable changes to this project are documented in this file.
 
+
+## [1.5.1] – 2025-08-28
+### Added
+- Added check for free disk space at target before creating image.
+
+### Fixed
+- Bugfix: Wrong exclude file was used when removing DHCP.
+
 ## [1.5.0] – 2025-08-22
+### Improved
 - Improved large parts of code
+
+### Added
 - Added progressbar
 
 ## [1.4.1] – 2025-08-04

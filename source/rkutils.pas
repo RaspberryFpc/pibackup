@@ -92,41 +92,65 @@ type
     LoopDevice: string;
   end;
 
+
+
+type
+  TStatVFS = record
+    f_bsize:   cULong;   // Filesystem block size
+    f_frsize:  cULong;   // Fragment size
+    f_blocks:  cUInt64;  // fsblkcnt_t
+    f_bfree:   cUInt64;  // fsblkcnt_t
+    f_bavail:  cUInt64;  // fsblkcnt_t
+    f_files:   cUInt64;  // fsfilcnt_t
+    f_ffree:   cUInt64;  // fsfilcnt_t
+    f_favail:  cUInt64;  // fsfilcnt_t
+    f_fsid:    cULong;   // Filesystem ID
+    f_flag:    cULong;   // Mount flags
+    f_namemax: cULong;   // Maximum filename length
+    f_spare: array[0..5] of cULong;
+    end;
+
+
+function statvfs(path: pchar; var buf: TStatVFS): cint; cdecl; external 'c';
+
+
+
 function runbash(command: ansistring): string;
 function prexe(cmdl: ansistring; parameter: array of string; box: tlistbox): ansistring;
 function Prexebash(command: ansistring; box: tlistbox): ansistring;
 function padleft(s: string; Count: integer): string;
 function GetSecondField(const s: string): string;
 function IsProgInstalled(progname: string): boolean;
-function GetMountPointFromProc(const path: string): string;
-procedure Listboxaddscroll(listbox: tlistbox; item: string);
-function FileSizeAsString(size: int64; Use1024: boolean = True): ansistring;
-procedure getDrives(sl: TStrings);
 function ReplacePartUUIDInCmdline(Device: string; NewID: string): string;
 function ReplacePartUUIDInFstab(device: string; newsignatur: string): string;
-procedure ReplacePartuuidinmbr(device: string; NewSignature: dword);
 function GetMBRPartitionTypeName(PartType: byte): string;
 function Read_Mbr(const filename: string): tmbr;
-procedure Write_mbr(mbr: tmbr; filename: string);
+function FileSizeAsString(size: int64; Use1024: boolean = True): ansistring;
+function GetMountPointFromProc(const path: string): string;
 function PartitionNamefromDevice(device: string; PartitionNumber: integer): string;
-procedure MakeImagefirst2partitions(Sourcedrive, Filename: ansistring; listbox: tlistbox);
+function starLine(s: ansistring; len: integer): ansistring;
 function getValueAfterKeyword(s, keyword: ansistring): int64;
 function ms2T(ms: int64): ansistring;
 function getStringAfterKeyword(s, keyword: ansistring): string;
-function starLine(s: ansistring; len: integer): ansistring;
+function RunsAsRoot: boolean;
+function is_mounted(mount: string; var mountpoint: string; var device: string): boolean;
+function LoopDeviceExists(const Device: string): boolean;
+
+procedure Listboxaddscroll(listbox: tlistbox; item: string);
+procedure getDrives(sl: TStrings);
+procedure ReplacePartuuidinmbr(device: string; NewSignature: dword);
+procedure Write_mbr(mbr: tmbr; filename: string);
+procedure MakeImagefirst2partitions(Sourcedrive, Filename: ansistring; listbox: tlistbox);
 procedure Listboxupdate(listbox: tlistbox; item: string);
 procedure ImageToDeviceImgAndZstd(Source, Destination: string; delpar3, delpar4: boolean; box: TListBox);
 procedure PreCheckImageWrite(const Source, Destination: string);
-function RunsAsRoot: boolean;
 procedure SaveUmount(mount: string; listbox: TListBox);
-function is_mounted(mount: string; var mountpoint: string; var device: string): boolean;
 procedure ClearEmptyBlocks(listbox: tlistbox; Mounted: TMountedPartition);
 procedure MountPartitionFromImage(const ImageFile: string; PartitionNumber: integer; const MountPoint: string; out Mounted: TMountedPartition; ListBox: TListBox);
 procedure UnmountOnly(const Mounted: TMountedPartition; ListBox: TListBox);
 procedure RemountPartition(const Mounted: TMountedPartition; ListBox: TListBox);
 procedure ClosePartition(var Mounted: TMountedPartition; ListBox: TListBox);
-function LoopDeviceExists(const Device: string): boolean;
-
+procedure EnsureEnoughSpace(const FilePath: string; NewSize: int64);
 
 var
   terminate_all: boolean;
@@ -141,7 +165,6 @@ const
 
 
 var
-  //  Buffer: array[0..buffersize - 1] of byte;
   ValHistory: array[0..PufferSize - 1] of int64;
   TimeHistory: array[0..PufferSize - 1] of uint64;
   pufferindex: integer;
@@ -216,6 +239,8 @@ begin
   end;
 end;
 
+
+
 function LoopDeviceExists(const Device: string): boolean;
 var
   s: string;
@@ -268,7 +293,7 @@ begin
 end;
 
 
- procedure ClosePartition(var Mounted: TMountedPartition; ListBox: TListBox);
+procedure ClosePartition(var Mounted: TMountedPartition; ListBox: TListBox);
 var
   s: string;
 begin
@@ -321,6 +346,52 @@ begin
 end;
 
 
+
+ procedure EnsureEnoughSpace(const FilePath: string; NewSize: int64);
+var
+  vfs: TStatVFS;
+  DirPath, ExistingPath: string;
+  OldSize, FreeBytes: int64;
+
+
+begin
+  // Alte Dateigröße bestimmen
+  if FileExists(FilePath) then
+    OldSize := FileSize(FilePath)
+  else
+    OldSize := 0;
+
+  // Zielverzeichnis
+  DirPath := ExtractFileDir(FilePath);
+
+  // Nächstexistierendes Verzeichnis suchen
+  ExistingPath := DirPath;
+  while (ExistingPath <> '') and (not DirectoryExists(ExistingPath)) do
+    ExistingPath := ExtractFileDir(ExistingPath);
+
+  if (ExistingPath = '') then
+    raise Exception.Create('No existing parent directory found for "' + FilePath + '"');
+
+
+  // Freien Speicher prüfen
+  if statvfs(PChar(ExistingPath), vfs) <> 0 then
+    raise Exception.Create('Failed to get free space for "' + ExistingPath + '"');
+
+
+  FreeBytes := vfs.f_bsize * vfs.f_bavail;
+
+  // Prüfen ob genug Platz da ist
+  if NewSize > OldSize then
+    if (NewSize - OldSize) > FreeBytes then
+      raise Exception.Create(
+        Format('Not enough disk space: required %d bytes, available %d bytes', [NewSize , FreeBytes + OldSize])
+      );
+
+  // Erst jetzt die Verzeichnisse erstellen
+  if not DirectoryExists(DirPath) then
+    if not ForceDirectories(DirPath) then
+      raise Exception.Create('Failed to create directory "' + DirPath + '"');
+end;
 
 
 
@@ -391,7 +462,7 @@ var
   dev, mountpt: string;
   i: integer;
 begin
-  listboxaddscroll(listbox, 'Umount: '+  mount);
+  listboxaddscroll(listbox, 'Umount: ' + mount);
 
   if not is_mounted(mount, dev, mountpt) then
   begin
@@ -405,30 +476,30 @@ begin
   begin
     if not is_mounted(mount, dev, mountpt) then
     begin
-//      listboxaddscroll(listbox, 'Unmounted successfully.');
+      //      listboxaddscroll(listbox, 'Unmounted successfully.');
       Exit;
     end;
 
     case i of
       0: begin
-//        listboxaddscroll(listbox, '→ umount');
+        //        listboxaddscroll(listbox, '→ umount');
         runcommand('umount ' + mountpt, s);
       end;
       1: begin
-//        listboxaddscroll(listbox, '→ lazy umount (-l)');
+        //        listboxaddscroll(listbox, '→ lazy umount (-l)');
         runcommand('umount -l ' + mountpt, s);
       end;
       2: begin
-//        listboxaddscroll(listbox, '→ force umount (-f)');
+        //        listboxaddscroll(listbox, '→ force umount (-f)');
         runcommand('umount -f ' + mountpt, s);
       end;
       3: begin
-//        listboxaddscroll(listbox, '→ killing blocking processes (fuser -km)');
+        //        listboxaddscroll(listbox, '→ killing blocking processes (fuser -km)');
         runcommand('fuser -km ' + mountpt, s);
       end;
       else
       begin
-//        listboxaddscroll(listbox, '→ final force umount');
+        //        listboxaddscroll(listbox, '→ final force umount');
         runcommand('umount -f ' + mountpt, s);
       end;
     end;
@@ -1224,6 +1295,9 @@ begin
     // Read MBR and calculate size
     MBR := Read_MBR(SourceDrive);
     bytestocopy := (MBR.PartitionEntries[2].FirstLBA + MBR.PartitionEntries[2].PartitionSize) * 512;
+
+    EnsureEnoughSpace(Filename, bytestocopy);
+
     tocopy := bytestocopy;
     toread := tocopy;
 

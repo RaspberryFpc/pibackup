@@ -21,11 +21,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="99"/>
-        <CursorPos X="44" Y="109"/>
+        <TopLine Value="145"/>
+        <CursorPos X="28"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -34,7 +33,7 @@
         <Filename Value="excludeparser.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="ExcludeParser"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="168"/>
         <CursorPos X="68" Y="190"/>
@@ -44,10 +43,11 @@
       <Unit>
         <Filename Value="rkutils.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="1"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1291"/>
-        <CursorPos Y="1299"/>
+        <TopLine Value="105"/>
+        <CursorPos X="29" Y="110"/>
         <UsageCount Value="203"/>
         <Loaded Value="True"/>
       </Unit>
@@ -55,7 +55,7 @@
         <Filename Value="zstd.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Zstd"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2"/>
         <CursorPos Y="11"/>
@@ -241,126 +241,122 @@
         <UsageCount Value="35"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
+    <JumpHistory HistoryIndex="24">
       <Position>
-        <Filename Value="zstd.pas"/>
-        <Caret Line="224" Column="50" TopLine="217"/>
-      </Position>
-      <Position>
-        <Filename Value="zstd.pas"/>
-        <Caret Line="235" Column="9" TopLine="219"/>
-      </Position>
-      <Position>
-        <Filename Value="zstd.pas"/>
-        <Caret Line="279" Column="29" TopLine="263"/>
-      </Position>
-      <Position>
-        <Filename Value="zstd.pas"/>
-        <Caret Line="322" Column="9" TopLine="306"/>
-      </Position>
-      <Position>
-        <Filename Value="zstd.pas"/>
-        <Caret Line="82" Column="9" TopLine="73"/>
-      </Position>
-      <Position>
-        <Filename Value="zstd.pas"/>
-        <Caret Line="177" Column="23" TopLine="161"/>
-      </Position>
-      <Position>
-        <Filename Value="zstd.pas"/>
-        <Caret Line="235" Column="9" TopLine="219"/>
-      </Position>
-      <Position>
-        <Filename Value="zstd.pas"/>
-        <Caret Line="279" Column="29" TopLine="263"/>
-      </Position>
-      <Position>
-        <Filename Value="zstd.pas"/>
-        <Caret Line="322" Column="9" TopLine="306"/>
-      </Position>
-      <Position>
-        <Filename Value="zstd.pas"/>
-        <Caret Line="118" Column="7" TopLine="109"/>
-      </Position>
-      <Position>
-        <Filename Value="zstd.pas"/>
-        <Caret Line="8" Column="34"/>
-      </Position>
-      <Position>
-        <Filename Value="zstd.pas"/>
-        <Caret Line="124" Column="99" TopLine="110"/>
-      </Position>
-      <Position>
-        <Filename Value="zstd.pas"/>
-        <Caret Line="324" Column="5" TopLine="297"/>
-      </Position>
-      <Position>
-        <Filename Value="zstd.pas"/>
-        <Caret Line="246" Column="23" TopLine="236"/>
-      </Position>
-      <Position>
-        <Filename Value="zstd.pas"/>
-        <Caret Line="11" Column="41"/>
-      </Position>
-      <Position>
-        <Filename Value="zstd.pas"/>
-        <Caret Line="246" Column="41" TopLine="230"/>
-      </Position>
-      <Position>
-        <Filename Value="zstd.pas"/>
-        <Caret Line="11" Column="84"/>
-      </Position>
-      <Position>
-        <Filename Value="zstd.pas"/>
-        <Caret Line="246" Column="54" TopLine="236"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="68" Column="26" TopLine="62"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="725" Column="39" TopLine="709"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="68" Column="36" TopLine="59"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="756" Column="19" TopLine="740"/>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="331" Column="28" TopLine="321"/>
       </Position>
       <Position>
         <Filename Value="rkutils.pas"/>
-        <Caret Line="118" Column="20" TopLine="108"/>
+        <Caret Line="109" TopLine="92"/>
       </Position>
       <Position>
         <Filename Value="rkutils.pas"/>
-        <Caret Line="1692" Column="17" TopLine="1683"/>
+        <Caret Line="386" TopLine="369"/>
       </Position>
       <Position>
-        <Filename Value="zstd.pas"/>
-        <Caret Line="11" Column="25"/>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="110" Column="78" TopLine="97"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="367" Column="52" TopLine="172"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="347" TopLine="345"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="398" Column="7" TopLine="369"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="399" Column="3" TopLine="397"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="371" Column="10" TopLine="360"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="756" Column="19" TopLine="740"/>
+        <Caret Line="578" Column="15" TopLine="567"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="131" Column="16" TopLine="123"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="1241" Column="36" TopLine="1227"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="131" Column="36" TopLine="123"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="810" Column="19" TopLine="803"/>
+        <Caret Line="573" Column="20" TopLine="567"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="35" Column="18" TopLine="26"/>
+        <Caret Line="580" Column="20" TopLine="573"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="64" Column="28" TopLine="64"/>
+        <Caret Line="583" Column="15" TopLine="576"/>
       </Position>
       <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="668" Column="46" TopLine="658"/>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="237" Column="25" TopLine="231"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="149" Column="21" TopLine="133"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="362" TopLine="352"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="107" Column="11" TopLine="92"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="368" TopLine="362"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="372" TopLine="362"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="108" TopLine="93"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="113" Column="13" TopLine="97"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="381" TopLine="374"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="393" TopLine="383"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="398" Column="22" TopLine="385"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="390" TopLine="385"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="381" TopLine="368"/>
       </Position>
     </JumpHistory>
     <RunParams>

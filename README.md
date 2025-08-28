@@ -1,5 +1,5 @@
 # pibackup
-**Version:** v1.5.0  
+**Version:** v1.5.1  
 
 **pibackup** is a portable 64-bit **live backup tool** with a graphical user interface (GUI), specially designed for Raspberry Pi and similar Linux systems. It supports **live backups** of running systems, but can also create images from inactive drives. Restores are **safe and flexible**, offering various options.  
 
