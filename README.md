@@ -11,7 +11,7 @@ Backups are safe, flexible, and can be restored directly from `.img` or `.img.zs
 ---
 
 ## Version
-**v1.5.1**
+**v1.5.2**
 
 ---
 

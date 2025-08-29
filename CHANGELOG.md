@@ -2,6 +2,10 @@
 
 All notable changes to this project are documented in this file.
 
+## [1.5.2] – 2025-08-29
+### Improved 
+- now only a single call to resize2fs is needed.
+- Before calling resize2fs, a sync is now executed.
 
 ## [1.5.1] – 2025-08-28
 ### Added

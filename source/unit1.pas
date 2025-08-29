@@ -104,7 +104,7 @@ implementation
 { TForm1 }
 
 const
-  appname = 'PiBackup  v1.5.1';
+  appname = 'PiBackup  v1.5.2';
   ininame = 'pbt.ini';
   p2mpoint = '/pi_images/p2_pibackup_img';
   p1mpoint = '/pi_images/p1_pibackup_img';
@@ -533,7 +533,7 @@ end;
 procedure TForm1.ButtonCreateImageClick(Sender: TObject);
 var
   filename, sourcedrive, s, mp: ansistring;
-  minsize, NewBlockCount: int64;
+  NewBlockCount: int64;
   blocksize: integer;
   deststream: TFileStream;
   mbrwork: TMbr;
@@ -605,13 +605,8 @@ begin
     if Pos('errors', LowerCase(s)) > 0 then
       Listboxaddscroll(listbox1, 'Filesystem check reported errors');
 
-    // shrink filesystem
-    s := PrexeBash('/sbin/resize2fs -P ' + mountedpartition2.LoopDevice, listbox1);
-    minsize := GetValueAfterKeyword(s, 'filesystem:');
-    if minsize = 0 then
-      raise Exception.Create('Could not determine minimum filesystem size');
-
-    s := PrexeBash('/sbin/resize2fs -p ' + mountedpartition2.LoopDevice + ' ' + IntToStr(minsize), listbox1);
+    RunCommand('sync', s);
+    s := PrexeBash('/sbin/resize2fs -M -p ' + mountedpartition2.LoopDevice , listbox1);
     NewBlockCount := GetValueAfterKeyword(s, 'is now');
     if NewBlockCount = 0 then
       raise Exception.Create('Failed to resize filesystem');
