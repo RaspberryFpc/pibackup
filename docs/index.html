@@ -37,7 +37,7 @@
         "description": "pibackup is a portable 64-bit live backup and restore tool for Raspberry Pi and Linux PCs. Supports live backup, selective system restore, image shrinking, and efficient zstd compression (.img.zst).",
         "applicationCategory": "BackupApplication",
         "operatingSystem": "Linux",
-        "softwareVersion": "1.5.1",
+        "softwareVersion": "1.5.2",
         "screenshot": "https://raspberryfpc.github.io/pibackup/screenshot1.png",
         "offers": {
           "@type": "Offer",
@@ -48,7 +48,7 @@
           {
             "@type": "CreativeWork",
             "datePublished": "2025-08-29",
-            "name": "pibackup v1.5.1",
+            "name": "pibackup v1.5.2",
             "description": "Added pre-check for free storage space before creating images and fixed exclude file bug in DHCP removal."
           }
         ]
@@ -82,14 +82,6 @@
           },
           {
             "@type": "Question",
-            "name": "Does pibackup support automated backups?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "You can run pibackup via command line or scripts together with cron to automate your Raspberry Pi backups on a daily, weekly, or monthly schedule."
-            }
-          },
-          {
-            "@type": "Question",
             "name": "Is pibackup an alternative to raspiBackup?",
             "acceptedAnswer": {
               "@type": "Answer",
@@ -102,6 +94,14 @@
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "Yes, pibackup lets you selectively restore the /boot and /root partitions without touching other data partitions. This makes recovery safe and flexible."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I adjust the target partition size during restore?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, you can already set the size of the target partition during the restore process. The live GUI shows a slider and a preview of the partition layout, so you can adjust sizes before writing the backup."
             }
           }
         ]
@@ -174,41 +174,4 @@
 
     <section id="screenshot" style="padding: 2em 0; text-align: center;">
       <h2>Raspberry Pi Backup – Screenshot</h2>
-      <p>See <a href="#features">pibackup</a> in action:</p>
-      <img src="screenshot1.png" alt="Screenshot of pibackup GUI" style="max-width: 90%; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border: 1px solid #ccc;">
-    </section>
-
-    <section id="download">
-      <h2>Download & Source Code</h2>
-      <p>Visit the <a href="https://github.com/RaspberryFpc/pibackup" target="_blank">GitHub project page</a> to download or contribute.</p>
-      <a class="button" href="https://github.com/RaspberryFpc/pibackup" target="_blank">GitHub Project</a>
-    </section>
-
-    <section id="faq">
-      <h2>FAQ</h2>
-
-      <h3>How can I back up my Raspberry Pi SD card?</h3>
-      <p>You can create a full <strong>Raspberry Pi SD card backup</strong> or clone the card to an image file with <a href="#features">pibackup</a>. The tool supports live backup of running systems, so you don’t need to shut down your Raspberry Pi.</p>
-
-      <h3>How do I create a Raspberry Pi image backup?</h3>
-      <p>With <strong>pibackup</strong> you can generate a compressed <code>.img.zst</code> image file of your Raspberry Pi. This backup can later be restored to the same SD card, to a bigger card, or even to an SSD/HDD.</p>
-
-      <h3>Can I save my Raspberry Pi backup to USB or NAS?</h3>
-      <p>Yes, you can store backups on an external USB drive, SSD, HDD, or directly on a network attached storage (NAS). This is the safest way to keep your Raspberry Pi backups.</p>
-
-      <h3>Does pibackup support automated backups?</h3>
-      <p>You can run <strong>pibackup</strong> via command line or scripts together with <code>cron</code> to automate your Raspberry Pi backups on a daily, weekly, or monthly schedule.</p>
-
-      <h3>Is pibackup an alternative to raspiBackup?</h3>
-      <p>Yes. <strong>pibackup</strong> is a portable alternative to raspiBackup, offering a graphical interface, live backup capability, and modern compression with <code>zstd</code>.</p>
-
-      <h3>Can I restore only the system partitions?</h3>
-      <p>Yes, <strong>pibackup</strong> lets you selectively restore the <code>/boot</code> and <code>/root</code> partitions without touching other data partitions. This makes recovery safe and flexible.</p>
-    </section>
-  </main>
-
-  <footer>
-    &copy; 2025 pibackup – MIT License – <a href="https://github.com/RaspberryFpc/pibackup" target="_blank">GitHub</a>
-  </footer>
-</body>
-</html>
+      <p>See <a href="#
