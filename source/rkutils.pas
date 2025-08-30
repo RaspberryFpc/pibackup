@@ -1375,6 +1375,9 @@ begin
 
     until (toread = 0);
 
+     info := Format('%d MB  speed: %.1f MB/sec  ETA: %s', [all div 1000000, bps / 1000,'0 seconds']);
+     Listboxupdate(ListBox, info);
+
     makeImageEnd := GetTickCount64;
     ListBox.Items.Add(IntToStr(all) + ' of ' + IntToStr(tocopy) + ' bytes copied in ' + ms2t(makeImageEnd - makeImageStart));
 

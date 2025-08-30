@@ -152,3 +152,16 @@ Precompiled binaries are in the `bin/` folder.
 
 💡 **Note on Live Backups:**  
 Live backups work reliably but for maximum consistency a fresh boot or inactive system backup is recommended.  
+
+---
+
+## 🛠️ Emergency Recovery System
+
+💡 **Tip: Prepare an emergency SD card**  
+Create a small SD card with a **Linux desktop system** (e.g. Raspberry Pi OS Desktop or another lightweight desktop distribution) and copy **pibackup** onto it.  
+  
+Alternatively, you can simply **clone your existing working system** with **pibackup** by creating an image and restoring it to a smaller SD card.  
+This way you always have a ready-to-use **recovery environment** with GUI available.  
+
+In case your main system no longer boots, you will have a ready-to-use **recovery environment** with GUI,  
+allowing you to restore your backups to any SD card, SSD or HDD.

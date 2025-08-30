@@ -104,7 +104,7 @@ implementation
 { TForm1 }
 
 const
-  appname = 'PiBackup  v1.5.2';
+  appname = 'PiBackup  v1.5.2';  // Restlaufzeit am ende beim erzeugen des images
   ininame = 'pbt.ini';
   p2mpoint = '/pi_images/p2_pibackup_img';
   p1mpoint = '/pi_images/p1_pibackup_img';
