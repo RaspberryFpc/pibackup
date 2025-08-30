@@ -1,6 +1,9 @@
 # Changelog
 
 All notable changes to this project are documented in this file.
+## [1.5.3] – 2025-08-30
+### Improved 
+- restore functions
 
 ## [1.5.2] – 2025-08-29
 ### Improved 

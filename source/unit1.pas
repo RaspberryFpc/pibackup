@@ -104,7 +104,7 @@ implementation
 { TForm1 }
 
 const
-  appname = 'PiBackup  v1.5.2';  // Restlaufzeit am ende beim erzeugen des images
+  appname = 'PiBackup  v1.5.3';  // Restlaufzeit am ende beim erzeugen des images     abbruch bein schreiben
   ininame = 'pbt.ini';
   p2mpoint = '/pi_images/p2_pibackup_img';
   p1mpoint = '/pi_images/p1_pibackup_img';
@@ -751,31 +751,20 @@ begin
 
     ImageToDeviceImgAndZstd(edit1.Text, selecteddrive, CheckBox_DelPartition3.Checked, CheckBox_DelPartition4.Checked, listbox1);
 
-    // Get partition 2 name
+    //// Get partition 2 name
     par2name := PartitionNamefromDevice(selecteddrive, 2);
-
-    // Unmount partition
-    runcommand('umount -l ' + par2name, s);
-    Sleep(1000);
-    runcommand('umount -f ' + par2name, s);
-    Sleep(2000);
-
-    s := Prexebash('e2fsck -fy ' + par2name, listbox1);
-    ListBoxaddscroll(listbox1, s);
-    if Pos('error', LowerCase(s)) > 0 then
-      raise Exception.Create('Filesystem errors detected – please check manually.');
 
     // Update MBR to resize partition 2
     workmbr := Read_MBR(selecteddrive);
     workmbr.PartitionEntries[2].PartitionSize := strtoint64(stringgrid1.Cells[parsize, par2]) div 512;  // neue grösse in sectors
     Write_MBR(workmbr, selecteddrive);
 
-    ListBoxaddscroll(listbox1, 'partprobe - reloading partition table');
     s := Prexebash('partprobe ' + selecteddrive, listbox1);
 
     Prexebash('e2fsck -fy ' + par2name, listbox1);
     ListBoxaddscroll(listbox1, 'resize...');
     s := Prexebash('resize2fs ' + par2name, listbox1);
+
     ListBoxaddscroll(listbox1, 'partprobe - reloading partition table');
     s := Prexebash('partprobe ' + selecteddrive, listbox1);
 

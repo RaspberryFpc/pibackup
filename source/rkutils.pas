@@ -1581,7 +1581,7 @@ begin
         end;
         form1.ProgressBar1.Position := done * 1000 div tocopy;
       end;
-
+      application.ProcessMessages;
     until (ReadCount = 0) or (done >= tocopy) or terminate_all;
 
 
@@ -1725,8 +1725,8 @@ begin
             form1.ProgressBar1.Position := fin.Position * 1000 div fin.Size;
           status := Format(' %.1f MB  %1f MB/s  ETA %s', [fin.Position / 1048576, speedMBs, etaStr]);
           box.Items[lastline] := status;
-          Application.ProcessMessages;
-        end;
+       end;
+         Application.ProcessMessages;
       end;
 
 
