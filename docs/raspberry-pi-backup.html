@@ -1,205 +1,211 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- SEO Meta Tags -->
   <title>pibackup – Raspberry Pi Backup & Restore Tool</title>
-  <meta name="description" content="pibackup – Create, shrink & compress Raspberry Pi SD/SSD images easily. Backup and restore your Raspberry Pi safely.">
+  <meta name="description" content="pibackup – Backup & Restore Tool für Raspberry Pi. Erstelle komprimierte Images (.img.zst) von SD/SSD und stelle sie sicher wieder her.">
 
   <style>
     body {
-      font-family: 'Arial', sans-serif;
-      line-height: 1.6;
-      background-color: #f0f4f8;
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f5f5f5;
       color: #333;
-      margin: 0;
-      padding: 0;
     }
 
-    .container {
-      max-width: 1000px;
-      margin: 50px auto;
-      padding: 30px;
-      background: #fff;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-      border-radius: 12px;
+    header {
+      text-align: center;
+      margin-bottom: 20px;
     }
 
     h1 {
-      color: #007acc;
-      font-size: 2.2em;
+      font-size: 2em;
       margin-bottom: 10px;
-      text-align: center;
     }
 
-    p {
-      margin: 15px 0;
-      text-align: justify;
+    .language-switch {
+      text-align: right;
+      margin-bottom: 20px;
     }
 
-    .features {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      margin-top: 30px;
-      justify-content: center;
+    .lang {
+      display: none;
     }
 
-    .feature-box {
-      flex: 1 1 200px;
-      min-width: 200px;
-      background-color: #e6f2ff;
-      border-left: 5px solid #007acc;
+    .lang.active {
+      display: block;
+    }
+
+    .box {
+      background: white;
+      border-radius: 12px;
       padding: 20px;
-      border-radius: 8px;
-      text-align: center;
-      transition: transform 0.2s;
-    }
-
-    .feature-box:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    }
-
-    .feature-box i {
-      font-size: 2.5em;
-      color: #007acc;
-      margin-bottom: 10px;
+      margin: 15px 0;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
     h2 {
-      color: #005f99;
-      margin-top: 40px;
-      text-align: center;
+      margin-top: 0;
     }
 
-    a.button {
+    ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .button {
       display: inline-block;
-      padding: 12px 25px;
-      background-color: #007acc;
+      padding: 12px 24px;
+      background: #0078d7;
       color: white;
-      border-radius: 5px;
       text-decoration: none;
+      border-radius: 8px;
       font-weight: bold;
-      margin-top: 20px;
-      text-align: center;
+      margin-top: 15px;
     }
 
-    a.button:hover {
-      background-color: #005f99;
-    }
-
-    .instructions ol, .instructions ul {
-      margin-left: 20px;
-      margin-bottom: 20px;
+    .button:hover {
+      background: #005fa3;
     }
 
     footer {
       text-align: center;
-      margin-top: 50px;
+      margin-top: 30px;
       font-size: 0.9em;
-      color: #777;
-    }
-
-    @media (max-width: 768px) {
-      .features {
-        flex-direction: column;
-        gap: 15px;
-      }
+      color: #666;
     }
   </style>
 
-  <!-- Optional: Icons from FontAwesome -->
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <script>
+    function switchLanguage(lang) {
+      document.querySelectorAll('.lang').forEach(el => el.classList.remove('active'));
+      document.getElementById(lang).classList.add('active');
+    }
+    window.onload = () => switchLanguage('de');
+  </script>
 </head>
+
 <body>
 
-  <div class="container">
-    <h1>pibackup – Raspberry Pi Backup & Restore Tool</h1>
-    <p>With <strong>pibackup</strong> you can create a compressed image (.img or .img.zst) of your Raspberry Pi. This backup can later be restored to the same SD card, a larger or smaller one, or another drive. Save storage space by shrinking the images while keeping full control over your data.</p>
+  <header>
+    <h1>pibackup</h1>
+    <p>Raspberry Pi Backup & Restore Tool</p>
+  </header>
 
-    <h2>Main Features</h2>
-    <div class="features">
-      <div class="feature-box">
-        <i class="fas fa-save"></i>
-        <h3>Backup</h3>
-        <p>Securely back up a running system or an external drive by creating a standard image that includes the MBR.</p>
-      </div>
-      <div class="feature-box">
-        <i class="fas fa-compress-alt"></i>
-        <h3>Shrink & Compress</h3>
-        <p>Automatically resize the root partition and optionally compress the image in Zstandard format (.zst).</p>
-      </div>
-      <div class="feature-box">
-        <i class="fas fa-sync-alt"></i>
-        <h3>Restore</h3>
-        <p>Restore backups to the same or a different device safely.</p>
-      </div>
-      <div class="feature-box">
-        <i class="fas fa-ban"></i>
-        <h3>Exclude File</h3>
-        <p>Exclude unnecessary files to save storage space.</p>
-      </div>
-    </div>
-
-<div style="text-align:center; margin-top:20px;">
-  <a href="https://github.com/RaspberryFpc/pibackup/releases" class="button" target="_blank">
-    Download pibackup
-  </a>
-</div>
-
-    <h2>Instructions & Tips</h2>
-    <div class="instructions">
-
-      <div style="background-color:#d9f0d9; border-left:5px solid #28a745; padding:20px; margin-bottom:20px; border-radius:8px;">
-        <h3>1. Creating a Backup</h3>
-        <ol>
-          <li>Start pibackup if it is not already running.</li>
-          <li>Select the device to back up: running system or external drive.</li>
-          <li>Optional: Select a file with excluded files (Exclude-File) to omit unnecessary data.</li>
-          <li>Choose the storage location for the backup image. By default, a <strong>.img</strong> file is created; if the Compress option is enabled, a <strong>.img.zst</strong> file will be generated automatically.</li>
-          <li>Start the backup and monitor the progress.</li>
-        </ol>
-      </div>
-
-      <div style="background-color:#fff3cd; border-left:5px solid #ffc107; padding:20px; margin-bottom:20px; border-radius:8px;">
-        <h3>2. Shrinking & Compressing</h3>
-        <ol>
-          <li>If an Exclude-File is selected, pibackup first removes all specified files and folders from the backup image.</li>
-          <li>After that, the root partition in the image is automatically resized (shrunk) to its minimum size.</li>
-          <li>If the Compress option is enabled, the image is then compressed in Zstandard format (.zst).</li>
-        </ol>
-      </div>
-
-      <div style="background-color:#d1ecf1; border-left:5px solid #17a2b8; padding:20px; margin-bottom:20px; border-radius:8px;">
-        <h3>3. Restoring a Backup</h3>
-        <ol>
-          <li>Start pibackup and select <strong>"Restore to device"</strong>.</li>
-          <li>Select the backup image you want to restore.</li>
-          <li>Select the target device (must not be the running system; using a different medium is recommended).</li>
-          <li>The target partitions are displayed in a grid showing their layout after the restore.</li>
-          <li>By default, each restored partition is set to the maximum available size. You can adjust the size using the slider.</li>
-          <li>If the target device is too small, you can free up additional space by enabling the checkboxes to delete partitions 3 and 4.</li>
-          <li>Start the restoration and monitor the progress.</li>
-          <li>After completion, safely remove the device and start the Raspberry Pi if needed.</li>
-        </ol>
-      </div>
-
-      <div style="background-color:#f8d7da; border-left:5px solid #dc3545; padding:20px; margin-bottom:20px; border-radius:8px;">
-        <h3>Tips for Maximum Safety</h3>
-        <ul>
-          <li>Create backups regularly, e.g., weekly.</li>
-          <li>Store backup images on a secondary medium.</li>
-          <li>Keep a ready-to-use emergency image for quick system recovery.</li>
-        </ul>
-      </div>
-
-    </div>
-
-    <footer>
-      &copy; 2025 pibackup – Raspberry Pi Backup & Restore Tool
-    </footer>
+  <div class="language-switch">
+    <label for="language">🌐 Sprache / Language: </label>
+    <select id="language" onchange="switchLanguage(this.value)">
+      <option value="de">Deutsch</option>
+      <option value="en">English</option>
+    </select>
   </div>
 
+  <!-- Deutsch -->
+  <div id="de" class="lang">
+    <div class="box">
+      <h2>Funktionen</h2>
+      <ul>
+        <li>Sichere Backups vom laufenden System oder von externen Laufwerken.</li>
+        <li>Erstellt ein vollständiges Image inklusive MBR.</li>
+        <li>Optionale <strong>Exclude-Datei</strong>, um unnötige Daten zu entfernen.</li>
+        <li>Automatisches Shrinking der Root-Partition.</li>
+        <li>Kompression im Zstandard-Format (.zst).</li>
+        <li>Sichere Wiederherstellung mit Partitionsvorschau und Optionen für Speicherplatz.</li>
+      </ul>
+    </div>
+
+    <div class="box">
+      <h2>Backup-Anleitung</h2>
+      <ol>
+        <li>pibackup starten.</li>
+        <li>Das zu sichernde Device (SD/SSD/USB) auswählen.</li>
+        <li>Optional: Datei mit auszuschließenden Dateien/Ordnern (.exclude) auswählen.</li>
+        <li>Speicherort für das Backup-Image festlegen (.img).</li>
+        <li>Wenn „Compress“ aktiviert ist, wird automatisch eine <code>.img.zst</code>-Datei erstellt.</li>
+        <li>Backup starten und den Fortschritt beobachten.</li>
+      </ol>
+    </div>
+
+    <div class="box">
+      <h2>Restore-Anleitung</h2>
+      <ol>
+        <li>pibackup starten und <strong>Restore to Device</strong> auswählen.</li>
+        <li>Das gewünschte Backup-Image auswählen (.img oder .img.zst).</li>
+        <li>Zielgerät auswählen (nicht das laufende System!).</li>
+        <li>Die geplanten Zielpartitionen werden in einem Grid angezeigt.</li>
+        <li>Standardgröße ist „Maximum available“. Mit einem Slider kann die Größe angepasst werden.</li>
+        <li>Falls die Partition zu klein ist, können optional die 3. und 4. Partition per Checkbox entfernt werden.</li>
+        <li>Restore starten und den Fortschritt überwachen.</li>
+      </ol>
+    </div>
+
+    <div class="box">
+      <h2>Anleitung & Tipps</h2>
+      <p>Erstelle regelmäßig Backups, um Datenverlust zu vermeiden. Halte ein Notfall-Image bereit, um dein System im Ernstfall schnell wiederherzustellen.</p>
+    </div>
+
+    <div class="box" style="text-align:center;">
+      <a href="https://github.com/RaspberryFpc/pibackup/releases" class="button" target="_blank">⬇️ Download pibackup</a>
+    </div>
+  </div>
+
+  <!-- English -->
+  <div id="en" class="lang">
+    <div class="box">
+      <h2>Features</h2>
+      <ul>
+        <li>Secure backups from the running system or external drives.</li>
+        <li>Creates a complete image including the MBR.</li>
+        <li>Optional <strong>Exclude file</strong> to remove unnecessary data.</li>
+        <li>Automatic shrinking of the root partition.</li>
+        <li>Compression in Zstandard format (.zst).</li>
+        <li>Safe restore with partition preview and space-saving options.</li>
+      </ul>
+    </div>
+
+    <div class="box">
+      <h2>Backup Guide</h2>
+      <ol>
+        <li>Start pibackup.</li>
+        <li>Select the device to back up (SD/SSD/USB).</li>
+        <li>Optional: Select a file with excluded files/folders (.exclude).</li>
+        <li>Choose the storage location for the backup image (.img).</li>
+        <li>If “Compress” is enabled, a <code>.img.zst</code> file is created automatically.</li>
+        <li>Start the backup and monitor the progress.</li>
+      </ol>
+    </div>
+
+    <div class="box">
+      <h2>Restore Guide</h2>
+      <ol>
+        <li>Start pibackup and select <strong>Restore to Device</strong>.</li>
+        <li>Select the desired backup image (.img or .img.zst).</li>
+        <li>Choose the target device (not the running system!).</li>
+        <li>The planned target partitions are displayed in a grid.</li>
+        <li>Default size is “Maximum available”. A slider allows manual resizing.</li>
+        <li>If the partition is too small, you can optionally remove the 3rd and 4th partitions via checkboxes.</li>
+        <li>Start the restoration and monitor the progress.</li>
+      </ol>
+    </div>
+
+    <div class="box">
+      <h2>Instructions & Tips</h2>
+      <p>Create regular backups to avoid data loss. Keep a ready-to-use emergency image to quickly restore your system if needed.</p>
+    </div>
+
+    <div class="box" style="text-align:center;">
+      <a href="https://github.com/RaspberryFpc/pibackup/releases" class="button" target="_blank">⬇️ Download pibackup</a>
+    </div>
+  </div>
+
+  <footer>
+    © 2025 pibackup – Raspberry Pi Backup & Restore Tool
+  </footer>
+
 </body>
+
 </html>
