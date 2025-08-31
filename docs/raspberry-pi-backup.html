@@ -116,7 +116,7 @@
 
   <div class="container">
     <h1>pibackup – Raspberry Pi Backup & Restore Tool</h1>
-    <p>With <strong>pibackup</strong> you can create a compressed image (.img.zst) of your Raspberry Pi. This backup can later be restored to the same SD card, a larger or smaller one, or another drive. Save storage space by shrinking the images while keeping full control over your data.</p>
+    <p>With <strong>pibackup</strong> you can create a compressed image (.img or .img.zst) of your Raspberry Pi. This backup can later be restored to the same SD card, a larger or smaller one, or another drive. Save storage space by shrinking the images while keeping full control over your data.</p>
 
     <h2>Main Features</h2>
     <div class="features">
@@ -155,7 +155,7 @@
           <li>Start pibackup if it is not already running.</li>
           <li>Select the device to back up: running system or external drive.</li>
           <li>Optional: Select a file with excluded files (Exclude-File) to omit unnecessary data.</li>
-          <li>Choose the storage location for the backup image (.img.zst).</li>
+          <li>Choose the storage location for the backup image. By default, a <strong>.img</strong> file is created; if the Compress option is enabled, a <strong>.img.zst</strong> file will be generated automatically.</li>
           <li>Start the backup and monitor the progress.</li>
         </ol>
       </div>
@@ -165,7 +165,7 @@
         <ol>
           <li>Optionally exclude unnecessary files using the Exclude function.</li>
           <li>pibackup will shrink the partitions to the minimum size.</li>
-          <li>The image is automatically compressed in Zstandard format (.zst).</li>
+          <li>The image is automatically compressed in Zstandard format (.zst) if Compress is enabled.</li>
         </ol>
       </div>
 
