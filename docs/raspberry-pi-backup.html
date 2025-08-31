@@ -12,20 +12,21 @@
       max-width: 900px;
       margin: auto;
       padding: 20px;
-      background: #f9f9f9;
+      background: #fafafa;
     }
     h1, h2 {
       text-align: center;
     }
     .box {
-      border-radius: 12px;
+      border-radius: 10px;
       padding: 16px;
       margin: 16px 0;
-      color: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
-    .backup { background-color: #2e7d32; }   /* Grün */
-    .restore { background-color: #1565c0; }  /* Blau */
-    .tips { background-color: #ef6c00; }     /* Orange */
+    .intro { background-color: #eeeeee; }
+    .backup { background-color: #e8f5e9; }   /* zartes Grün */
+    .restore { background-color: #e3f2fd; }  /* zartes Blau */
+    .tips { background-color: #fff3e0; }     /* zartes Orange */
     .lang-switch {
       text-align: right;
       margin-bottom: 20px;
@@ -36,6 +37,10 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
+      background: #e0e0e0;
+    }
+    .lang-switch button:hover {
+      background: #d5d5d5;
     }
     .hidden { display: none; }
   </style>
@@ -58,6 +63,12 @@
 
   <!-- English -->
   <div class="lang en">
+    <div class="box intro">
+      <p><b>pibackup</b> lets you securely back up and restore Raspberry Pi systems. 
+      Images are automatically shrunk and can be compressed with Zstandard (.img.zst). 
+      Restoring to smaller or larger media is supported.</p>
+    </div>
+
     <div class="box backup">
       <h3>🔒 Backup Instructions</h3>
       <ol>
@@ -96,6 +107,12 @@
 
   <!-- German -->
   <div class="lang de hidden">
+    <div class="box intro">
+      <p><b>pibackup</b> ermöglicht es, Raspberry-Pi-Systeme sicher zu sichern und wiederherzustellen. 
+      Images werden automatisch verkleinert und können mit Zstandard (.img.zst) komprimiert werden. 
+      Auch das Wiederherstellen auf kleinere oder größere Medien ist möglich.</p>
+    </div>
+
     <div class="box backup">
       <h3>🔒 Backup-Anleitung</h3>
       <ol>
