@@ -5,101 +5,73 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>pibackup – Raspberry Pi Backup & Restore Tool</title>
   <meta name="description" content="pibackup – Sicheres Backup & Restore für Raspberry Pi Systeme. Erstelle komprimierte Images mit Zstandard und stelle sie flexibel wieder her.">
+  <meta name="keywords" content="Raspberry Pi, Backup, Restore, SD Karte, SSD, Image, Zstandard, pibackup">
+  <meta name="robots" content="index, follow">
 
   <!-- FontAwesome für Icons -->
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
+  <!-- JSON-LD für Software mit Version und Rating -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "pibackup",
+    "operatingSystem": "Linux",
+    "applicationCategory": "Utility",
+    "softwareVersion": "1.5.3",
+    "url": "https://raspberryfpc.github.io/pibackup/",
+    "description": "pibackup – Sicheres Backup & Restore für Raspberry Pi Systeme. Erstelle komprimierte Images mit Zstandard und stelle sie flexibel wieder her.",
+    "offers": {
+      "@type": "Offer",
+      "url": "https://github.com/raspberryfpc/pibackup/releases",
+      "price": "0.00",
+      "priceCurrency": "USD"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5",
+      "ratingCount": "12"
+    }
+  }
+  </script>
+
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0; 
-      padding: 0; 
-      line-height: 1.6; 
-      background: #f5f5f7; 
-      color: #222;
-    }
-    header {
-      background: #2c3e50;
-      color: white;
-      padding: 1.5rem;
-      text-align: center;
-    }
-    header h1 { margin: 0; }
-    .language-switch { margin-top: 1rem; }
-    .container { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+    body { font-family: Arial, sans-serif; margin:0; padding:0; line-height:1.6; background:#f5f5f7; color:#222; }
+    header { background:#2c3e50; color:white; padding:1.5rem; text-align:center; }
+    header h1 { margin:0; }
+    .language-switch { margin-top:1rem; }
+    .container { max-width:900px; margin:2rem auto; padding:0 1rem; }
 
     /* Feature-Boxen */
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1rem;
-      margin: 2rem 0;
-    }
-    .feature-box {
-      padding: 1rem;
-      border-radius: 12px;
-      text-align: center;
-      color: #222;
-      transition: transform 0.2s, box-shadow 0.2s;
-      cursor: default;
-    }
-    .feature-box i {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-      color: inherit;
-    }
-    .features .feature-box:nth-child(1) { background: #e8f5e9; border-left:5px solid #2e7d32; }
-    .features .feature-box:nth-child(2) { background: #e3f2fd; border-left:5px solid #1565c0; }
-    .features .feature-box:nth-child(3) { background: #fff3e0; border-left:5px solid #ef6c00; }
-    .features .feature-box:nth-child(4) { background: #fce4ec; border-left:5px solid #c2185b; }
-    .features .feature-box:nth-child(5) { background: #ede7f6; border-left:5px solid #5e35b1; }
-    .features .feature-box:nth-child(6) { background: #fff9c4; border-left:5px solid #fbc02d; }
-
-    .feature-box:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-    }
+    .features { display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:1rem; margin:2rem 0; }
+    .feature-box { padding:1rem; border-radius:12px; text-align:center; color:#222; transition: transform 0.2s, box-shadow 0.2s; cursor:default; }
+    .feature-box i { font-size:2rem; margin-bottom:0.5rem; color:inherit; }
+    .features .feature-box:nth-child(1) { background:#e6f7e6; border-left:5px solid #2e7d32; }
+    .features .feature-box:nth-child(2) { background:#e3f2fd; border-left:5px solid #1565c0; }
+    .features .feature-box:nth-child(3) { background:#fff8e1; border-left:5px solid #ffb300; }
+    .features .feature-box:nth-child(4) { background:#fce4ec; border-left:5px solid #c2185b; }
+    .features .feature-box:nth-child(5) { background:#ede7f6; border-left:5px solid #5e35b1; }
+    .features .feature-box:nth-child(6) { background:#fff9c4; border-left:5px solid #fbc02d; }
+    .feature-box:hover { transform:translateY(-3px); box-shadow:0 4px 10px rgba(0,0,0,0.12); }
 
     /* Content-Boxen */
-    .box { 
-      background: #fdfdfd; 
-      padding: 1rem; 
-      margin: 1rem 0; 
-      border-radius: 12px; 
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      position: relative;
-    }
-    .box i {
-      position: absolute;
-      top: 1rem;
-      left: 1rem;
-      font-size: 1.8rem;
-      color: #007acc;
-    }
-    .box h2 {
-      margin-left: 2.5rem; 
-      border-bottom: 2px solid #ddd; 
-      padding-bottom: 0.3rem;
-    }
-    .box.backup { background: #e3f2fd; }
-    .box.restore { background: #fff3e0; }
-    .box.tips { background: #e8f5e9; }
+    .box { background:#fdfdfd; padding:1rem 1rem 1rem 3rem; margin:1rem 0; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.08); position:relative; }
+    .box i { position:absolute; top:1rem; left:1rem; font-size:1.6rem; color:#007acc; }
+    .box h2 { margin-bottom:0.5rem; }
+    .box.backup { background:#e6f7e6; }
+    .box.restore { background:#fff8e1; }
+    .box.tips { background:#f0f4f8; }
+    .box.download { background:#f5f5f7; border-left:5px solid #007acc; text-align:center; }
+    .download a { display:inline-block; background:#2c3e50; color:white; padding:0.8rem 1.2rem; border-radius:8px; text-decoration:none; margin-top:1rem; }
 
-    .download a {
-      display: inline-block;
-      background: #2c3e50;
-      color: white;
-      padding: 0.8rem 1.2rem;
-      border-radius: 8px;
-      text-decoration: none;
-      margin-top: 1rem;
-    }
-
-    footer { text-align: center; padding: 1rem; margin-top: 2rem; font-size: 0.9rem; color: #555; }
+    footer { text-align:center; padding:1rem; margin-top:2rem; font-size:0.9rem; color:#555; }
 
     /* Sprachumschaltung */
-    [lang="de"] { display: block; }
-    [lang="en"] { display: none; }
+    [lang="de"] { display:block; }
+    [lang="en"] { display:none; }
+
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0; }
   </style>
 </head>
 <body>
@@ -119,20 +91,19 @@
     <!-- Deutsch -->
     <section lang="de">
       <div class="features">
-        <div class="feature-box"><i class="fas fa-save"></i><h3>Sichere Backups</h3><p>Erstelle vollständige Images deiner SD-Karte oder SSD, inklusive MBR.</p></div>
-        <div class="feature-box"><i class="fas fa-compress-alt"></i><h3>Automatisches Shrinking</h3><p>Die Root-Partition wird automatisch auf die minimale Größe verkleinert.</p></div>
-        <div class="feature-box"><i class="fas fa-file-archive"></i><h3>Zstandard Kompression</h3><p>Effiziente .img.zst-Dateien für platzsparende Backups.</p></div>
-        <div class="feature-box"><i class="fas fa-redo"></i><h3>Sicheres Restore</h3><p>Partitionen werden korrekt wiederhergestellt, ohne die Daten auf nicht gewählten Partitionen zu gefährden.</p></div>
-        <div class="feature-box"><i class="fas fa-sliders-h"></i><h3>Flexible Größenanpassung</h3><p>Größe der Partitionen kann nach dem Restore per Slider angepasst werden.</p></div>
-        <div class="feature-box"><i class="fas fa-check-circle"></i><h3>Vorschau & Kontrolle</h3><p>Grid zeigt die Partitionen vor dem Restore, damit Fehler vermieden werden.</p></div>
+        <div class="feature-box"><i class="fas fa-save"></i><span class="sr-only">Backup Icon</span><h2>Sichere Backups</h2><p>Erstelle vollständige Images deiner SD-Karte oder SSD, inklusive MBR.</p></div>
+        <div class="feature-box"><i class="fas fa-compress-alt"></i><span class="sr-only">Shrink Icon</span><h2>Automatisches Shrinking</h2><p>Die Root-Partition wird automatisch auf die minimale Größe verkleinert.</p></div>
+        <div class="feature-box"><i class="fas fa-file-archive"></i><span class="sr-only">Compression Icon</span><h2>Zstandard Kompression</h2><p>Effiziente .img.zst-Dateien für platzsparende Backups.</p></div>
+        <div class="feature-box"><i class="fas fa-redo"></i><span class="sr-only">Restore Icon</span><h2>Sicheres Restore</h2><p>Partitionen werden korrekt wiederhergestellt, ohne die Daten auf nicht gewählten Partitionen zu gefährden.</p></div>
+        <div class="feature-box"><i class="fas fa-sliders-h"></i><span class="sr-only">Slider Icon</span><h2>Flexible Größenanpassung</h2><p>Größe der Partitionen kann nach dem Restore per Slider angepasst werden.</p></div>
+        <div class="feature-box"><i class="fas fa-key"></i><span class="sr-only">UUID Icon</span><h2>UUID ändern</h2><p>Optional kann die UUID des Zielgeräts beim Restore geändert werden.</p></div>
       </div>
 
       <div class="box backup">
-        <i class="fas fa-save"></i>
-        <h2>Backup-Anleitung</h2>
+        <i class="fas fa-save"></i><h2>Backup-Anleitung</h2>
         <ol>
           <li>pibackup starten.</li>
-          <li>Das zu sichernde Device auswählen (interner Speicher oder externes Medium).</li>
+          <li>Das zu sichernde Laufwerk auswählen (internes oder externes Medium).</li>
           <li>Optional eine <code>.exclude</code>-Datei angeben, um bestimmte Dateien/Ordner auszuschließen.</li>
           <li>Speicherort für das Backup-Image festlegen (.img oder .img.zst bei aktivierter Kompression).</li>
           <li>Backup starten und den Fortschritt beobachten.</li>
@@ -140,21 +111,20 @@
       </div>
 
       <div class="box restore">
-        <i class="fas fa-redo"></i>
-        <h2>Restore-Anleitung</h2>
+        <i class="fas fa-redo"></i><h2>Restore-Anleitung</h2>
         <ol>
           <li>pibackup starten und <strong>Restore to Device</strong> auswählen.</li>
           <li>Das gewünschte Backup-Image laden.</li>
-          <li>Zielgerät auswählen (Achtung: Partitionen 1 und 2 werden überschrieben; Partitionen 3 und 4 bleiben erhalten, außer du aktivierst die Checkbox zum Löschen).</li>
-          <li>Eine Vorschau im Grid zeigt die Partitionen nach dem Restore.</li>
+          <li>Zielgerät auswählen (Partitionen 1 und 2 werden überschrieben; Partitionen 3 und 4 bleiben erhalten, außer du aktivierst die Checkbox zum Löschen).</li>
+          <li>Optional: UUID des Zielgeräts ändern.</li>
+          <li>Vorschau im Grid zeigt die Partitionen nach dem Restore.</li>
           <li>Standardmäßig wird die maximale Größe verwendet. Optional kann die Größe per Slider angepasst werden.</li>
           <li>Wiederherstellung starten und den Fortschritt überwachen.</li>
         </ol>
       </div>
 
       <div class="box tips">
-        <i class="fas fa-lightbulb"></i>
-        <h2>Anleitung & Tipps</h2>
+        <i class="fas fa-lightbulb"></i><h2>Anleitung & Tipps</h2>
         <p>Erstelle regelmäßig Backups, um Datenverlust zu vermeiden. Mit pibackup kannst du Backups auch auf kleinere Speichermedien zurückspielen. Ein Notfall-Image ist sehr hilfreich, um dein System im Ernstfall schnell wiederherzustellen.</p>
       </div>
 
@@ -168,17 +138,16 @@
     <!-- Englisch -->
     <section lang="en">
       <div class="features">
-        <div class="feature-box"><i class="fas fa-save"></i><h3>Secure Backups</h3><p>Create full images of your SD card or SSD, including the MBR.</p></div>
-        <div class="feature-box"><i class="fas fa-compress-alt"></i><h3>Automatic Shrinking</h3><p>The root partition is automatically resized to its minimum size.</p></div>
-        <div class="feature-box"><i class="fas fa-file-archive"></i><h3>Zstandard Compression</h3><p>Efficient .img.zst files for space-saving backups.</p></div>
-        <div class="feature-box"><i class="fas fa-redo"></i><h3>Safe Restore</h3><p>Partitions are restored correctly without affecting other partitions.</p></div>
-        <div class="feature-box"><i class="fas fa-sliders-h"></i><h3>Flexible Size</h3><p>Partition sizes can be adjusted via slider after restore.</p></div>
-        <div class="feature-box"><i class="fas fa-check-circle"></i><h3>Preview & Control</h3><p>Grid preview shows partitions before restore to avoid errors.</p></div>
+        <div class="feature-box"><i class="fas fa-save"></i><span class="sr-only">Backup Icon</span><h2>Secure Backups</h2><p>Create full images of your SD card or SSD, including the MBR.</p></div>
+        <div class="feature-box"><i class="fas fa-compress-alt"></i><span class="sr-only">Shrink Icon</span><h2>Automatic Shrinking</h2><p>The root partition is automatically resized to its minimum size.</p></div>
+        <div class="feature-box"><i class="fas fa-file-archive"></i><span class="sr-only">Compression Icon</span><h2>Zstandard Compression</h2><p>Efficient .img.zst files for space-saving backups.</p></div>
+        <div class="feature-box"><i class="fas fa-redo"></i><span class="sr-only">Restore Icon</span><h2>Safe Restore</h2><p>Partitions are restored correctly without affecting other partitions.</p></div>
+        <div class="feature-box"><i class="fas fa-sliders-h"></i><span class="sr-only">Slider Icon</span><h2>Flexible Size</h2><p>Partition sizes can be adjusted via slider after restore.</p></div>
+        <div class="feature-box"><i class="fas fa-key"></i><span class="sr-only">UUID Icon</span><h2>Change UUID</h2><p>You can optionally change the target device UUID during restore.</p></div>
       </div>
 
       <div class="box backup">
-        <i class="fas fa-save"></i>
-        <h2>Backup Guide</h2>
+        <i class="fas fa-save"></i><h2>Backup Guide</h2>
         <ol>
           <li>Start pibackup.</li>
           <li>Select the device to back up (internal storage or external drive).</li>
@@ -189,12 +158,12 @@
       </div>
 
       <div class="box restore">
-        <i class="fas fa-redo"></i>
-        <h2>Restore Guide</h2>
+        <i class="fas fa-redo"></i><h2>Restore Guide</h2>
         <ol>
           <li>Start pibackup and select <strong>Restore to Device</strong>.</li>
           <li>Load the desired backup image.</li>
           <li>Select the target device (Partitions 1 and 2 will be overwritten; Partitions 3 and 4 remain unless checkbox is enabled).</li>
+          <li>Optionally: change the UUID of the target device.</li>
           <li>Grid preview shows the partitions after restore.</li>
           <li>By default, each partition is set to maximum size. You can adjust sizes via slider.</li>
           <li>Start restoration and monitor progress.</li>
@@ -202,8 +171,7 @@
       </div>
 
       <div class="box tips">
-        <i class="fas fa-lightbulb"></i>
-        <h2>Instructions & Tips</h2>
+        <i class="fas fa-lightbulb"></i><h2>Instructions & Tips</h2>
         <p>Create backups regularly to prevent data loss. Backups can also be restored to smaller media. Keeping an emergency image ready allows quick system recovery.</p>
       </div>
 
