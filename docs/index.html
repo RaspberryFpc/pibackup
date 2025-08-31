@@ -25,88 +25,7 @@
   <meta property="og:url" content="https://raspberryfpc.github.io/pibackup/">
   <meta property="og:type" content="website">
 
-  <!-- JSON-LD Structured Data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "SoftwareApplication",
-        "name": "pibackup",
-        "url": "https://raspberryfpc.github.io/pibackup/",
-        "description": "pibackup is a portable 64-bit live backup and restore tool for Raspberry Pi and Linux PCs. Supports live backup, selective system restore, image shrinking, and efficient zstd compression (.img.zst).",
-        "applicationCategory": "BackupApplication",
-        "operatingSystem": "Linux",
-        "softwareVersion": "1.5.2",
-        "screenshot": "https://raspberryfpc.github.io/pibackup/screenshot1.png",
-        "offers": {
-          "@type": "Offer",
-          "price": "0.00",
-          "priceCurrency": "USD"
-        },
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": "4.8",
-          "reviewCount": "12"
-        }
-      },
-      {
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "How can I back up my Raspberry Pi SD card?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "You can create a full Raspberry Pi SD card backup or clone the card to an image file with pibackup. The tool supports live backup of running systems, so you don’t need to shut down your Raspberry Pi."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How do I create a Raspberry Pi image backup?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "With pibackup you can create a compressed .img.zst image of your Raspberry Pi. This backup can later be restored to the same SD card, to a larger or smaller card, or even to an SSD or HDD."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Can I save my Raspberry Pi backup to USB or NAS?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes, you can store backups on an external USB drive, SSD, HDD, or directly on a network attached storage (NAS). This is the safest way to keep your Raspberry Pi backups."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Is pibackup an alternative to raspiBackup?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes. pibackup is a modern, portable alternative to raspiBackup. It comes with a graphical interface, live backup capability, and efficient zstd compression for small image sizes."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Can I restore only the system partitions?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes, pibackup lets you selectively restore the /boot and /root partitions without touching other data partitions. This makes recovery safe and flexible."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Can I adjust the target partition size during restore?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes, you can already set the size of the target partition during the restore process. The live GUI shows a slider and a preview of the partition layout, so you can adjust sizes before writing the backup."
-            }
-          }
-        ]
-      }
-    ]
-  }
-  </script>
-
+  <!-- Styles -->
   <style>
     body { font-family: system-ui, sans-serif; background: #f6f8fa; margin: 0; padding: 0; color: #333; }
     header { background: #24292e; color: white; padding: 2rem; text-align: center; }
@@ -132,7 +51,7 @@
   <nav>
     <a href="#features">Features</a> | 
     <a href="#restore">Restore Options</a> | 
-    <a href="#screenshot">Screenshot</a> | 
+    <a href="raspberry-pi-backup.html">Backup Guide</a> |
     <a href="#download">Download</a> | 
     <a href="#faq">FAQ</a>
   </nav>
@@ -141,6 +60,7 @@
     <section id="features">
       <h2>Raspberry Pi Backup – Main Features</h2>
       <p>With <a href="#download">pibackup</a>, you can create a reliable <strong>Raspberry Pi backup</strong> on SD card, SSD, or HDD. Supports <a href="#restore">live backup</a> of running systems including the first two partitions (<code>/boot</code> and <code>/root</code>).</p>
+      <p>For a complete step-by-step guide, see the <a href="raspberry-pi-backup.html">Raspberry Pi Backup & Restore Guide</a>.</p>
       <ul>
         <li>Simple graphical user interface – no installation required</li>
         <li>64-bit Linux application – runs directly</li>
