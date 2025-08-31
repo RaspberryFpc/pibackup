@@ -101,7 +101,6 @@
       color: #777;
     }
 
-    /* Responsive */
     @media (max-width: 768px) {
       .features {
         flex-direction: column;
@@ -110,74 +109,77 @@
     }
   </style>
 
-  <!-- Optional: Icons von FontAwesome -->
+  <!-- Optional: Icons from FontAwesome -->
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
   <div class="container">
     <h1>pibackup – Raspberry Pi Backup & Restore Tool</h1>
-    <p>Mit <strong>pibackup</strong> kannst du ein komprimiertes Image (.img.zst) deines Raspberry Pi erstellen. Dieses Backup kann später auf dieselbe SD-Karte, eine größere oder kleinere Karte oder sogar auf ein anderes Laufwerk oder vorhandenes Image wiederhergestellt werden. Spare Speicherplatz durch Schrumpfen der Images und behalte die volle Kontrolle über deine Daten.</p>
+    <p>With <strong>pibackup</strong> you can create a compressed image (.img.zst) of your Raspberry Pi. This backup can later be restored to the same SD card, a larger or smaller one, another drive, or even an existing image. Save storage space by shrinking the images while keeping full control over your data.</p>
 
-    <h2>Hauptfunktionen</h2>
+    <h2>Main Features</h2>
     <div class="features">
       <div class="feature-box">
         <i class="fas fa-save"></i>
         <h3>Backup</h3>
-        <p>Sichere ein laufendes System, ein externes Laufwerk oder ein vorhandenes Image zuverlässig.</p>
+        <p>Securely back up a running system, an external drive, or an existing image.</p>
       </div>
       <div class="feature-box">
         <i class="fas fa-compress-alt"></i>
         <h3>Shrink & Compress</h3>
-        <p>Reduziere die Image-Größe und komprimiere sie im Zstandard-Format (.zst).</p>
+        <p>Reduce image size and compress it in Zstandard format (.zst).</p>
       </div>
       <div class="feature-box">
         <i class="fas fa-sync-alt"></i>
         <h3>Restore</h3>
-        <p>Stelle Backups auf demselben oder einem anderen Medium wieder her.</p>
+        <p>Restore backups to the same or a different device safely.</p>
       </div>
       <div class="feature-box">
         <i class="fas fa-ban"></i>
-        <h3>Exclude-File</h3>
-        <p>Schließe unnötige Dateien aus, um Speicherplatz zu sparen.</p>
+        <h3>Exclude File</h3>
+        <p>Exclude unnecessary files to save storage space.</p>
       </div>
     </div>
 
     <div style="text-align:center;">
-      <a href="download.html" class="button">pibackup herunterladen</a>
+      <a href="download.html" class="button">Download pibackup</a>
     </div>
 
-    <h2>Anleitung & Tipps</h2>
+    <h2>Instructions & Tips</h2>
     <div class="instructions">
-      <h3>1. Backup erstellen</h3>
+      <h3>1. Creating a Backup</h3>
       <ol>
-        <li>pibackup starten, falls es noch nicht läuft.</li>
-        <li>Das zu sichernde Device auswählen: laufendes System, ein externes Laufwerk oder ein vorhandenes Image.</li>
-        <li>Optional: Eine Datei mit zu entfernenden Dateien auswählen (Exclude-File), um unnötige Daten auszuschließen.</li>
-        <li>Speicherort für das Backup-Image festlegen (.img.zst).</li>
-        <li>Backup starten und den Fortschritt beobachten.</li>
+        <li>Start pibackup if it is not already running.</li>
+        <li>Select the device to back up: running system, external drive, or existing image.</li>
+        <li>Optional: Select a file with excluded files (Exclude-File) to omit unnecessary data.</li>
+        <li>Choose the storage location for the backup image (.img.zst).</li>
+        <li>Start the backup and monitor the progress.</li>
       </ol>
 
-      <h3>2. Backup schrumpfen & komprimieren</h3>
+      <h3>2. Shrinking & Compressing</h3>
       <ol>
-        <li>Optional: Unnötige Dateien über die Exclude-Funktion ausschließen.</li>
-        <li>pibackup schrumpft die Partitionen auf die minimale Größe.</li>
-        <li>Das Image wird automatisch im Zstandard-Format komprimiert.</li>
+        <li>Optionally exclude unnecessary files using the Exclude function.</li>
+        <li>pibackup will shrink the partitions to the minimum size.</li>
+        <li>The image is automatically compressed in Zstandard format (.zst).</li>
       </ol>
 
-      <h3>3. Backup wiederherstellen</h3>
+      <h3>3. Restoring a Backup</h3>
       <ol>
-        <li>Ziel-Device auswählen (kann gleiches oder anderes Medium sein).</li>
-        <li>pibackup starten und das gewünschte Backup-Image laden.</li>
-        <li>Wiederherstellung starten – Fortschrittsanzeige beobachten.</li>
-        <li>Nach Abschluss das Device sicher entfernen und ggf. Raspberry Pi starten.</li>
+        <li>Select the backup image you want to restore.</li>
+        <li>Select the target device (must not be the running system; using a different medium is recommended).</li>
+        <li>The target partitions are displayed in a grid showing their layout after the restore.</li>
+        <li>By default, each restored partition is set to the maximum available size. You can adjust the size using the slider.</li>
+        <li>If the target device is too small, you can free up additional space by enabling the checkboxes to delete partitions 3 and 4.</li>
+        <li>Start the restoration and monitor the progress.</li>
+        <li>After completion, safely remove the device and start the Raspberry Pi if needed.</li>
       </ol>
 
-      <h3>Tipps für maximale Sicherheit</h3>
+      <h3>Tips for Maximum Safety</h3>
       <ul>
-        <li>Regelmäßig Backups erstellen, z. B. wöchentlich.</li>
-        <li>Backup-Images auf einem zweiten Medium speichern.</li>
-        <li>Ein Notfall-Image griffbereit halten, um das System schnell wiederherzustellen.</li>
+        <li>Create backups regularly, e.g., weekly.</li>
+        <li>Store backup images on a secondary medium.</li>
+        <li>Keep a ready-to-use emergency image for quick system recovery.</li>
       </ul>
     </div>
 
