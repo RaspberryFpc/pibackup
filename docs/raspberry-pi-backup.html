@@ -128,7 +128,7 @@
       <div class="feature-box">
         <i class="fas fa-compress-alt"></i>
         <h3>Shrink & Compress</h3>
-        <p>Reduce image size and compress it in Zstandard format (.zst).</p>
+        <p>Automatically resize partitions and optionally compress the image in Zstandard format (.zst).</p>
       </div>
       <div class="feature-box">
         <i class="fas fa-sync-alt"></i>
@@ -163,9 +163,9 @@
       <div style="background-color:#fff3cd; border-left:5px solid #ffc107; padding:20px; margin-bottom:20px; border-radius:8px;">
         <h3>2. Shrinking & Compressing</h3>
         <ol>
-          <li>Optionally exclude unnecessary files using the Exclude function.</li>
-          <li>pibackup will shrink the partitions to the minimum size.</li>
-          <li>The image is automatically compressed in Zstandard format (.zst) if Compress is enabled.</li>
+          <li>If an Exclude-File is selected, pibackup first removes all specified files and folders from the backup image.</li>
+          <li>After that, all partitions are automatically resized (shrunk) to their minimum size.</li>
+          <li>If the Compress option is enabled, the image is then compressed in Zstandard format (.zst).</li>
         </ol>
       </div>
 
