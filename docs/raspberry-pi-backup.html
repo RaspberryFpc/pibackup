@@ -89,6 +89,11 @@
       background-color: #005f99;
     }
 
+    .instructions ol, .instructions ul {
+      margin-left: 20px;
+      margin-bottom: 20px;
+    }
+
     footer {
       text-align: center;
       margin-top: 50px;
@@ -112,14 +117,14 @@
 
   <div class="container">
     <h1>pibackup – Raspberry Pi Backup & Restore Tool</h1>
-    <p>Mit <strong>pibackup</strong> kannst du ein komprimiertes Image (.img.zst) deines Raspberry Pi erstellen. Dieses Backup kann später auf dieselbe SD-Karte, eine größere oder kleinere Karte oder sogar auf SSD/HDD wiederhergestellt werden. Spare Speicherplatz durch Schrumpfen der Images und behalte die volle Kontrolle über deine Daten.</p>
+    <p>Mit <strong>pibackup</strong> kannst du ein komprimiertes Image (.img.zst) deines Raspberry Pi erstellen. Dieses Backup kann später auf dieselbe SD-Karte, eine größere oder kleinere Karte oder sogar auf ein anderes Laufwerk oder vorhandenes Image wiederhergestellt werden. Spare Speicherplatz durch Schrumpfen der Images und behalte die volle Kontrolle über deine Daten.</p>
 
     <h2>Hauptfunktionen</h2>
     <div class="features">
       <div class="feature-box">
         <i class="fas fa-save"></i>
         <h3>Backup</h3>
-        <p>Sichere die ersten zwei Partitionen deines Raspberry Pi zuverlässig.</p>
+        <p>Sichere ein laufendes System, ein externes Laufwerk oder ein vorhandenes Image zuverlässig.</p>
       </div>
       <div class="feature-box">
         <i class="fas fa-compress-alt"></i>
@@ -129,7 +134,7 @@
       <div class="feature-box">
         <i class="fas fa-sync-alt"></i>
         <h3>Restore</h3>
-        <p>Stelle das Backup auf der gleichen oder einer anderen SD-Karte wieder her.</p>
+        <p>Stelle Backups auf demselben oder einem anderen Medium wieder her.</p>
       </div>
       <div class="feature-box">
         <i class="fas fa-ban"></i>
@@ -143,7 +148,38 @@
     </div>
 
     <h2>Anleitung & Tipps</h2>
-    <p>Erstelle regelmäßig Backups, um Datenverlust zu vermeiden. Du kannst bestehende Backups auf kleinere Medien schreiben oder ein Notfall-Image bereithalten, um dein System im Ernstfall schnell wiederherzustellen.</p>
+    <div class="instructions">
+      <h3>1. Backup erstellen</h3>
+      <ol>
+        <li>pibackup starten, falls es noch nicht läuft.</li>
+        <li>Das zu sichernde Device auswählen: laufendes System, ein externes Laufwerk oder ein vorhandenes Image.</li>
+        <li>Optional: Eine Datei mit zu entfernenden Dateien auswählen (Exclude-File), um unnötige Daten auszuschließen.</li>
+        <li>Speicherort für das Backup-Image festlegen (.img.zst).</li>
+        <li>Backup starten und den Fortschritt beobachten.</li>
+      </ol>
+
+      <h3>2. Backup schrumpfen & komprimieren</h3>
+      <ol>
+        <li>Optional: Unnötige Dateien über die Exclude-Funktion ausschließen.</li>
+        <li>pibackup schrumpft die Partitionen auf die minimale Größe.</li>
+        <li>Das Image wird automatisch im Zstandard-Format komprimiert.</li>
+      </ol>
+
+      <h3>3. Backup wiederherstellen</h3>
+      <ol>
+        <li>Ziel-Device auswählen (kann gleiches oder anderes Medium sein).</li>
+        <li>pibackup starten und das gewünschte Backup-Image laden.</li>
+        <li>Wiederherstellung starten – Fortschrittsanzeige beobachten.</li>
+        <li>Nach Abschluss das Device sicher entfernen und ggf. Raspberry Pi starten.</li>
+      </ol>
+
+      <h3>Tipps für maximale Sicherheit</h3>
+      <ul>
+        <li>Regelmäßig Backups erstellen, z. B. wöchentlich.</li>
+        <li>Backup-Images auf einem zweiten Medium speichern.</li>
+        <li>Ein Notfall-Image griffbereit halten, um das System schnell wiederherzustellen.</li>
+      </ul>
+    </div>
 
     <footer>
       &copy; 2025 pibackup – Raspberry Pi Backup & Restore Tool
