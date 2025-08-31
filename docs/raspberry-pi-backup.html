@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raspberry Pi Backup & Restore Guide – pibackup</title>
+  <meta name="description" content="Step-by-step guide to backup and restore your Raspberry Pi with pibackup. Create, shrink, compress, and restore SD/SSD/HDD images safely.">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Can I restore the backup to a smaller SD card or SSD partition?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. pibackup automatically resizes the restore partition as long as the data fits. You can also delete partition 3 or partition 3 and 4 to free space for the backup."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does pibackup allow custom restore partition sizes?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. You can either use the default maximum available space or specify a custom partition size in the GUI."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does pibackup test the restored backup?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "pibackup performs internal validation automatically during restore, such as running e2fsck to check filesystem integrity."
+        }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+<main>
+<h1>Raspberry Pi Backup & Restore Guide with <em>pibackup</em></h1>
+
+<h2>Why a Backup Is Important</h2>
+<p>The Raspberry Pi is often used as a server, media center, or control system.  
+If the SD card or SSD fails, all data may be lost. <em>pibackup</em> allows you to create complete backups and restore them safely to any SD card, USB stick, SSD, or internal partition.</p>
+
+<h2>Requirements</h2>
+<ul>
+  <li>A Raspberry Pi with a running system</li>
+  <li>A second SD card, USB stick, or external SSD/HDD with enough space</li>
+  <li>Or an internal SSD with a free 3rd or 4th partition with enough space</li>
+  <li>Installed <em>pibackup</em> tool (<a href="https://github.com/raspberryfpc/pibackup">GitHub Project Page</a>)</li>
+</ul>
+
+<h2>Step 1: Start pibackup</h2>
+<p>Run pibackup via your desktop launcher or double-click the start script. The GUI opens automatically, no terminal commands required.</p>
+
+<h2>Step 2: Create a Backup</h2>
+<p>Select your source device (e.g. /dev/mmcblk0) in the GUI. pibackup will:</p>
+<ul>
+  <li>Create an image of the first two partitions (boot + root)</li>
+  <li>Optionally optimize the image by removing unnecessary files</li>
+  <li>Compress to .img.zst (optional)</li>
+</ul>
+
+<h2>Step 3: Restore a Backup</h2>
+<p>Open pibackup and select <strong>Restore</strong> in the GUI.</p>
+<ol>
+  <li>Choose the backup file (e.g., mybackup.img.zst)</li>
+  <li>Select the target device (SD card, USB, SSD/HDD)</li>
+  <li><strong>Select options before confirming restore:</strong>
+    <ul>
+      <li>Restore partition size – default = maximum available space, or specify custom size</li>
+      <li>New device UUID – assign a new UUID if needed</li>
+      <li>Partitions to delete – optionally delete <strong>partition 3</strong> or <strong>partition 3 and 4</strong> to free space</li>
+    </ul>
+  </li>
+  <li>Confirm the restore process</li>
+</ol>
+<p>pibackup writes the image, applies selected options, and adjusts partitions as needed.</p>
+
+<h2>Step 4: Test the Backup</h2>
+<ul>
+  <li>Boot the Raspberry Pi with the restored media</li>
+  <li>pibackup performs internal validation (e.g., e2fsck)</li>
+  <li>Verify system functionality (SSH, services, desktop)</li>
+</ul>
+
+<h2>FAQ</h2>
+<h3>Can I restore to a smaller SD card or SSD?</h3>
+<p>Yes. The restore partition is resized automatically, or you can specify a custom size. Optionally delete partition 3 or 3+4 to free space.</p>
+
+<h3>Does pibackup support custom restore partition sizes?</h3>
+<p>Yes. Default = max available space; you can also set a custom size via GUI slider.</p>
+
+<h3>How does pibackup test the restored backup?</h3>
+<p>Internal checks like e2fsck are run automatically during restore.</p>
+
+<h2>Advantages</h2>
+<ul>
+  <li>GUI-only operation, no terminal commands</li>
+  <li>Safe and flexible backup/restore</li>
+  <li>Supports SD, USB, SSD/HDD, internal partitions</li>
+  <li>Custom restore options: partition size, delete partition 3/4, new UUID</li>
+  <li>Efficient compression with Zstandard</li>
+</ul>
+
+<h2>Further Resources</h2>
+<ul>
+  <li><a href="https://github.com/raspberryfpc/pibackup">pibackup GitHub</a></li>
+  <li><a href="https://raspberryfpc.github.io/pibackup/">Documentation & Releases</a></li>
+</ul>
+</main>
+</body>
+</html>
