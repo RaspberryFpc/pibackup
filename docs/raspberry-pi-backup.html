@@ -116,14 +116,14 @@
 
   <div class="container">
     <h1>pibackup – Raspberry Pi Backup & Restore Tool</h1>
-    <p>With <strong>pibackup</strong> you can create a compressed image (.img.zst) of your Raspberry Pi. This backup can later be restored to the same SD card, a larger or smaller one, another drive, or even an existing image. Save storage space by shrinking the images while keeping full control over your data.</p>
+    <p>With <strong>pibackup</strong> you can create a compressed image (.img.zst) of your Raspberry Pi. This backup can later be restored to the same SD card, a larger or smaller one, or another drive. Save storage space by shrinking the images while keeping full control over your data.</p>
 
     <h2>Main Features</h2>
     <div class="features">
       <div class="feature-box">
         <i class="fas fa-save"></i>
         <h3>Backup</h3>
-        <p>Securely back up a running system, an external drive, or an existing image.</p>
+        <p>Securely back up a running system or an external drive by creating a standard image that includes the MBR.</p>
       </div>
       <div class="feature-box">
         <i class="fas fa-compress-alt"></i>
@@ -148,39 +148,50 @@
 
     <h2>Instructions & Tips</h2>
     <div class="instructions">
-      <h3>1. Creating a Backup</h3>
-      <ol>
-        <li>Start pibackup if it is not already running.</li>
-        <li>Select the device to back up: running system, external drive, or existing image.</li>
-        <li>Optional: Select a file with excluded files (Exclude-File) to omit unnecessary data.</li>
-        <li>Choose the storage location for the backup image (.img.zst).</li>
-        <li>Start the backup and monitor the progress.</li>
-      </ol>
 
-      <h3>2. Shrinking & Compressing</h3>
-      <ol>
-        <li>Optionally exclude unnecessary files using the Exclude function.</li>
-        <li>pibackup will shrink the partitions to the minimum size.</li>
-        <li>The image is automatically compressed in Zstandard format (.zst).</li>
-      </ol>
+      <div style="background-color:#d9f0d9; border-left:5px solid #28a745; padding:20px; margin-bottom:20px; border-radius:8px;">
+        <h3>1. Creating a Backup</h3>
+        <ol>
+          <li>Start pibackup if it is not already running.</li>
+          <li>Select the device to back up: running system or external drive.</li>
+          <li>Optional: Select a file with excluded files (Exclude-File) to omit unnecessary data.</li>
+          <li>Choose the storage location for the backup image (.img.zst).</li>
+          <li>Start the backup and monitor the progress.</li>
+        </ol>
+      </div>
 
-      <h3>3. Restoring a Backup</h3>
-      <ol>
-        <li>Select the backup image you want to restore.</li>
-        <li>Select the target device (must not be the running system; using a different medium is recommended).</li>
-        <li>The target partitions are displayed in a grid showing their layout after the restore.</li>
-        <li>By default, each restored partition is set to the maximum available size. You can adjust the size using the slider.</li>
-        <li>If the target device is too small, you can free up additional space by enabling the checkboxes to delete partitions 3 and 4.</li>
-        <li>Start the restoration and monitor the progress.</li>
-        <li>After completion, safely remove the device and start the Raspberry Pi if needed.</li>
-      </ol>
+      <div style="background-color:#fff3cd; border-left:5px solid #ffc107; padding:20px; margin-bottom:20px; border-radius:8px;">
+        <h3>2. Shrinking & Compressing</h3>
+        <ol>
+          <li>Optionally exclude unnecessary files using the Exclude function.</li>
+          <li>pibackup will shrink the partitions to the minimum size.</li>
+          <li>The image is automatically compressed in Zstandard format (.zst).</li>
+        </ol>
+      </div>
 
-      <h3>Tips for Maximum Safety</h3>
-      <ul>
-        <li>Create backups regularly, e.g., weekly.</li>
-        <li>Store backup images on a secondary medium.</li>
-        <li>Keep a ready-to-use emergency image for quick system recovery.</li>
-      </ul>
+      <div style="background-color:#d1ecf1; border-left:5px solid #17a2b8; padding:20px; margin-bottom:20px; border-radius:8px;">
+        <h3>3. Restoring a Backup</h3>
+        <ol>
+          <li>Start pibackup and select <strong>"Restore to device"</strong>.</li>
+          <li>Select the backup image you want to restore.</li>
+          <li>Select the target device (must not be the running system; using a different medium is recommended).</li>
+          <li>The target partitions are displayed in a grid showing their layout after the restore.</li>
+          <li>By default, each restored partition is set to the maximum available size. You can adjust the size using the slider.</li>
+          <li>If the target device is too small, you can free up additional space by enabling the checkboxes to delete partitions 3 and 4.</li>
+          <li>Start the restoration and monitor the progress.</li>
+          <li>After completion, safely remove the device and start the Raspberry Pi if needed.</li>
+        </ol>
+      </div>
+
+      <div style="background-color:#f8d7da; border-left:5px solid #dc3545; padding:20px; margin-bottom:20px; border-radius:8px;">
+        <h3>Tips for Maximum Safety</h3>
+        <ul>
+          <li>Create backups regularly, e.g., weekly.</li>
+          <li>Store backup images on a secondary medium.</li>
+          <li>Keep a ready-to-use emergency image for quick system recovery.</li>
+        </ul>
+      </div>
+
     </div>
 
     <footer>
