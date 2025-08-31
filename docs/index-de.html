@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pibackup – Raspberry Pi Backup & Restore Tool</title>
+  <meta name="description" content="pibackup – Raspberry Pi Backup-Tool zum Erstellen und Wiederherstellen von SD-Karten-Images. Live-Backup, Schrumpfen, Klonen und Komprimieren von Images (.img.zst). Funktioniert mit SD-Karten, SSDs, HDDs, USB und NAS.">
+  <link rel="canonical" href="https://raspberryfpc.github.io/pibackup/index-de.html">
+  <link rel="alternate" hreflang="en" href="index.html" />
+  <link rel="icon" href="rkicon.ico" type="image/x-icon">
+  <!-- Google Site Verification -->
+  <meta name="google-site-verification" content="9R0_acOmUPXTuQXBqsgF1j8WIMsb0tLe0sQp7RPOBpU" />
+  <!-- Open Graph -->
+  <meta property="og:title" content="pibackup – Raspberry Pi Backup & Restore Tool">
+  <meta property="og:description" content="Tragbares 64-Bit Live-Backup- und Wiederherstellungstool für Raspberry Pi und Linux. Live-Backup, selektive Wiederherstellung, Image-Schrumpfung und effiziente zstd-Kompression (.img.zst).">
+  <meta property="og:image" content="https://raspberryfpc.github.io/pibackup/screenshot1.png">
+  <meta property="og:url" content="https://raspberryfpc.github.io/pibackup/index-de.html">
+  <meta property="og:type" content="website">
+  <style>
+    body { font-family: system-ui, sans-serif; background: #f6f8fa; margin: 0; padding: 0; color: #333; }
+    header { background: #24292e; color: white; padding: 2rem; text-align: center; }
+    h1 { margin: 0; font-size: 2.2rem; }
+    main { max-width: 800px; margin: 2rem auto; padding: 1.5rem; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    section { margin-bottom: 2rem; }
+    h2 { color: #0366d6; }
+    ul { line-height: 1.6; padding-left: 1.2rem; }
+    a.button { display: inline-block; margin-top: 1rem; padding: 0.6rem 1.2rem; background: #28a745; color: white; text-decoration: none; border-radius: 5px; }
+    footer { text-align: center; color: #777; padding: 2rem; font-size: 0.9rem; }
+    nav { margin-bottom: 1rem; text-align: center; }
+    nav a { margin: 0 0.5rem; color: #0366d6; text-decoration: none; }
+    p a { color: #0366d6; text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>pibackup – Raspberry Pi Backup & Restore Tool</h1>
+    <p>Tragbares Live-Backup & Restore für Raspberry Pi, Linux, SD-Karten & SSDs</p>
+  </header>
+  <nav>
+    <a href="#features">Funktionen</a> | 
+    <a href="#restore">Wiederherstellung</a> | 
+    <a href="raspberry-pi-backup.html">Backup-Anleitung</a> |
+    <a href="#download">Download</a> | 
+    <a href="#faq">FAQ</a> | 
+    <a href="index.html">English</a>
+  </nav>
+  <main>
+    <section id="features" style="background:#e3f2fd; padding:1em; border-radius:8px;">
+      <h2>Raspberry Pi Backup – Hauptfunktionen</h2>
+      <p>Mit <a href="#download">pibackup</a> können Sie ein zuverlässiges <strong>Raspberry Pi Backup</strong> auf SD-Karte, SSD oder HDD erstellen. Unterstützt Live-Backup von laufenden Systemen einschließlich der ersten beiden Partitionen (<code>/boot</code> und <code>/root</code>).</p>
+      <ul>
+        <li>Einfache grafische Oberfläche – keine Installation erforderlich</li>
+        <li>64-Bit Linux Anwendung – läuft direkt</li>
+        <li>Automatisches Backup der ersten beiden Partitionen (<code>/boot</code> und <code>/root</code>)</li>
+        <li>Live-Backup-Unterstützung – Backup laufender Systeme</li>
+        <li>Exclude-Dateien zum Entfernen unerwünschter Daten</li>
+        <li>Optionales Entfernen von SSH- und DHCP-Konfigurationen</li>
+        <li>Image-Schrumpfung mit <code>resize2fs</code> und Kompression mit <strong>zstd</strong></li>
+        <li>Backups als <code>.img.zst</code> speichern (optional)</li>
+        <li>Leere Sektoren mit <code>0xFF</code> für bessere Kompression & Sicherheit</li>
+        <li>Kompatibel mit SD-Karten, SSDs, HDDs, USB und NAS</li>
+      </ul>
+    </section>
+
+    <section id="restore" style="background:#fff3e0; padding:1em; border-radius:8px;">
+      <h2>Raspberry Pi Backup – Wiederherstellungsoptionen</h2>
+      <p>Mit <a href="#download">pibackup</a> können Sie <code>/boot</code> und <code>/root</code> selektiv wiederherstellen, ohne andere Partitionen zu beeinflussen. Größen und Layout können in der Live-GUI angepasst werden.</p>
+      <ul>
+        <li>Direktes Wiederherstellen von <code>.img</code> oder <code>.img.zst</code></li>
+        <li>Selektive Wiederherstellung – nur Systempartitionen</li>
+        <li>Zielgerät über Dropdown wählen</li>
+        <li>Partitionsgröße über Schieberegler anpassen</li>
+        <li>Live-Vorschau des Partitionierungs-Layouts</li>
+        <li>Optional selektives Löschen von Partitionen</li>
+        <li>Dateisystem automatisch anpassen</li>
+      </ul>
+    </section>
+
+    <section id="screenshot" style="padding:2em 0; text-align:center;">
+      <h2>Raspberry Pi Backup – Screenshot</h2>
+      <img src="screenshot1.png" alt="Screenshot der pibackup GUI" style="max-width:90%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.1); border:1px solid #ccc;">
+    </section>
+
+    <section id="download">
+      <h2>Download & Source Code</h2>
+      <a class="button" href="https://github.com/RaspberryFpc/pibackup" target="_blank">GitHub Projekt</a>
+    </section>
+
+    <section id="faq">
+      <h2>FAQ</h2>
+      <h3>Wie kann ich mein Raspberry Pi SD-Karten-Backup erstellen?</h3>
+      <p>Sie können ein vollständiges <strong>Raspberry Pi SD-Karten-Backup</strong> erstellen oder die Karte auf eine Image-Datei klonen. Live-Backup wird unterstützt.</p>
+      <h3>Kann ich nur die Systempartitionen wiederherstellen?</h3>
+      <p>Ja, Sie können <code>/boot</code> und <code>/root</code> selektiv wiederherstellen, ohne andere Partitionen zu beeinflussen.</p>
+    </section>
+  </main>
+
+  <footer>
+    &copy; 2025 pibackup – MIT Lizenz – <a href="https://github.com/RaspberryFpc/pibackup" target="_blank">GitHub</a>
+  </footer>
+</body>
+</html>
