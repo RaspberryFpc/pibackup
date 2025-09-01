@@ -102,12 +102,30 @@
     </section>
 
     <section id="faq">
-      <h2>FAQ</h2>
-      <h3>How can I back up my Raspberry Pi SD card?</h3>
-      <p>With <a href="#features">pibackup</a>, you can create a full <strong>Raspberry Pi SD card backup</strong> by saving the card as an image file. Live backups are supported.</p>
-      <h3>Can I restore only the system partitions?</h3>
-      <p>Yes, you can selectively restore <code>/boot</code> and <code>/root</code> without affecting other partitions.</p>
-    </section>
+  <h2>FAQ</h2>
+
+  <h3>How can I back up my Raspberry Pi SD card?</h3>
+  <p>You can create a full <strong>Raspberry Pi SD card backup</strong> with <a href="#features">pibackup</a>. The tool supports live backup of running systems, so you don’t need to shut down your Raspberry Pi.</p>
+
+  <h3>How do I create a Raspberry Pi image backup?</h3>
+  <p>With <a href="#features">pibackup</a> you can generate a compressed <code>.img.zst</code> image file of your Raspberry Pi. This backup can later be restored to the same SD card, to a bigger or smaller card, or even to an SSD/HDD.</p>
+
+  <h3>Can I save my Raspberry Pi backup to USB or NAS?</h3>
+  <p>Yes, you can store backups on an external USB drive, SSD, HDD, or directly on a network attached storage (NAS). This is the safest way to keep your Raspberry Pi backups.</p>
+
+  <h3>Is pibackup an alternative to raspiBackup?</h3>
+  <p>Yes. <a href="#features">pibackup</a> is a portable alternative to raspiBackup, offering a graphical interface, live backup capability, and modern compression with zstd.</p>
+
+  <h3>What is always backed up by pibackup?</h3>
+  <p><a href="#features">pibackup</a> always backs up the <code>/boot</code> and <code>/root</code> partitions including the MBR. The backup includes everything needed to fully restore the system partitions.</p>
+
+  <h3>How does restore work?</h3>
+  <p>During restore, <code>/boot</code> and <code>/root</code> are restored completely, and the MBR of the target device is updated to match the backup, including adjustments to any additional partitions. The restore always writes the backup to the <code>/root</code> partition of the target device.</p>
+
+  <h3>Can I adjust the root partition size during restore?</h3>
+  <p>Yes, you can set the size of the <code>/root</code> partition during the restore process. The live GUI shows a slider and a preview of the partition layout, so you can adjust sizes before writing the backup.</p>
+</section>
+
   </main>
 
   <!-- Footer -->
