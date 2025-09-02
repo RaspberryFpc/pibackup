@@ -79,7 +79,6 @@ type
     procedure ModifyImage(mountpoint: string);
     function InstallMissingRoutines: boolean;
     procedure write_ini;
-    //   procedure CompressWithProgress(const infile: string; level: integer; LBox: TListBox);
     procedure readDeviceInfo(drive: string; var deviceinfo: Tdriveinfo);
     procedure GridUpdate(Sender: TObject);
 
@@ -104,8 +103,8 @@ implementation
 { TForm1 }
 
 const
-  appname = 'PiBackup  v1.5.3';  // Restlaufzeit am ende beim erzeugen des images     abbruch bein schreiben
-  ininame = 'pbt.ini';
+  appname = 'PiBackup  v1.5.4';
+  ininame = 'pibackup.ini';
   p2mpoint = '/pi_images/p2_pibackup_img';
   p1mpoint = '/pi_images/p1_pibackup_img';
 
@@ -372,6 +371,7 @@ begin
 end;
 
 
+
 procedure TForm1.write_ini;
 var
   ini: tinifile;
@@ -406,8 +406,8 @@ begin
 
       Listboxaddscroll(listbox1, starline('Installing zstd', 80));
 
-      PrexeBash('apt-get update && sudo apt upgrade -y', listbox1);
-      PrexeBash('apt-get -y -q install zstd', listbox1);
+      PrexeThreadedBash('apt-get update && sudo apt upgrade -y', listbox1);
+      PrexeThreadedBash('apt-get -y -q install zstd', listbox1);
       installdone := True;
     end;
   end;
@@ -420,6 +420,8 @@ begin
   end;
   if installdone then Listboxaddscroll(listbox1, starline('OK', 80));
 end;
+
+
 
 procedure TForm1.FormActivate(Sender: TObject);
 begin
@@ -538,6 +540,8 @@ var
   deststream: TFileStream;
   mbrwork: TMbr;
   sectorsperblock, p, p1: integer;
+  command:string;
+
 begin
   if ButtonCreateImage.Caption = 'cancel' then
   begin
@@ -584,7 +588,7 @@ begin
     unmountonly(mountedPartition2, listbox1);
 
     // check image
-    s := PrexeBash('/sbin/e2fsck -fy ' + mountedpartition2.LoopDevice, listbox1);
+    s := PrexeThreadedBash('/sbin/e2fsck -fy ' + mountedpartition2.LoopDevice, listbox1);
     if Pos('errors', LowerCase(s)) > 0 then
       Listboxaddscroll(listbox1, 'Filesystem check reported errors');
 
@@ -601,12 +605,18 @@ begin
 
     // umount und test filesystem
     unmountonly(mountedPartition2, listbox1);
-    s := PrexeBash('/sbin/e2fsck -fy ' + mountedpartition2.LoopDevice, listbox1);
+    s := PrexeThreadedBash('/sbin/e2fsck -fy ' + mountedpartition2.LoopDevice, listbox1);
     if Pos('errors', LowerCase(s)) > 0 then
       Listboxaddscroll(listbox1, 'Filesystem check reported errors');
 
     RunCommand('sync', s);
-    s := PrexeBash('/sbin/resize2fs -M -p ' + mountedpartition2.LoopDevice , listbox1);
+
+    //s := PrexeBash('/sbin/resize2fs -M -p ' + mountedpartition2.LoopDevice , listbox1);
+
+    s := PrexeThreadedBash('/sbin/resize2fs -M -p ' + mountedpartition2.LoopDevice , listbox1);
+
+
+
     NewBlockCount := GetValueAfterKeyword(s, 'is now');
     if NewBlockCount = 0 then
       raise Exception.Create('Failed to resize filesystem');
@@ -646,7 +656,7 @@ begin
 
     // check filesystem
     runbash('/sbin/partprobe ' + mountedpartition2.LoopDevice);
-    PrexeBash('/sbin/e2fsck -fy ' + mountedpartition2.LoopDevice, Listbox1);
+    PrexeThreadedBash('/sbin/e2fsck -fy ' + mountedpartition2.LoopDevice, Listbox1);
     fpchown(filename, 1000, 1000);
     fpchmod(filename, &755);
 
@@ -759,14 +769,14 @@ begin
     workmbr.PartitionEntries[2].PartitionSize := strtoint64(stringgrid1.Cells[parsize, par2]) div 512;  // neue grösse in sectors
     Write_MBR(workmbr, selecteddrive);
 
-    s := Prexebash('partprobe ' + selecteddrive, listbox1);
+    s := PrexeThreadedBash('partprobe ' + selecteddrive, listbox1);
 
-    Prexebash('e2fsck -fy ' + par2name, listbox1);
+    PrexeThreadedBash('e2fsck -fy ' + par2name, listbox1);
     ListBoxaddscroll(listbox1, 'resize...');
-    s := Prexebash('resize2fs ' + par2name, listbox1);
+    s := PrexeThreadedBash('resize2fs ' + par2name, listbox1);
 
     ListBoxaddscroll(listbox1, 'partprobe - reloading partition table');
-    s := Prexebash('partprobe ' + selecteddrive, listbox1);
+    s := PrexeThreadedBash('partprobe ' + selecteddrive, listbox1);
 
     Application.ProcessMessages;
 
@@ -842,9 +852,9 @@ begin
 
   terminate_all := True;
   sleep(3000);
-  PrexeBash('umount ' + device, listbox1);  // optional, wenn es gemountet war
-  PrexeBash('losetup -d ' + device, listbox1);
-  PrexeBash('rm -rf ' + p2mpoint, listbox1);
+  PrexeThreadedBash('umount ' + device, listbox1);  // optional, wenn es gemountet war
+  PrexeThreadedBash('losetup -d ' + device, listbox1);
+  PrexeThreadedBash('rm -rf ' + p2mpoint, listbox1);
   runcommand('sudo systemctl start udisks2', s);
 end;
 

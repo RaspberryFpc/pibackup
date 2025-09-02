@@ -1,6 +1,20 @@
 # Changelog
 
 All notable changes to this project are documented in this file.
+
+## [1.5.4] – 2025-09-02
+### Improved
+- More reliable resource handling and shutdown of background processes.  
+- Code simplified: less duplication, clearer execution flow.  
+
+### Added
+- External programs (`resize2fs`, `e2fsck`, etc.) are now executed in a separate thread:  
+- GUI remains responsive during long-running operations.  
+- Progress and cancellation are handled more consistently.  
+
+
+
+
 ## [1.5.3] – 2025-08-30
 ### Improved 
 - restore functions

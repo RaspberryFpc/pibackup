@@ -5,7 +5,7 @@ unit rkutils;
 interface
 
 uses
-  Classes, SysUtils, process, baseunix, unix, LazUTF8, fileutil, dateutils, StdCtrls, Forms, Dialogs, UnixType;
+  Classes, SysUtils, process, baseunix, unix, LazUTF8, fileutil, dateutils, StdCtrls, Forms, Dialogs, UnixType, ExtCtrls;
 
 type
   TExt4Superblock = packed record
@@ -96,25 +96,44 @@ type
 
 type
   TStatVFS = record
-    f_bsize:   cULong;   // Filesystem block size
-    f_frsize:  cULong;   // Fragment size
-    f_blocks:  cUInt64;  // fsblkcnt_t
-    f_bfree:   cUInt64;  // fsblkcnt_t
-    f_bavail:  cUInt64;  // fsblkcnt_t
-    f_files:   cUInt64;  // fsfilcnt_t
-    f_ffree:   cUInt64;  // fsfilcnt_t
-    f_favail:  cUInt64;  // fsfilcnt_t
-    f_fsid:    cULong;   // Filesystem ID
-    f_flag:    cULong;   // Mount flags
+    f_bsize: cULong;   // Filesystem block size
+    f_frsize: cULong;   // Fragment size
+    f_blocks: cUInt64;  // fsblkcnt_t
+    f_bfree: cUInt64;  // fsblkcnt_t
+    f_bavail: cUInt64;  // fsblkcnt_t
+    f_files: cUInt64;  // fsfilcnt_t
+    f_ffree: cUInt64;  // fsfilcnt_t
+    f_favail: cUInt64;  // fsfilcnt_t
+    f_fsid: cULong;   // Filesystem ID
+    f_flag: cULong;   // Mount flags
     f_namemax: cULong;   // Maximum filename length
     f_spare: array[0..5] of cULong;
-    end;
+  end;
+
+
+  type
+  TPrexeThreaded = class(TThread)
+  private
+    FCmd: AnsiString;
+    FParams: array of string;
+    FListBox: TListBox;
+    FResult: AnsiString;
+    FTempString: AnsiString;
+    FFinished: Boolean;
+    procedure UpdateListBox;
+    procedure AddListBoxLine;
+  protected
+    procedure Execute; override;
+  public
+    constructor Create(const Cmd: AnsiString; Params: array of string; ListBox: TListBox);
+    property ResultText: AnsiString read FResult;
+    property Finished: Boolean read FFinished;
+  end;
+
+
 
 
 function statvfs(path: pchar; var buf: TStatVFS): cint; cdecl; external 'c';
-
-
-
 function runbash(command: ansistring): string;
 function prexe(cmdl: ansistring; parameter: array of string; box: tlistbox): ansistring;
 function Prexebash(command: ansistring; box: tlistbox): ansistring;
@@ -151,6 +170,9 @@ procedure UnmountOnly(const Mounted: TMountedPartition; ListBox: TListBox);
 procedure RemountPartition(const Mounted: TMountedPartition; ListBox: TListBox);
 procedure ClosePartition(var Mounted: TMountedPartition; ListBox: TListBox);
 procedure EnsureEnoughSpace(const FilePath: string; NewSize: int64);
+function  PrexeThreadedbash(command: AnsiString; box: TListBox): AnsiString;
+
+
 
 var
   terminate_all: boolean;
@@ -162,12 +184,16 @@ uses zstd, unit1;
 const
 
   puffersize = 48;
-
+  prexeBytesToRead = 2048;
 
 var
   ValHistory: array[0..PufferSize - 1] of int64;
   TimeHistory: array[0..PufferSize - 1] of uint64;
   pufferindex: integer;
+   cBuffer: array[0..prexeBytesToRead - 1] of char;
+  cbufferpos, bytesread: integer;
+  su, sm: ansistring;
+
 
 
 function RunsAsRoot: boolean;
@@ -347,13 +373,11 @@ end;
 
 
 
- procedure EnsureEnoughSpace(const FilePath: string; NewSize: int64);
+procedure EnsureEnoughSpace(const FilePath: string; NewSize: int64);
 var
   vfs: TStatVFS;
   DirPath, ExistingPath: string;
   OldSize, FreeBytes: int64;
-
-
 begin
   // Alte Dateigröße bestimmen
   if FileExists(FilePath) then
@@ -383,16 +407,13 @@ begin
   // Prüfen ob genug Platz da ist
   if NewSize > OldSize then
     if (NewSize - OldSize) > FreeBytes then
-      raise Exception.Create(
-        Format('Not enough disk space: required %d bytes, available %d bytes', [NewSize , FreeBytes + OldSize])
-      );
+      raise Exception.Create(Format('Not enough disk space: required %d bytes, available %d bytes', [NewSize, FreeBytes + OldSize]));
 
   // Erst jetzt die Verzeichnisse erstellen
   if not DirectoryExists(DirPath) then
     if not ForceDirectories(DirPath) then
       raise Exception.Create('Failed to create directory "' + DirPath + '"');
 end;
-
 
 
 
@@ -540,6 +561,8 @@ begin
   for n := 0 to length(parameter) - 1 do pr.Parameters.Add(parameter[n]);
 
   Pr.Options := [poUsepipes, poStderrToOutPut, poDefaultErrorMode];
+
+
   Pr.Execute;
   Listboxaddscroll(box, '');
   xpos := 0;
@@ -548,6 +571,8 @@ begin
   begin
     sleep(50);
     //   application.ProcessMessages;
+    CheckSynchronize(10);
+
     bytesread := Pr.Output.Read(cbuffer, prexebytestoread);
     cbufferpos := 0;
     repeat
@@ -595,9 +620,10 @@ begin
         end;
 
       if done = False then Inc(cbufferpos);
+
     until cbufferpos >= bytesread;            // testen was richtig ist  until cbufferpos > bytesread;
 
-
+    application.ProcessMessages;
     if terminate_all then
     begin
       pr.Terminate(0);
@@ -623,6 +649,177 @@ begin
   else
     Result := '';
 end;
+
+
+//  Classes, SysUtils, Process, LCLProc, Controls, StdCtrls;
+
+
+ constructor TPrexeThreaded.Create(const Cmd: AnsiString; Params: array of string; ListBox: TListBox);
+begin
+  inherited Create(True); // Thread suspendiert
+  FCmd := Cmd;
+  FParams := Copy(Params);
+  FListBox := ListBox;
+  FResult := '';
+  FFinished := False; // zurücksetzen beim Start
+  FreeOnTerminate := False;
+  Start; // Thread starten
+end;
+
+
+
+ // GUI-Methoden für Synchronize
+ procedure TPrexeThreaded.UpdateListBox;
+ begin
+   if Assigned(FListBox) then
+     FListBox.Items[FListBox.Items.Count - 1] := FTempString;
+ end;
+
+ procedure TPrexeThreaded.AddListBoxLine;
+ begin
+   if Assigned(FListBox) then listboxaddscroll(FListBox, '');
+ end;
+
+
+
+
+ // ----- Thread Execute -----
+ procedure TPrexeThreaded.Execute;
+ const
+   BufferSize = 2048;
+ var
+   pr: TProcess;
+   buf: array[0..BufferSize-1] of char;
+   bytesRead, cPos, i, StartCount, xpos: Integer;
+   su, sm: AnsiString;
+ begin
+   FResult := '';
+   xpos := 0;
+   FFinished := False;
+
+   // Anzahl der Zeilen vor Thread-Start merken
+  // Brauchen eine leere Zeile am anfang
+
+
+   // Startzeile in ListBox
+   if Assigned(FListBox) then
+     begin
+     Synchronize(@AddListBoxLine);
+     StartCount := FListBox.Items.Count-1;
+     end;
+
+
+
+   pr := TProcess.Create(nil);
+   try
+     pr.Executable := FCmd;
+     pr.Options := [poUsePipes, poStderrToOutPut, poDefaultErrorMode];
+     pr.PipeBufferSize := BufferSize;
+
+     for i := 0 to High(FParams) do
+       pr.Parameters.Add(FParams[i]);
+
+     pr.Execute;
+
+     while pr.Running do
+     begin
+       Sleep(50); // CPU schonen
+
+       bytesRead := pr.Output.Read(buf, BufferSize);
+       cPos := 0;
+
+       repeat
+         su := '';
+         // Alle druckbaren Zeichen sammeln
+         while (cPos < bytesRead) and (buf[cPos] > #31) do
+         begin
+           su := su + buf[cPos];
+           Inc(cPos);
+         end;
+
+         if su <> '' then
+         begin
+           if Assigned(FListBox) then
+           begin
+             sm := FListBox.Items[FListBox.Items.Count - 1];
+             Insert(su, sm, xpos + 1);
+             Inc(xpos, Length(su));
+             Delete(sm, xpos + 1, Length(su));
+             FTempString := sm;
+             if not terminated then Synchronize(@UpdateListBox);
+           end;
+         end;
+
+         // Sonderzeichen verarbeiten
+         if (cPos < bytesRead) then
+         begin
+           case buf[cPos] of
+             #10: begin // LF
+               Inc(cPos); xpos := 0;
+               if Assigned(FListBox) then
+                 if not terminated then Synchronize(@AddListBoxLine);
+             end;
+             #13: begin // CR
+               Inc(cPos); xpos := 0;
+             end;
+             #8: begin // Backspace
+               Inc(cPos); Dec(xpos);
+               if xpos < 0 then xpos := 0;
+             end;
+           end;
+         end else
+           Inc(cPos);
+
+       until cPos >= bytesRead;
+
+       // Thread abbrechen, falls Flag gesetzt
+       if terminated then
+       begin
+         pr.Terminate(0);
+         Sleep(500);
+         if pr.Running then
+           fpKill(pr.ProcessID, SIGKILL);
+         Exit;
+       end;
+     end;
+
+   finally
+     // Nur die neuen Zeilen in FResult speichern
+     if Assigned(FListBox) then
+     begin
+       FResult := '';
+       for i := StartCount to FListBox.Items.Count - 1 do
+         FResult := FResult + FListBox.Items[i] + sLineBreak;
+     end;
+     FFinished := True; // Flag setzen
+     pr.Free;
+   end;
+ end;
+
+
+
+
+ function PrexeThreadedBash(command: AnsiString; box: TListBox): AnsiString;
+var
+  th: TPrexeThreaded;
+begin
+  if terminate_all then
+    Exit('');
+
+  // Thread starten
+  th := TPrexeThreaded.Create('bash', ['-c', command], box);
+
+  // Polling-Schleife, GUI bleibt aktiv
+  while not th.Finished do
+  begin
+    Sleep(20);
+    Application.ProcessMessages;
+    if terminate_all then th.Terminate;
+  end;
+  Result := th.ResultText;
+  th.Free;
+end;
+
 
 
 
@@ -1375,8 +1572,8 @@ begin
 
     until (toread = 0);
 
-     info := Format('%d MB  speed: %.1f MB/sec  ETA: %s', [all div 1000000, bps / 1000,'0 seconds']);
-     Listboxupdate(ListBox, info);
+    info := Format('%d MB  speed: %.1f MB/sec  ETA: %s', [all div 1000000, bps / 1000, '0 seconds']);
+    Listboxupdate(ListBox, info);
 
     makeImageEnd := GetTickCount64;
     ListBox.Items.Add(IntToStr(all) + ' of ' + IntToStr(tocopy) + ' bytes copied in ' + ms2t(makeImageEnd - makeImageStart));
@@ -1725,8 +1922,8 @@ begin
             form1.ProgressBar1.Position := fin.Position * 1000 div fin.Size;
           status := Format(' %.1f MB  %1f MB/s  ETA %s', [fin.Position / 1048576, speedMBs, etaStr]);
           box.Items[lastline] := status;
-       end;
-         Application.ProcessMessages;
+        end;
+        Application.ProcessMessages;
       end;
 
 

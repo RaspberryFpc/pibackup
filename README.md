@@ -10,11 +10,6 @@ Backups are safe, flexible, and can be restored directly from `.img` or `.img.zs
 
 ---
 
-## Version
-**v1.5.3**
-
----
-
 ## Main Features
 - Simple graphical user interface (GUI)  
 - No installation required – runs directly  
