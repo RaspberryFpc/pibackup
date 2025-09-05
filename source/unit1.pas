@@ -657,8 +657,7 @@ begin
     // check filesystem
     runbash('/sbin/partprobe ' + mountedpartition2.LoopDevice);
     PrexeThreadedBash('/sbin/e2fsck -fy ' + mountedpartition2.LoopDevice, Listbox1);
-    fpchown(filename, 1000, 1000);
-    fpchmod(filename, &755);
+
 
     Listboxaddscroll(listbox1, 'image-size - root only: ' + IntToStr(mbrwork.PartitionEntries[2].PartitionSize * 512) + ' bytes');
     Listboxaddscroll(listbox1, 'image-size - all: ' + IntToStr(FileSize(filename)) + ' bytes');
@@ -672,7 +671,8 @@ begin
     ClearEmptyBlocks(listbox1, mountedPartition1);
     ClosePartition(mountedPartition1, ListBox1);
 
-
+    fpchown(filename, 1000, 1000);
+    fpchmod(filename, &755);
 
 
     if (not terminate_all) and (CheckBox1.Checked) then
@@ -688,6 +688,9 @@ begin
     on E: Exception do
       Listboxaddscroll(listbox1, 'Error: ' + E.Message);
   end;
+
+  fpchown(filename  + '.zst', 1000, 1000);
+  fpchmod(filename  + '.zst', &755);
 
   Listboxaddscroll(listbox1, starline('all done', 80));
   Listboxaddscroll(listbox1, '');
