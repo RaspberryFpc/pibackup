@@ -540,7 +540,7 @@ var
   deststream: TFileStream;
   mbrwork: TMbr;
   sectorsperblock, p, p1: integer;
-  command:string;
+  command,dirpath:string;
 
 begin
   if ButtonCreateImage.Caption = 'cancel' then
@@ -671,8 +671,13 @@ begin
     ClearEmptyBlocks(listbox1, mountedPartition1);
     ClosePartition(mountedPartition1, ListBox1);
 
+   dirpath := ExtractFilePath(filename);
+   fpchown(dirpath, 1000, 1000);
+   fpchmod(dirpath, &777);
+
+
     fpchown(filename, 1000, 1000);
-    fpchmod(filename, &755);
+    fpchmod(filename, &666);
 
 
     if (not terminate_all) and (CheckBox1.Checked) then
@@ -689,8 +694,13 @@ begin
       Listboxaddscroll(listbox1, 'Error: ' + E.Message);
   end;
 
+
+
+
+
+
   fpchown(filename  + '.zst', 1000, 1000);
-  fpchmod(filename  + '.zst', &755);
+  fpchmod(filename  + '.zst', &666);
 
   Listboxaddscroll(listbox1, starline('all done', 80));
   Listboxaddscroll(listbox1, '');
