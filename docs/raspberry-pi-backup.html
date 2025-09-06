@@ -19,7 +19,7 @@
     "name": "pibackup",
     "operatingSystem": "Linux",
     "applicationCategory": "Utility",
-    "softwareVersion": "1.5.3",
+    "softwareVersion": "1.5.4",
     "url": "https://raspberryfpc.github.io/pibackup/",
     "description": "pibackup – Sicheres Backup & Restore für Raspberry Pi Systeme. Erstelle komprimierte Images mit Zstandard und stelle sie flexibel wieder her.",
     "offers": {
@@ -142,7 +142,7 @@
         <div class="feature-box"><i class="fas fa-compress-alt"></i><span class="sr-only">Shrink Icon</span><h2>Automatic Shrinking</h2><p>The root partition is automatically resized to its minimum size.</p></div>
         <div class="feature-box"><i class="fas fa-file-archive"></i><span class="sr-only">Compression Icon</span><h2>Zstandard Compression</h2><p>Efficient .img.zst files for space-saving backups.</p></div>
         <div class="feature-box"><i class="fas fa-redo"></i><span class="sr-only">Restore Icon</span><h2>Safe Restore</h2><p>Partitions are restored correctly without affecting other partitions.</p></div>
-        <div class="feature-box"><i class="fas fa-sliders-h"></i><span class="sr-only">Slider Icon</span><h2>Flexible Size</h2><p>Partition sizes can be adjusted via slider after restore.</p></div>
+        <div class="feature-box"><i class="fas fa-sliders-h"></i><span class="sr-only">Slider Icon</span><h2>Flexible Size</h2><p>Root partition size can be adjusted via slider after restore.</p></div>
         <div class="feature-box"><i class="fas fa-key"></i><span class="sr-only">UUID Icon</span><h2>Change UUID</h2><p>You can optionally change the target device UUID during restore.</p></div>
       </div>
 
@@ -165,7 +165,7 @@
           <li>Select the target device (Partitions 1 and 2 will be overwritten; Partitions 3 and 4 remain unless checkbox is enabled).</li>
           <li>Optionally: change the UUID of the target device.</li>
           <li>Grid preview shows the partitions after restore.</li>
-          <li>By default, each partition is set to maximum size. You can adjust sizes via slider.</li>
+          <li>By default, the root partition is set to maximum size. You can adjust sizes via slider.</li>
           <li>Start restoration and monitor progress.</li>
         </ol>
       </div>
