@@ -160,3 +160,17 @@ This way you always have a ready-to-use **recovery environment** with GUI availa
 
 In case your main system no longer boots, you will have a ready-to-use **recovery environment** with GUI,  
 allowing you to restore your backups to any SD card, SSD or HDD.
+
+## Other Projects by the Author
+
+- [**raspberry-udp_audio_receiver**](https://github.com/RaspberryFpc/raspberry-udp_audio_receiver)  
+  Network audio receiver (UDP) with direct ALSA output and very low latency.
+
+- [**DS18B20-FPC-Pi-GUI**](https://github.com/RaspberryFpc/DS18B20-FPC-Pi-GUI)  
+  GUI tool to read DS18B20 temperature sensors with linearization for high accuracy.
+
+- [**RaspberryPi-BME280-GUI**](https://github.com/RaspberryFpc/RaspberryPi-BME280-GUI)  
+  Complete GUI application for accessing the BME280 I²C sensor using Free Pascal.
+
+- [**RaspberryPi-GPIOv2-FPC**](https://github.com/RaspberryFpc/RaspberryPi-GPIOv2-FPC)  
+  Simple and fast Pascal unit for controlling GPIO pins via the Linux GPIO character device interface.
