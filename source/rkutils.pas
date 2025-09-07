@@ -111,32 +111,8 @@ type
   end;
 
 
-  type
-  TPrexeThreaded = class(TThread)
-  private
-    FCmd: AnsiString;
-    FParams: array of string;
-    FListBox: TListBox;
-    FResult: AnsiString;
-    FTempString: AnsiString;
-    FFinished: Boolean;
-    procedure UpdateListBox;
-    procedure AddListBoxLine;
-  protected
-    procedure Execute; override;
-  public
-    constructor Create(const Cmd: AnsiString; Params: array of string; ListBox: TListBox);
-    property ResultText: AnsiString read FResult;
-    property Finished: Boolean read FFinished;
-  end;
-
-
-
-
 function statvfs(path: pchar; var buf: TStatVFS): cint; cdecl; external 'c';
 function runbash(command: ansistring): string;
-function prexe(cmdl: ansistring; parameter: array of string; box: tlistbox): ansistring;
-function Prexebash(command: ansistring; box: tlistbox): ansistring;
 function padleft(s: string; Count: integer): string;
 function GetSecondField(const s: string): string;
 function IsProgInstalled(progname: string): boolean;
@@ -154,7 +130,6 @@ function getStringAfterKeyword(s, keyword: ansistring): string;
 function RunsAsRoot: boolean;
 function is_mounted(mount: string; var mountpoint: string; var device: string): boolean;
 function LoopDeviceExists(const Device: string): boolean;
-
 procedure Listboxaddscroll(listbox: tlistbox; item: string);
 procedure getDrives(sl: TStrings);
 procedure ReplacePartuuidinmbr(device: string; NewSignature: dword);
@@ -170,7 +145,7 @@ procedure UnmountOnly(const Mounted: TMountedPartition; ListBox: TListBox);
 procedure RemountPartition(const Mounted: TMountedPartition; ListBox: TListBox);
 procedure ClosePartition(var Mounted: TMountedPartition; ListBox: TListBox);
 procedure EnsureEnoughSpace(const FilePath: string; NewSize: int64);
-function  PrexeThreadedbash(command: AnsiString; box: TListBox): AnsiString;
+
 
 
 
@@ -184,15 +159,13 @@ uses zstd, unit1;
 const
 
   puffersize = 48;
-  prexeBytesToRead = 2048;
+//  prexeBytesToRead = 2048;
 
 var
   ValHistory: array[0..PufferSize - 1] of int64;
   TimeHistory: array[0..PufferSize - 1] of uint64;
   pufferindex: integer;
-   cBuffer: array[0..prexeBytesToRead - 1] of char;
-  cbufferpos, bytesread: integer;
-  su, sm: ansistring;
+
 
 
 
@@ -239,7 +212,7 @@ begin
 
   // Partition mounten
   RunCommand('mount -t auto ' + loopDev + ' "' + MountPoint + '"', s);
-  listboxaddscroll(ListBox, '✓ Mounted partition ' + IntToStr(PartitionNumber) + ' at ' + MountPoint + ' (' + loopDev + ')');
+  listboxaddscroll(ListBox, 'Mounted partition ' + IntToStr(PartitionNumber) + ' at ' + MountPoint + ' (' + loopDev + ')');
 end;
 
 
@@ -261,7 +234,7 @@ begin
       ForceDirectories(Mounted.MountPoint);
 
     RunCommand('mount -t auto ' + Mounted.LoopDevice + ' ' + Mounted.MountPoint, s);
-    listboxaddscroll(ListBox, '✓ Remounted partition at ' + Mounted.MountPoint + ' (' + Mounted.LoopDevice + ')');
+    listboxaddscroll(ListBox, 'Remounted partition at ' + Mounted.MountPoint + ' (' + Mounted.LoopDevice + ')');
   end;
 end;
 
@@ -306,9 +279,9 @@ begin
     if IsEmpty then
     begin
       if RemoveDir(Current) then
-        listboxaddscroll(ListBox, '✓ Removed empty mount directory: ' + Current)
+        listboxaddscroll(ListBox, 'Removed empty mount directory: ' + Current)
       else
-        listboxaddscroll(ListBox, '⚠ Failed to remove: ' + Current);
+        listboxaddscroll(ListBox, 'Failed to remove: ' + Current);
       // nächstes Level hoch
       Current := ExtractFilePath(Current);
       Current := ExcludeTrailingPathDelimiter(Current);
@@ -353,19 +326,19 @@ begin
 
   // Final sync
   if not RunCommand('sync', s) then
-    listboxaddscroll(ListBox, '⚠ Sync failed: ' + s);
+    listboxaddscroll(ListBox, 'Sync failed: ' + s);
 
   // Prüfen ob Loopdevice wirklich verschwunden ist
   if (Mounted.LoopDevice <> '') then
   begin
     if not LoopDeviceExists(Mounted.LoopDevice) then
     begin
-      listboxaddscroll(ListBox, '✓ Loop device released: ' + Mounted.LoopDevice);
+      listboxaddscroll(ListBox, 'Loop device released: ' + Mounted.LoopDevice);
       Mounted.LoopDevice := '';
       Mounted.MountPoint := '';
     end
     else
-      listboxaddscroll(ListBox, '⚠ Loop device still present: ' + Mounted.LoopDevice);
+      listboxaddscroll(ListBox, 'Loop device still present: ' + Mounted.LoopDevice);
   end
   else
     Mounted.MountPoint := '';
@@ -491,13 +464,11 @@ begin
     Exit;
   end;
 
-  //listboxaddscroll(listbox, 'Trying to unmount: ' + mountpt + ' (' + dev + ')');
 
   for i := 0 to 4 do
   begin
     if not is_mounted(mount, dev, mountpt) then
     begin
-      //      listboxaddscroll(listbox, 'Unmounted successfully.');
       Exit;
     end;
 
@@ -533,294 +504,6 @@ begin
   else
     listboxaddscroll(listbox, 'Successfully unmounted');
 end;
-
-
-
-
-function prexe(cmdl: ansistring; parameter: array of string; box: tlistbox): ansistring;
-const
-  prexeBytesToRead = 2048;
-var
-  cBuffer: array[0..prexeBytesToRead - 1] of char;
-  cbufferpos: integer;
-  xpos, bytesread: integer;
-  su, sm: ansistring;
-  n, x: integer;
-  done: boolean;
-  Count: integer;
-  pr: tprocess;
-begin
-  Result := '';
-  Count := box.items.Count;
-  Listboxaddscroll(box, '');
-
-  Pr := TProcess.Create(nil);
-  pr.PipeBufferSize := prexeBytesToRead;
-  pr.Executable := cmdl;
-
-  for n := 0 to length(parameter) - 1 do pr.Parameters.Add(parameter[n]);
-
-  Pr.Options := [poUsepipes, poStderrToOutPut, poDefaultErrorMode];
-
-
-  Pr.Execute;
-  Listboxaddscroll(box, '');
-  xpos := 0;
-
-  while pr.Running do
-  begin
-    sleep(50);
-    //   application.ProcessMessages;
-    CheckSynchronize(10);
-
-    bytesread := Pr.Output.Read(cbuffer, prexebytestoread);
-    cbufferpos := 0;
-    repeat
-      su := '';
-      done := False;
-
-      while (cbufferpos < bytesread) and (cbuffer[cbufferpos] > #31) do
-
-      begin
-        su := su + cbuffer[cbufferpos];
-        Inc(cbufferpos);
-      end;
-      if su > '' then
-      begin
-        sm := box.items[box.items.Count - 1];
-        insert(su, sm, xpos + 1);
-        Inc(xpos, length(su));
-        Delete(sm, xpos + 1, length(su));
-        Listboxupdate(box, sm);
-        done := True;
-      end;
-
-      if (cbufferpos < bytesread) then
-        if cbuffer[cbufferpos] = #10 then
-        begin
-          Inc(cBufferpos);
-          Listboxaddscroll(box, '');
-          xpos := 0;
-          done := True;
-        end;
-      if (cbufferpos < bytesread) then
-        if cbuffer[cbufferpos] = #8 then
-        begin
-          Inc(cBufferpos);
-          Dec(xpos);
-          if xpos < 0 then xpos := 0;
-          done := True;
-        end;
-      if (cbufferpos < bytesread) then
-        if cbuffer[cbufferpos] = #13 then
-        begin
-          Inc(cBufferpos);
-          xpos := 0;
-          done := True;
-        end;
-
-      if done = False then Inc(cbufferpos);
-
-    until cbufferpos >= bytesread;            // testen was richtig ist  until cbufferpos > bytesread;
-
-    application.ProcessMessages;
-    if terminate_all then
-    begin
-      pr.Terminate(0);
-      sleep(1000);
-      if Pr.Running then
-        fpKill(Pr.ProcessID, SIGKILL);
-    end;
-  end;
-
-  if box.items.Count > Count then
-    for x := Count to box.items.Count - 1 do
-      Result := Result + box.items[x] + #10;
-
-end;
-
-
-function Prexebash(command: ansistring; box: tlistbox): ansistring;
-begin
-  if not terminate_all then
-  begin
-    Result := prexe('bash', ['-c', command], box);
-  end
-  else
-    Result := '';
-end;
-
-
-//  Classes, SysUtils, Process, LCLProc, Controls, StdCtrls;
-
-
- constructor TPrexeThreaded.Create(const Cmd: AnsiString; Params: array of string; ListBox: TListBox);
-begin
-  inherited Create(True); // Thread suspendiert
-  FCmd := Cmd;
-  FParams := Copy(Params);
-  FListBox := ListBox;
-  FResult := '';
-  FFinished := False; // zurücksetzen beim Start
-  FreeOnTerminate := False;
-  Start; // Thread starten
-end;
-
-
-
- // GUI-Methoden für Synchronize
- procedure TPrexeThreaded.UpdateListBox;
- begin
-   if Assigned(FListBox) then
-     FListBox.Items[FListBox.Items.Count - 1] := FTempString;
- end;
-
- procedure TPrexeThreaded.AddListBoxLine;
- begin
-   if Assigned(FListBox) then listboxaddscroll(FListBox, '');
- end;
-
-
-
-
- // ----- Thread Execute -----
- procedure TPrexeThreaded.Execute;
- const
-   BufferSize = 2048;
- var
-   pr: TProcess;
-   buf: array[0..BufferSize-1] of char;
-   bytesRead, cPos, i, StartCount, xpos: Integer;
-   su, sm: AnsiString;
- begin
-   FResult := '';
-   xpos := 0;
-   FFinished := False;
-
-   // Anzahl der Zeilen vor Thread-Start merken
-  // Brauchen eine leere Zeile am anfang
-
-
-   // Startzeile in ListBox
-   if Assigned(FListBox) then
-     begin
-     Synchronize(@AddListBoxLine);
-     StartCount := FListBox.Items.Count-1;
-     end;
-
-
-
-   pr := TProcess.Create(nil);
-   try
-     pr.Executable := FCmd;
-     pr.Options := [poUsePipes, poStderrToOutPut, poDefaultErrorMode];
-     pr.PipeBufferSize := BufferSize;
-
-     for i := 0 to High(FParams) do
-       pr.Parameters.Add(FParams[i]);
-
-     pr.Execute;
-
-     while pr.Running do
-     begin
-       Sleep(50); // CPU schonen
-
-       bytesRead := pr.Output.Read(buf, BufferSize);
-       cPos := 0;
-
-       repeat
-         su := '';
-         // Alle druckbaren Zeichen sammeln
-         while (cPos < bytesRead) and (buf[cPos] > #31) do
-         begin
-           su := su + buf[cPos];
-           Inc(cPos);
-         end;
-
-         if su <> '' then
-         begin
-           if Assigned(FListBox) then
-           begin
-             sm := FListBox.Items[FListBox.Items.Count - 1];
-             Insert(su, sm, xpos + 1);
-             Inc(xpos, Length(su));
-             Delete(sm, xpos + 1, Length(su));
-             FTempString := sm;
-             if not terminated then Synchronize(@UpdateListBox);
-           end;
-         end;
-
-         // Sonderzeichen verarbeiten
-         if (cPos < bytesRead) then
-         begin
-           case buf[cPos] of
-             #10: begin // LF
-               Inc(cPos); xpos := 0;
-               if Assigned(FListBox) then
-                 if not terminated then Synchronize(@AddListBoxLine);
-             end;
-             #13: begin // CR
-               Inc(cPos); xpos := 0;
-             end;
-             #8: begin // Backspace
-               Inc(cPos); Dec(xpos);
-               if xpos < 0 then xpos := 0;
-             end;
-           end;
-         end else
-           Inc(cPos);
-
-       until cPos >= bytesRead;
-
-       // Thread abbrechen, falls Flag gesetzt
-       if terminated then
-       begin
-         pr.Terminate(0);
-         Sleep(500);
-         if pr.Running then
-           fpKill(pr.ProcessID, SIGKILL);
-         Exit;
-       end;
-     end;
-
-   finally
-     // Nur die neuen Zeilen in FResult speichern
-     if Assigned(FListBox) then
-     begin
-       FResult := '';
-       for i := StartCount to FListBox.Items.Count - 1 do
-         FResult := FResult + FListBox.Items[i] + sLineBreak;
-     end;
-     FFinished := True; // Flag setzen
-     pr.Free;
-   end;
- end;
-
-
-
-
- function PrexeThreadedBash(command: AnsiString; box: TListBox): AnsiString;
-var
-  th: TPrexeThreaded;
-begin
-  if terminate_all then
-    Exit('');
-
-  // Thread starten
-  th := TPrexeThreaded.Create('bash', ['-c', command], box);
-
-  // Polling-Schleife, GUI bleibt aktiv
-  while not th.Finished do
-  begin
-    Sleep(20);
-    Application.ProcessMessages;
-    if terminate_all then th.Terminate;
-  end;
-  Result := th.ResultText;
-  th.Free;
-end;
-
-
 
 
 

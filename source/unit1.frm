@@ -12,9 +12,9 @@ object Form1: TForm1
   OnClose = FormClose
   OnCreate = FormCreate
   object Edit1: TEdit
-    Left = 111
-    Height = 32
-    Top = 40
+    Left = 113
+    Height = 30
+    Top = 82
     Width = 608
     ParentFont = False
     TabOrder = 0
@@ -22,12 +22,12 @@ object Form1: TForm1
     OnDblClick = Edit1DblClick
   end
   object ComboBox1: TComboBox
-    Left = 112
-    Height = 32
-    Top = 5
+    Left = 114
+    Height = 30
+    Top = 48
     Width = 608
     Anchors = [akLeft]
-    ItemHeight = 28
+    ItemHeight = 22
     TabOrder = 1
     Text = 'Laufwerk'
     OnChange = GridUpdate
@@ -35,9 +35,9 @@ object Form1: TForm1
   object Button2: TButton
     AnchorSideTop.Control = ComboBox1
     AnchorSideTop.Side = asrCenter
-    Left = 728
+    Left = 730
     Height = 30
-    Top = 6
+    Top = 48
     Width = 126
     Caption = 'reload'
     TabOrder = 2
@@ -46,25 +46,25 @@ object Form1: TForm1
   object Button4: TButton
     AnchorSideTop.Control = Edit1
     AnchorSideTop.Side = asrCenter
-    Left = 728
+    Left = 730
     Height = 30
-    Top = 41
+    Top = 82
     Width = 126
     Caption = 'select'
     TabOrder = 3
     OnClick = Edit1DblClick
   end
   object Label2: TLabel
-    Left = 31
+    Left = 33
     Height = 22
-    Top = 8
+    Top = 50
     Width = 47
     Caption = 'Device'
   end
   object Label3: TLabel
-    Left = 30
+    Left = 32
     Height = 22
-    Top = 42
+    Top = 84
     Width = 68
     Caption = 'image file'
   end
@@ -77,10 +77,11 @@ object Form1: TForm1
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 8
-    Height = 197
-    Top = 360
+    Height = 181
+    Top = 376
     Width = 995
     Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Top = 3
     BorderSpacing.Bottom = 4
     ClickOnSelChange = False
     ExtendedSelect = False
@@ -101,7 +102,7 @@ object Form1: TForm1
     AnchorSideTop.Control = Edit1
     Left = 8
     Height = 129
-    Top = 74
+    Top = 116
     Width = 995
     BorderSpacing.Top = 34
     ColCount = 6
@@ -124,10 +125,11 @@ object Form1: TForm1
   object RadioButton1: TRadioButton
     AnchorSideTop.Control = StringGrid1
     AnchorSideTop.Side = asrBottom
-    Left = 182
-    Height = 27
-    Top = 206
-    Width = 254
+    Left = 111
+    Height = 28
+    Top = 8
+    Width = 248
+    Anchors = [akLeft]
     BorderSpacing.Top = 3
     Caption = 'Create System Backup (Image)'
     Checked = True
@@ -141,10 +143,10 @@ object Form1: TForm1
     AnchorSideLeft.Control = RadioButton1
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = RadioButton1
-    Left = 466
-    Height = 27
-    Top = 206
-    Width = 255
+    Left = 389
+    Height = 28
+    Top = 8
+    Width = 249
     BorderSpacing.Left = 30
     Caption = 'Restore Backup or other Image'
     Font.Style = [fsBold]
@@ -154,13 +156,13 @@ object Form1: TForm1
   end
   object Panel1: TPanel
     AnchorSideLeft.Control = StringGrid1
-    AnchorSideTop.Control = RadioButton1
+    AnchorSideTop.Control = StringGrid1
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = StringGrid1
     AnchorSideRight.Side = asrBottom
     Left = 8
     Height = 100
-    Top = 237
+    Top = 249
     Width = 995
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Top = 4
@@ -170,9 +172,9 @@ object Form1: TForm1
     TabOrder = 8
     object CheckBox_RemoveSSH: TCheckBox
       Left = 15
-      Height = 27
+      Height = 28
       Top = 54
-      Width = 118
+      Width = 112
       Caption = 'remove SSH'
       Color = clDefault
       ParentColor = False
@@ -182,9 +184,9 @@ object Form1: TForm1
       AnchorSideTop.Control = CheckBox_RemoveSSH
       AnchorSideTop.Side = asrCenter
       Left = 136
-      Height = 27
+      Height = 28
       Top = 54
-      Width = 135
+      Width = 129
       Caption = 'Remove DHCP'
       TabOrder = 1
     end
@@ -193,8 +195,8 @@ object Form1: TForm1
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = ButtonCreateImage
       Left = 120
-      Height = 32
-      Top = 9
+      Height = 30
+      Top = 10
       Width = 724
       Anchors = [akLeft, akRight]
       BorderSpacing.Left = 5
@@ -220,9 +222,9 @@ object Form1: TForm1
       AnchorSideTop.Control = CheckBox_RemoveSSH
       AnchorSideTop.Side = asrCenter
       Left = 272
-      Height = 27
+      Height = 28
       Top = 54
-      Width = 199
+      Width = 193
       Caption = 'Compress Image   Level'
       Checked = True
       State = cbChecked
@@ -232,8 +234,8 @@ object Form1: TForm1
       AnchorSideTop.Control = CheckBox_RemoveSSH
       AnchorSideTop.Side = asrCenter
       Left = 464
-      Height = 32
-      Top = 51
+      Height = 31
+      Top = 53
       Width = 50
       Alignment = taCenter
       MaxValue = 19
@@ -248,7 +250,7 @@ object Form1: TForm1
       AnchorSideRight.Side = asrBottom
       Left = 852
       Height = 30
-      Top = 52
+      Top = 53
       Width = 126
       Anchors = [akTop, akRight]
       BorderSpacing.Right = 15
@@ -261,9 +263,9 @@ object Form1: TForm1
       AnchorSideTop.Control = Edit2
       AnchorSideTop.Side = asrCenter
       Left = 40
-      Height = 27
-      Top = 12
-      Width = 86
+      Height = 28
+      Top = 11
+      Width = 80
       Caption = 'Exclude'
       Checked = True
       State = cbChecked
@@ -272,9 +274,9 @@ object Form1: TForm1
     object CheckBox_Delimg: TCheckBox
       AnchorSideTop.Control = CheckBox_RemoveSSH
       Left = 520
-      Height = 27
+      Height = 28
       Top = 54
-      Width = 213
+      Width = 207
       Caption = 'If compressed delete .img'
       Checked = True
       State = cbChecked
@@ -291,10 +293,10 @@ object Form1: TForm1
     AnchorSideBottom.Side = asrBottom
     Left = 8
     Height = 100
-    Top = 238
+    Top = 249
     Width = 995
     Anchors = [akTop, akLeft, akRight]
-    BorderSpacing.Top = 35
+    BorderSpacing.Top = 4
     BevelInner = bvLowered
     ClientHeight = 100
     ClientWidth = 995
@@ -325,10 +327,10 @@ object Form1: TForm1
     object CheckBoxChangeDeviceID: TCheckBox
       AnchorSideTop.Control = CheckBox_DelPartition3
       AnchorSideTop.Side = asrCenter
-      Left = 467
-      Height = 27
-      Top = 55
-      Width = 149
+      Left = 470
+      Height = 28
+      Top = 54
+      Width = 143
       Anchors = [akTop]
       Caption = 'change device id'
       TabOrder = 1
@@ -338,8 +340,8 @@ object Form1: TForm1
       AnchorSideTop.Control = CheckBox_DelPartition3
       AnchorSideTop.Side = asrCenter
       Left = 622
-      Height = 32
-      Top = 52
+      Height = 30
+      Top = 53
       Width = 104
       Alignment = taCenter
       Anchors = [akTop]
@@ -351,9 +353,9 @@ object Form1: TForm1
       AnchorSideTop.Control = CheckBox_DelPartition3
       AnchorSideTop.Side = asrCenter
       Left = 248
-      Height = 27
-      Top = 55
-      Width = 150
+      Height = 28
+      Top = 54
+      Width = 144
       Caption = 'delete partition 4'
       TabOrder = 3
       OnChange = GridUpdate
@@ -361,9 +363,9 @@ object Form1: TForm1
     object CheckBox_DelPartition3: TCheckBox
       AnchorSideTop.Side = asrCenter
       Left = 62
-      Height = 27
-      Top = 55
-      Width = 157
+      Height = 28
+      Top = 54
+      Width = 151
       Anchors = [akLeft]
       Caption = 'delete  partition 3 '
       DoubleBuffered = False
@@ -387,13 +389,13 @@ object Form1: TForm1
     end
   end
   object BtSaveLog: TButton
-    AnchorSideTop.Control = RadioButton1
+    AnchorSideTop.Control = Button4
     AnchorSideTop.Side = asrCenter
     AnchorSideRight.Control = StringGrid1
     AnchorSideRight.Side = asrBottom
     Left = 904
     Height = 30
-    Top = 204
+    Top = 82
     Width = 99
     Anchors = [akTop, akRight]
     Caption = 'Save Log'
@@ -408,11 +410,11 @@ object Form1: TForm1
     AnchorSideRight.Side = asrBottom
     Left = 9
     Height = 20
-    Top = 340
+    Top = 353
     Width = 994
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 1
-    BorderSpacing.Top = 137
+    BorderSpacing.Top = 108
     ParentColor = False
     ParentFont = False
     Smooth = True
@@ -422,15 +424,15 @@ object Form1: TForm1
   end
   object SaveDialog1: TSaveDialog
     DefaultExt = '.img'
-    Left = 535
-    Top = 14
+    Left = 537
+    Top = 56
   end
   object OpenDialog1: TOpenDialog
-    Left = 584
-    Top = 14
+    Left = 586
+    Top = 56
   end
   object OpenDialog2: TOpenDialog
-    Left = 632
-    Top = 8
+    Left = 634
+    Top = 50
   end
 end

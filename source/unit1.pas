@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, Grids,
   Process, inifiles, fileutil, lazutf8, Unix, baseunix, LCLIntf, rkutils, zstd,
   LCLType, MaskEdit, ExtCtrls, ComCtrls, excludeParser, DateUtils, fpjson,
-  jsonparser, Types;
+  jsonparser, Types,exethread;
 
 type
   partitioninfo = record
@@ -103,7 +103,7 @@ implementation
 { TForm1 }
 
 const
-  appname = 'PiBackup  v1.5.4';
+  appname = 'PiBackup  v1.5.5';
   ininame = 'pibackup.ini';
   p2mpoint = '/pi_images/p2_pibackup_img';
   p1mpoint = '/pi_images/p1_pibackup_img';
@@ -422,21 +422,12 @@ begin
 end;
 
 
-
 procedure TForm1.FormActivate(Sender: TObject);
 begin
   if firstaktiv then
     installmissingroutines;
   firstaktiv := False;
 end;
-
-
-//procedure TForm1.CompressWithProgress(const infile: string; level: integer; LBox: TListBox);
-//begin
-//  Listboxaddscroll(listbox1, Starline('compressing with zstd', 80));
-//  CompressFileZstdWithProgress(edit1.Text, edit1.Text + '.zst', spinedit1.Value, 4, True, Listbox1);
-//  Listboxaddscroll(listbox1, 'filesize is now: ' + FileSizeAsString(filesize(infile + '.zst'), False) + '  /  ' + FileSizeAsString(filesize(infile + '.zst'), True));
-//end;
 
 
 procedure TForm1.FormCreate(Sender: TObject);
@@ -496,6 +487,8 @@ begin
   Delete(user, Length(user), 1);
   gridupdate(self);
 end;
+
+
 
 
 
@@ -613,7 +606,7 @@ begin
 
     //s := PrexeBash('/sbin/resize2fs -M -p ' + mountedpartition2.LoopDevice , listbox1);
 
-    s := PrexeThreadedBash('/sbin/resize2fs -M -p ' + mountedpartition2.LoopDevice , listbox1);
+    s := PrexeThreadedBash('/sbin/resize2fs -M -p ' + mountedpartition2.LoopDevice , listbox1,progressbar1,1);
 
 
 
@@ -786,7 +779,7 @@ begin
 
     PrexeThreadedBash('e2fsck -fy ' + par2name, listbox1);
     ListBoxaddscroll(listbox1, 'resize...');
-    s := PrexeThreadedBash('resize2fs ' + par2name, listbox1);
+    s := PrexeThreadedBash('resize2fs ' + par2name, listbox1,progressbar1,1);
 
     ListBoxaddscroll(listbox1, 'partprobe - reloading partition table');
     s := PrexeThreadedBash('partprobe ' + selecteddrive, listbox1);

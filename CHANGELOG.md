@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented in this file.
 
+## [1.5.5] – 2025-09-07
+### Changed  
+- The main function selection buttons have been moved to the top of the form.  
+- The progress bar now updates correctly during resize operations.  
+- All functions for executing external programs have been moved into a separate unit.  
+
 ## [1.5.4] – 2025-09-02
 ### Improved
 - More reliable resource handling and shutdown of background processes.  

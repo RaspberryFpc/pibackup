@@ -132,6 +132,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="Zstd"/>
       </Unit>
+      <Unit>
+        <Filename Value="exethread.pas"/>
+        <FRMtype Value="0"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

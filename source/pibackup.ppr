@@ -8,7 +8,7 @@ uses
   Interfaces, // includes LCL widgetset (Qt in deinem Fall)
   Forms,
   Dialogs,rkutils,
-  unit1;
+  unit1, exethread;
 
 //const
 //  libc = 'c';
