@@ -159,7 +159,7 @@ uses zstd, unit1;
 const
 
   puffersize = 48;
-//  prexeBytesToRead = 2048;
+  //  prexeBytesToRead = 2048;
 
 var
   ValHistory: array[0..PufferSize - 1] of int64;

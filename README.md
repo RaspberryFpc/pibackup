@@ -103,6 +103,7 @@ Categories=Utility;
 - Developed with [CodeTyphon](https://www.pilotlogic.com/)  
 - GUI: Qt5 widgetset  
 - Target: 64-bit ARM Linux  
+- Tested on Pi4 and Pi5 with Trixie and Bookworm (X11)
 
 ### Build from Source
 - Open CodeTyphon IDE  

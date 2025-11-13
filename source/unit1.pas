@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, Grids,
   Process, inifiles, fileutil, lazutf8, Unix, baseunix, LCLIntf, rkutils, zstd,
   LCLType, MaskEdit, ExtCtrls, ComCtrls, excludeParser, DateUtils, fpjson,
-  jsonparser, Types,exethread;
+  jsonparser, Types, exethread;
 
 type
   partitioninfo = record
@@ -83,7 +83,7 @@ type
     procedure GridUpdate(Sender: TObject);
 
   private
-
+    procedure SetBaseThreadCount(Data: PtrInt);
   public
 
   end;
@@ -103,7 +103,7 @@ implementation
 { TForm1 }
 
 const
-  appname = 'PiBackup  v1.5.5';
+  appname = 'PiBackup  v1.5.6';
   ininame = 'pibackup.ini';
   p2mpoint = '/pi_images/p2_pibackup_img';
   p1mpoint = '/pi_images/p1_pibackup_img';
@@ -126,7 +126,47 @@ var
   Destname: ansistring;
   FirstAktiv: boolean = True;
   device: string;
+  basicthreads: integer;
 
+
+function CountThreads: integer;
+var
+  SR: TSearchRec;
+begin
+  Result := 0;
+  if FindFirst('/proc/self/task/*', faDirectory, SR) = 0 then
+  begin
+    repeat
+      if (SR.Name <> '.') and (SR.Name <> '..') then
+        Inc(Result);
+    until FindNext(SR) <> 0;
+    FindClose(SR);
+  end;
+end;
+
+
+procedure TForm1.SetBaseThreadCount(Data: PtrInt);
+begin
+  Basicthreads := CountThreads;
+  // WriteLn('✅ Base threads after event loop start: ', BaseThreadCount);
+end;
+
+
+function WaitForAllThreads(basethreads, TimeoutMS: integer): boolean;
+var
+  SR: TSearchRec;
+  Start: QWord;
+  threadcount: integer;
+begin
+  Start := GetTickCount64;
+  repeat
+    threadcount := CountThreads;
+    if threadcount <= basethreads then
+      Exit(True); // ✅ nur Hauptthreads aktiv
+    Sleep(50);
+  until (GetTickCount64 - Start) > QWord(TimeoutMS);
+  Result := False; // ❌ Timeout erreicht
+end;
 
 
 procedure TForm1.readDeviceInfo(drive: string; var deviceinfo: Tdriveinfo);
@@ -436,6 +476,8 @@ var
   s, speichertdrive: ansistring;
   x, w, h: integer;
 begin
+  Application.QueueAsyncCall(@SetBaseThreadCount, 0);
+
   runcommand('sudo systemctl stop udisks2', s);
   form1.Caption := appname;
   stringGrid1.ColWidths[0] := 80;
@@ -486,8 +528,8 @@ begin
   runcommand('logname', user);
   Delete(user, Length(user), 1);
   gridupdate(self);
-end;
 
+end;
 
 
 
@@ -533,8 +575,7 @@ var
   deststream: TFileStream;
   mbrwork: TMbr;
   sectorsperblock, p, p1: integer;
-  command,dirpath:string;
-
+  command, dirpath: string;
 begin
   if ButtonCreateImage.Caption = 'cancel' then
   begin
@@ -558,7 +599,7 @@ begin
     sourcedrive := copy(sourcedrive, 1, pos(':', sourcedrive) - 1);
     filename := Trim(ChangeFileExt(Edit1.Text, '.img'));
 
-   mp := GetMountPointFromProc(filename);
+    mp := GetMountPointFromProc(filename);
     if (mp = '/') or (mp = '/boot') or (mp = '/boot/firmware') then
       raise Exception.Create('Destination is on a protected system partition: ' + mp);
 
@@ -606,7 +647,8 @@ begin
 
     //s := PrexeBash('/sbin/resize2fs -M -p ' + mountedpartition2.LoopDevice , listbox1);
 
-    s := PrexeThreadedBash('/sbin/resize2fs -M -p ' + mountedpartition2.LoopDevice , listbox1,progressbar1,1);
+    s := PrexeThreadedBash('/sbin/resize2fs -M -p ' + mountedpartition2.LoopDevice, listbox1, progressbar1, 1);
+    progressbar1.Position := progressbar1.Max;
 
 
 
@@ -664,9 +706,9 @@ begin
     ClearEmptyBlocks(listbox1, mountedPartition1);
     ClosePartition(mountedPartition1, ListBox1);
 
-   dirpath := ExtractFilePath(filename);
-   fpchown(dirpath, 1000, 1000);
-   fpchmod(dirpath, &777);
+    dirpath := ExtractFilePath(filename);
+    fpchown(dirpath, 1000, 1000);
+    fpchmod(dirpath, &777);
 
 
     fpchown(filename, 1000, 1000);
@@ -690,10 +732,8 @@ begin
 
 
 
-
-
-  fpchown(filename  + '.zst', 1000, 1000);
-  fpchmod(filename  + '.zst', &666);
+  fpchown(filename + '.zst', 1000, 1000);
+  fpchmod(filename + '.zst', &666);
 
   Listboxaddscroll(listbox1, starline('all done', 80));
   Listboxaddscroll(listbox1, '');
@@ -779,7 +819,7 @@ begin
 
     PrexeThreadedBash('e2fsck -fy ' + par2name, listbox1);
     ListBoxaddscroll(listbox1, 'resize...');
-    s := PrexeThreadedBash('resize2fs ' + par2name, listbox1,progressbar1,1);
+    s := PrexeThreadedBash('resize2fs ' + par2name, listbox1, progressbar1, 1);
 
     ListBoxaddscroll(listbox1, 'partprobe - reloading partition table');
     s := PrexeThreadedBash('partprobe ' + selecteddrive, listbox1);
@@ -857,7 +897,8 @@ begin
   Listboxaddscroll(listbox1, 'The program is shutting down. This may take a moment...');
 
   terminate_all := True;
-  sleep(3000);
+  //sleep(3000);
+  WaitForAllThreads(basicthreads, 15000);
   PrexeThreadedBash('umount ' + device, listbox1);  // optional, wenn es gemountet war
   PrexeThreadedBash('losetup -d ' + device, listbox1);
   PrexeThreadedBash('rm -rf ' + p2mpoint, listbox1);

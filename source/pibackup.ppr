@@ -1,4 +1,4 @@
- program pibackup;
+program pibackup;
 {$mode objfpc}{$H+}
 
 uses
@@ -7,15 +7,17 @@ uses
   {$ENDIF}
   Interfaces, // includes LCL widgetset (Qt in deinem Fall)
   Forms,
-  Dialogs,rkutils,
-  unit1, exethread;
+  Dialogs,
+  rkutils,
+  unit1,
+  exethread;
 
-//const
-//  libc = 'c';
+  //const
+  //  libc = 'c';
 
-//function setenv(name: PChar; value: PChar; overwrite: cint): cint; cdecl; external libc name 'setenv';
+  //function setenv(name: PChar; value: PChar; overwrite: cint): cint; cdecl; external libc name 'setenv';
 
-{$R *.res}
+  {$R *.res}
 
 begin
 
@@ -23,8 +25,7 @@ begin
 
   if not RunsAsRoot then
   begin
-    MessageDlg('Error', 'This program requires root privileges.' + sLineBreak +
-      'Please run it using sudo, su, or as the root user.', mtError, [mbOK], 0);
+    MessageDlg('Error', 'This program requires root privileges.' + sLineBreak + 'Please run it using sudo, su, or as the root user.', mtError, [mbOK], 0);
     Halt(1);
   end;
 
@@ -33,4 +34,3 @@ begin
   Application.CreateForm(TForm1, Form1);
   Application.Run;
 end.
-

@@ -1,18 +1,18 @@
-Unit Zstd;
+unit Zstd;
 
 {$mode objfpc}{$H+}
 
 interface
 
 uses
-  baseunix,stdctrls,rkutils,forms;
+  baseunix, StdCtrls, rkutils, Forms;
 
-procedure CompressFileZstdWithProgress(const InFile, OutFile: string; Level, ThreadCount: integer; UseLongMode: boolean;listbox:Tlistbox);
+procedure CompressFileZstdWithProgress(const InFile, OutFile: string; Level, ThreadCount: integer; UseLongMode: boolean; listbox: Tlistbox);
 
 const
   ZSTD_LIB = 'libzstd.so';
 
-  const
+const
   ZSTD_c_compressionLevel = 100;
   ZSTD_c_nbWorkers = 400;
   ZSTD_c_enableLongDistanceMatching = 160;
@@ -27,43 +27,41 @@ type
 
   TZSTD_inBuffer = record
     src: Pointer;
-    size: NativeUInt;
-    pos: NativeUInt;
+    size: nativeuint;
+    pos: nativeuint;
   end;
   PZSTD_inBuffer = ^TZSTD_inBuffer;
 
   TZSTD_outBuffer = record
     dst: Pointer;
-    size: NativeUInt;
-    pos: NativeUInt;
+    size: nativeuint;
+    pos: nativeuint;
   end;
- PZSTD_outBuffer = ^TZSTD_outBuffer;
+  PZSTD_outBuffer = ^TZSTD_outBuffer;
 
- // === Kompression ===
+// === Kompression ===
 function ZSTD_createCCtx(): TZSTD_CCtx; cdecl; external ZSTD_LIB;
-function ZSTD_freeCCtx(cctx: TZSTD_CCtx): NativeUInt; cdecl; external ZSTD_LIB;
-function ZSTD_CCtx_setParameter(cctx: TZSTD_CCtx; param: cint; value: cint): NativeUInt; cdecl; external ZSTD_LIB;
-function ZSTD_compressStream2(cctx: TZSTD_CCtx; output: PZSTD_outBuffer;
-  input: PZSTD_inBuffer; endOp: Integer): NativeUInt; cdecl; external ZSTD_LIB;
+function ZSTD_freeCCtx(cctx: TZSTD_CCtx): nativeuint; cdecl; external ZSTD_LIB;
+function ZSTD_CCtx_setParameter(cctx: TZSTD_CCtx; param: cint; Value: cint): nativeuint; cdecl; external ZSTD_LIB;
+function ZSTD_compressStream2(cctx: TZSTD_CCtx; output: PZSTD_outBuffer; input: PZSTD_inBuffer; endOp: integer): nativeuint; cdecl; external ZSTD_LIB;
 function ZSTD_initDStream(dstream: TZSTD_DStream): size_t; cdecl; external ZSTD_LIB;
-function ZSTD_versionNumber: Cardinal; cdecl; external ZSTD_LIB;
+function ZSTD_versionNumber: cardinal; cdecl; external ZSTD_LIB;
 
 // === Dekompression ===
 function ZSTD_createDCtx(): TZSTD_DCtx; cdecl; external ZSTD_LIB;
-function ZSTD_freeDCtx(dctx: TZSTD_DCtx): NativeUInt; cdecl; external ZSTD_LIB;
-function ZSTD_decompressStream(dctx: TZSTD_DCtx;
-  var output: TZSTD_outBuffer; var input: TZSTD_inBuffer): NativeUInt; cdecl; external ZSTD_LIB;
+function ZSTD_freeDCtx(dctx: TZSTD_DCtx): nativeuint; cdecl; external ZSTD_LIB;
+function ZSTD_decompressStream(dctx: TZSTD_DCtx; var output: TZSTD_outBuffer; var input: TZSTD_inBuffer): nativeuint; cdecl; external ZSTD_LIB;
 
 // === Fehlerbehandlung ===
-function ZSTD_isError(code: NativeUInt): cint; cdecl; external ZSTD_LIB;
-function ZSTD_getErrorName(code: NativeUInt): PChar; cdecl; external ZSTD_LIB;
+function ZSTD_isError(code: nativeuint): cint; cdecl; external ZSTD_LIB;
+function ZSTD_getErrorName(code: nativeuint): pchar; cdecl; external ZSTD_LIB;
 
 implementation
 
 uses
-  Classes, SysUtils, DateUtils,unit1;
+  Classes, SysUtils, DateUtils, unit1;
 
-function GetCPUCount: Integer;
+function GetCPUCount: integer;
 var
   f: TextFile;
   line: string;
@@ -72,7 +70,7 @@ begin
   AssignFile(f, '/proc/cpuinfo');
   Reset(f);
   try
-    while not Eof(f) do
+    while not EOF(f) do
     begin
       ReadLn(f, line);
       if Pos('processor', line) = 1 then
@@ -87,9 +85,10 @@ end;
 
 
 const
- BuSize = 32 * 1024 * 1024; // 32 MiB für schnellere Verarbeitung
+  BuSize = 32 * 1024 * 1024; // 32 MiB für schnellere Verarbeitung
+
 var
-InBuf, OutBuf: array[0..BuSize - 1] of Byte;
+  InBuf, OutBuf: array[0..BuSize - 1] of byte;
 
 
 
@@ -98,24 +97,24 @@ var
   input, output: record
     src: Pointer;
     size, pos: SizeUInt;
-  end;
+    end;
 
   fIn, fOut: TFileStream;
   cctx: Pointer;
-  readBytes: Integer;
-  totalWritten, fileSize, totalRead: Int64;
+  readBytes: integer;
+  totalWritten, fileSize, totalRead: int64;
   ret: SizeUInt;
   startTime, lastUpdateTime: TDateTime;
-  elapsedSecs, etaSecs, speedMBs: Double;
-  compressionRatio: Double;
+  elapsedSecs, etaSecs, speedMBs: double;
+  compressionRatio: double;
   s: string;
 
 
-  procedure Compressblock(endMode: Cardinal);
+  procedure Compressblock(endMode: cardinal);
   begin
     repeat
       application.ProcessMessages;
-      if terminate_all then raise exception.create('compressing terminated');
+      if terminate_all then raise Exception.Create('compressing terminated');
       output.src := @OutBuf;
       output.size := BuSize;
       output.pos := 0;
@@ -129,8 +128,7 @@ var
         fOut.Write(OutBuf, output.pos);
         Inc(totalWritten, output.pos);
       end;
-    until ((endMode = ZSTD_e_continue) and (input.pos >= input.size))
-       or ((endMode = ZSTD_e_end)      and (ret = 0));
+    until ((endMode = ZSTD_e_continue) and (input.pos >= input.size)) or ((endMode = ZSTD_e_end) and (ret = 0));
   end;
 
 begin
@@ -154,7 +152,7 @@ begin
     Listbox.Items.Add('ZSTD_versionNumber: ' + IntToStr(ZSTD_versionNumber));
 
     Listbox.Items.Add(''); // leere Zeile für Status
-    listboxaddscroll(listbox,'');
+    listboxaddscroll(listbox, '');
 
     // Parameter setzen
     ret := ZSTD_CCtx_setParameter(cctx, ZSTD_c_compressionLevel, Level);
@@ -197,12 +195,12 @@ begin
       if (Now - lastUpdateTime) * SecsPerDay > 0.5 then
       begin
         if elapsedSecs > 0 then
-          speedMBs := (totalRead / (1024*1024)) / elapsedSecs
+          speedMBs := (totalRead / (1024 * 1024)) / elapsedSecs
         else
           speedMBs := 0;
 
         if speedMBs > 0 then
-          etaSecs := ((fileSize - totalRead) / (1024*1024)) / speedMBs
+          etaSecs := ((fileSize - totalRead) / (1024 * 1024)) / speedMBs
         else
           etaSecs := 0;
 
@@ -211,10 +209,7 @@ begin
         else
           compressionRatio := 0;
 
-        s := Format('Speed: %.2f MB/s  ETA: %s  Ratio: %.2f:1',
-          [ speedMBs,
-            FormatDateTime('nn:ss', etaSecs / SecsPerDay),
-            compressionRatio ]);
+        s := Format('Speed: %.2f MB/s  ETA: %s  Ratio: %.2f:1', [speedMBs, FormatDateTime('nn:ss', etaSecs / SecsPerDay), compressionRatio]);
 
         Listboxupdate(listbox, s);
         lastUpdateTime := Now;
@@ -229,9 +224,9 @@ begin
 
     // Abschluss
     form1.ProgressBar1.Position := form1.ProgressBar1.Max;
-    listboxaddscroll(Listbox,'');
-    listboxaddscroll(Listbox,'compressed file size is now: ' +  IntToStr(totalWritten div (1024*1024)) + ' MiB');
-    listboxaddscroll(Listbox,'');
+    listboxaddscroll(Listbox, '');
+    listboxaddscroll(Listbox, 'compressed file size is now: ' + IntToStr(totalWritten div (1024 * 1024)) + ' MiB');
+    listboxaddscroll(Listbox, '');
 
   finally
     ZSTD_freeCCtx(cctx);
@@ -241,4 +236,3 @@ begin
 end;
 
 end.
-

@@ -5,7 +5,7 @@ unit ExcludeParser;
 interface
 
 uses
-  Classes, SysUtils, Process, Forms, StdCtrls,rkutils;
+  Classes, SysUtils, Process, Forms, StdCtrls, rkutils;
 
 type
   TExcludeCommand = (ecUnknown, ecRF, ecRD, ecRT, ecRFID, ecRAIT, ecRAID);
@@ -37,7 +37,6 @@ implementation
 
 uses unit1;
 
-
 function TExcludeList.ParseCommand(const cmd: string): TExcludeCommand;
 begin
   case LowerCase(Trim(cmd)) of
@@ -58,15 +57,15 @@ begin
 end;
 
 
- function TExcludeList.ReplacePlaceholders(const s: string): string;
+function TExcludeList.ReplacePlaceholders(const s: string): string;
 var
   user: string;
 begin
   User := GetEnvironmentVariable('SUDO_USER');
   if User = '' then
     User := GetEnvironmentVariable('USER'); // fallback, wenn nicht über sudo gestartet
-   if User = '' then  user := GetEnvironmentVariable('USERNAME');
-   Result := StringReplace(s, '§user', user, [rfReplaceAll, rfIgnoreCase]);
+  if User = '' then  user := GetEnvironmentVariable('USERNAME');
+  Result := StringReplace(s, '§user', user, [rfReplaceAll, rfIgnoreCase]);
 end;
 
 
@@ -138,14 +137,14 @@ var
   s: string;    // nur zum debuggen
 begin
   if clearcmd > '' then
-  //FLogTarget.Items.Add(clearcmd);
-  Listboxaddscroll(FLogTarget, clearcmd);
+    //FLogTarget.Items.Add(clearcmd);
+    Listboxaddscroll(FLogTarget, clearcmd);
 
 
-  s:=runbash(CmdLine);
-   if s > #10 then
-    Listboxaddscroll(FLogTarget,s);
-   //FLogTarget.Items.Add(s);
+  s := runbash(CmdLine);
+  if s > #10 then
+    Listboxaddscroll(FLogTarget, s);
+  //FLogTarget.Items.Add(s);
 
   // application.ProcessMessages;
 end;
@@ -163,31 +162,31 @@ begin
     entry := GetEntry(i);
     case entry.Command of
       ecRF: begin
-        clearcmd := 'deletefile ' + copy(entry.Path,length(fmountpoint)+1,1024);
+        clearcmd := 'deletefile ' + copy(entry.Path, length(fmountpoint) + 1, 1024);
         cmd := 'rm -f ' + QuoteString(entry.Path);
       end;
       ecRD: begin
-        clearcmd := 'Remove directory ' + copy(entry.Path,length(fmountpoint)+1,1024);
+        clearcmd := 'Remove directory ' + copy(entry.Path, length(fmountpoint) + 1, 1024);
         cmd := 'rmdir ' + QuoteString(entry.Path);
       end;
-       ecRT: begin
-        clearcmd := 'Remove tree ' +  copy(entry.Path,length(fmountpoint)+1,1024);
+      ecRT: begin
+        clearcmd := 'Remove tree ' + copy(entry.Path, length(fmountpoint) + 1, 1024);
         cmd := 'rm -rf ' + QuoteString(entry.Path);
-         end;
+      end;
       ecRFID: begin
-        clearcmd := 'Remove files in directory '+ copy(entry.Path,length(fmountpoint)+1,1024);
+        clearcmd := 'Remove files in directory ' + copy(entry.Path, length(fmountpoint) + 1, 1024);
         cmd := 'find ' + QuoteString(entry.Path) + ' -maxdepth 1 -type f -exec rm -f {} +';
-        end;
+      end;
       ecRAIT: begin
-        clearcmd := 'Remove all in tree ' + copy(entry.Path,length(fmountpoint)+1,1024);
+        clearcmd := 'Remove all in tree ' + copy(entry.Path, length(fmountpoint) + 1, 1024);
         cmd := 'find ' + QuoteString(entry.Path) + ' -mindepth 1 -exec rm -rf {} +';
-         end;
+      end;
       ecRAID: begin
-        clearcmd := 'Remove all in directory ' + copy(entry.Path,length(fmountpoint)+1,1024);
+        clearcmd := 'Remove all in directory ' + copy(entry.Path, length(fmountpoint) + 1, 1024);
         cmd := 'rm -rf ' + QuoteString(entry.Path) + '/*';
-         end;
+      end;
       else
-    Continue;
+        Continue;
     end;
     ExecuteCommand(cmd, clearcmd);
   end;

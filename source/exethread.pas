@@ -6,44 +6,39 @@ interface
 
 uses
   Classes, SysUtils, process, baseunix, unix, LazUTF8, fileutil, dateutils, StdCtrls, Forms, Dialogs, UnixType,
-  ExtCtrls,ComCtrls,rkutils;
+  ExtCtrls, ComCtrls, rkutils;
 
- type
+type
   TPrexeThreaded = class(TThread)
   private
-    FCmd: AnsiString;
+    FCmd: ansistring;
     FParams: array of string;
     FListBox: TListBox;
     FPass: integer;
     FProgressBar: TProgressBar;
-    FResult: AnsiString;
-    FTempString: AnsiString;
-    FProgressMode: Integer;
-    FFinished: Boolean;
+    FResult: ansistring;
+    FTempString: ansistring;
+    FProgressMode: integer;
+    FFinished: boolean;
     procedure UpdateListBox;
     procedure AddListBoxLine;
   protected
     procedure Execute; override;
   public
-    constructor Create(const Cmd: AnsiString; Params: array of string;
-                       ListBox: TListBox;
-                       ProgressBar: TProgressBar = nil;
-                       ProgressMode: Integer = 0);
-    property ResultText: AnsiString read FResult;
-    property Finished: Boolean read FFinished;
+    constructor Create(const Cmd: ansistring; Params: array of string; ListBox: TListBox; ProgressBar: TProgressBar = nil; ProgressMode: integer = 0);
+    property ResultText: ansistring read FResult;
+    property Finished: boolean read FFinished;
   end;
 
-  function PrexeThreadedBash(command: AnsiString; box: TListBox;progressbar:tprogressbar=nil;progressmode:integer=0): AnsiString;
+function PrexeThreadedBash(command: ansistring; box: TListBox; progressbar: tprogressbar = nil; progressmode: integer = 0): ansistring;
 
 
 implementation
 
 
 
-  constructor TPrexeThreaded.Create(const Cmd: AnsiString; Params: array of string;
-                                  ListBox: TListBox;
-                                  ProgressBar: TProgressBar;
-                                  ProgressMode: Integer);
+constructor TPrexeThreaded.Create(const Cmd: ansistring; Params: array of string; ListBox: TListBox; ProgressBar: TProgressBar;
+  ProgressMode: integer);
 begin
   inherited Create(True); // Thread suspendiert
   FCmd := Cmd;
@@ -52,10 +47,10 @@ begin
   FProgressBar := ProgressBar; // optional, kann nil sein
   FProgressMode := ProgressMode; // default 0
   FResult := '';
-  fpass:=0;
+  fpass := 0;
   FFinished := False;
   FreeOnTerminate := False;
-  if assigned(fprogressbar) then fprogressbar.Max:=1000;
+  if assigned(fprogressbar) then fprogressbar.Max := 1000;
   Start; // Thread starten
 end;
 
@@ -64,56 +59,54 @@ end;
 // GUI-Methoden für Synchronize
 procedure TPrexeThreaded.UpdateListBox;
 const
-  pass2step=4;
-  pass3step=2;
-  pass4step=1;
+  pass2step = 4;
+  pass3step = 2;
+  pass4step = 1;
 
-  basestart3 = pass2step *40;
+  basestart3 = pass2step * 40;
   basestart4 = basestart3 + pass3step * 40;
 
-  p_sum= basestart4 + pass4step*40;
-
+  p_sum = basestart4 + pass4step * 40;
 var
-  x,count:integer;
-  s,s_pass:string;
-  pass:integer;
-
+  x, Count: integer;
+  s, s_pass: string;
+  pass: integer;
 begin
   if Assigned(FListBox) then
     FListBox.Items[FListBox.Items.Count - 1] := FTempString;
 
 
 
-    if fprogressmode = 1 then
-      begin
-       s:= FListBox.Items[FListBox.Items.Count - 2];
+  if fprogressmode = 1 then
+  begin
+    s := FListBox.Items[FListBox.Items.Count - 2];
 
-        count:= 0;
-        if pos('pass 2',s) > 0 then pass:=2;
-        if pos('pass 3',s) > 0 then pass:=3;
-        if pos('pass 4',s) > 0 then pass:=4;
+    Count := 0;
+    if pos('pass 2', s) > 0 then pass := 2;
+    if pos('pass 3', s) > 0 then pass := 3;
+    if pos('pass 4', s) > 0 then pass := 4;
 
-        if pass=2 then
-          begin
-           s:=FTempString;
-           for x:= 1 to length(s) do if s[x]='X' then inc(count,pass2step);
-           fprogressbar.Position:=fprogressbar.Max * count div p_sum;
-          end;
+    if pass = 2 then
+    begin
+      s := FTempString;
+      for x := 1 to length(s) do if s[x] = 'X' then Inc(Count, pass2step);
+      fprogressbar.Position := fprogressbar.Max * Count div p_sum;
+    end;
 
-        if pass=3 then
-          begin
-           s:=FTempString;
-           for x:= 1 to length(s) do if s[x]='X' then inc(count,pass3step);
-           fprogressbar.Position:=fprogressbar.Max * (count + basestart3) div p_sum;
-          end;
+    if pass = 3 then
+    begin
+      s := FTempString;
+      for x := 1 to length(s) do if s[x] = 'X' then Inc(Count, pass3step);
+      fprogressbar.Position := fprogressbar.Max * (Count + basestart3) div p_sum;
+    end;
 
-        if pass=4 then
-          begin
-           s:=FTempString;
-           for x:= 1 to length(s) do if s[x]='X' then inc(count,pass4step);
-           fprogressbar.Position:=fprogressbar.Max * (count + basestart4) div p_sum;
-        end;
-      end;
+    if pass = 4 then
+    begin
+      s := FTempString;
+      for x := 1 to length(s) do if s[x] = 'X' then Inc(Count, pass4step);
+      fprogressbar.Position := fprogressbar.Max * (Count + basestart4) div p_sum;
+    end;
+  end;
 end;
 
 procedure TPrexeThreaded.AddListBoxLine;
@@ -130,24 +123,24 @@ const
   BufferSize = 2048;
 var
   pr: TProcess;
-  buf: array[0..BufferSize-1] of char;
-  bytesRead, cPos, i, StartCount, xpos: Integer;
-  su, sm: AnsiString;
+  buf: array[0..BufferSize - 1] of char;
+  bytesRead, cPos, i, StartCount, xpos: integer;
+  su, sm: ansistring;
 begin
   FResult := '';
   xpos := 0;
   FFinished := False;
 
   // Anzahl der Zeilen vor Thread-Start merken
- // Brauchen eine leere Zeile am anfang
+  // Brauchen eine leere Zeile am anfang
 
 
   // Startzeile in ListBox
   if Assigned(FListBox) then
-    begin
+  begin
     Synchronize(@AddListBoxLine);
-    StartCount := FListBox.Items.Count-1;
-    end;
+    StartCount := FListBox.Items.Count - 1;
+  end;
 
 
 
@@ -196,19 +189,23 @@ begin
         begin
           case buf[cPos] of
             #10: begin // LF
-              Inc(cPos); xpos := 0;
+              Inc(cPos);
+              xpos := 0;
               if Assigned(FListBox) then
                 if not terminated then Synchronize(@AddListBoxLine);
             end;
             #13: begin // CR
-              Inc(cPos); xpos := 0;
+              Inc(cPos);
+              xpos := 0;
             end;
             #8: begin // Backspace
-              Inc(cPos); Dec(xpos);
+              Inc(cPos);
+              Dec(xpos);
               if xpos < 0 then xpos := 0;
             end;
           end;
-        end else
+        end
+        else
           Inc(cPos);
 
       until cPos >= bytesRead;
@@ -240,30 +237,28 @@ end;
 
 
 
-function PrexeThreadedBash(command: AnsiString; box: TListBox;progressbar:tprogressbar=nil;progressmode:integer=0): AnsiString;
+function PrexeThreadedBash(command: ansistring; box: TListBox; progressbar: tprogressbar = nil; progressmode: integer = 0): ansistring;
 var
- th: TPrexeThreaded;
-
+  th: TPrexeThreaded;
 begin
- if terminate_all then
-   Exit('');
+  if terminate_all then
+    Exit('');
 
 
 
- // Thread starten
- th := TPrexeThreaded.Create('bash', ['-c', command], box,progressbar,progressmode);
+  // Thread starten
+  th := TPrexeThreaded.Create('bash', ['-c', command], box, progressbar, progressmode);
 
- // Polling-Schleife, GUI bleibt aktiv
+  // Polling-Schleife, GUI bleibt aktiv
 
- while not th.Finished do
- begin
-   Sleep(20);
-   Application.ProcessMessages;
-   if terminate_all then th.Terminate;
- end;
- Result := th.ResultText;
- th.Free;
+  while not th.Finished do
+  begin
+    Sleep(20);
+    Application.ProcessMessages;
+    if terminate_all then th.Terminate;
+  end;
+  Result := th.ResultText;
+  th.Free;
 end;
 
 end.
-

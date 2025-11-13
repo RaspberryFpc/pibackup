@@ -1,6 +1,9 @@
 # Changelog
 
 All notable changes to this project are documented in this file.
+## [1.5.6] – 2025-09-07
+### Improved
+- Behavior of the progress bar during resize corrected
 
 ## [1.5.5] – 2025-09-07
 ### Changed  

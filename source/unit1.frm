@@ -7,13 +7,13 @@ object Form1: TForm1
   ClientHeight = 561
   ClientWidth = 1016
   Position = poDesktopCenter
-  LCLVersion = '8.7'
+  LCLVersion = '8.8'
   OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
   object Edit1: TEdit
     Left = 113
-    Height = 30
+    Height = 23
     Top = 82
     Width = 608
     ParentFont = False
@@ -23,11 +23,11 @@ object Form1: TForm1
   end
   object ComboBox1: TComboBox
     Left = 114
-    Height = 30
-    Top = 48
+    Height = 23
+    Top = 52
     Width = 608
     Anchors = [akLeft]
-    ItemHeight = 22
+    ItemHeight = 15
     TabOrder = 1
     Text = 'Laufwerk'
     OnChange = GridUpdate
@@ -48,7 +48,7 @@ object Form1: TForm1
     AnchorSideTop.Side = asrCenter
     Left = 730
     Height = 30
-    Top = 82
+    Top = 78
     Width = 126
     Caption = 'select'
     TabOrder = 3
@@ -56,16 +56,16 @@ object Form1: TForm1
   end
   object Label2: TLabel
     Left = 33
-    Height = 22
+    Height = 15
     Top = 50
-    Width = 47
+    Width = 41
     Caption = 'Device'
   end
   object Label3: TLabel
     Left = 32
-    Height = 22
+    Height = 15
     Top = 84
-    Width = 68
+    Width = 60
     Caption = 'image file'
   end
   object ListBox1: TListBox
@@ -126,9 +126,9 @@ object Form1: TForm1
     AnchorSideTop.Control = StringGrid1
     AnchorSideTop.Side = asrBottom
     Left = 111
-    Height = 28
-    Top = 8
-    Width = 248
+    Height = 21
+    Top = 12
+    Width = 235
     Anchors = [akLeft]
     BorderSpacing.Top = 3
     Caption = 'Create System Backup (Image)'
@@ -143,10 +143,10 @@ object Form1: TForm1
     AnchorSideLeft.Control = RadioButton1
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = RadioButton1
-    Left = 389
-    Height = 28
-    Top = 8
-    Width = 249
+    Left = 376
+    Height = 21
+    Top = 12
+    Width = 237
     BorderSpacing.Left = 30
     Caption = 'Restore Backup or other Image'
     Font.Style = [fsBold]
@@ -172,9 +172,9 @@ object Form1: TForm1
     TabOrder = 8
     object CheckBox_RemoveSSH: TCheckBox
       Left = 15
-      Height = 28
+      Height = 21
       Top = 54
-      Width = 112
+      Width = 99
       Caption = 'remove SSH'
       Color = clDefault
       ParentColor = False
@@ -184,9 +184,9 @@ object Form1: TForm1
       AnchorSideTop.Control = CheckBox_RemoveSSH
       AnchorSideTop.Side = asrCenter
       Left = 136
-      Height = 28
+      Height = 21
       Top = 54
-      Width = 129
+      Width = 112
       Caption = 'Remove DHCP'
       TabOrder = 1
     end
@@ -195,8 +195,8 @@ object Form1: TForm1
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = ButtonCreateImage
       Left = 120
-      Height = 30
-      Top = 10
+      Height = 23
+      Top = 14
       Width = 724
       Anchors = [akLeft, akRight]
       BorderSpacing.Left = 5
@@ -222,9 +222,9 @@ object Form1: TForm1
       AnchorSideTop.Control = CheckBox_RemoveSSH
       AnchorSideTop.Side = asrCenter
       Left = 272
-      Height = 28
+      Height = 21
       Top = 54
-      Width = 193
+      Width = 169
       Caption = 'Compress Image   Level'
       Checked = True
       State = cbChecked
@@ -234,8 +234,8 @@ object Form1: TForm1
       AnchorSideTop.Control = CheckBox_RemoveSSH
       AnchorSideTop.Side = asrCenter
       Left = 464
-      Height = 31
-      Top = 53
+      Height = 24
+      Top = 52
       Width = 50
       Alignment = taCenter
       MaxValue = 19
@@ -250,7 +250,7 @@ object Form1: TForm1
       AnchorSideRight.Side = asrBottom
       Left = 852
       Height = 30
-      Top = 53
+      Top = 49
       Width = 126
       Anchors = [akTop, akRight]
       BorderSpacing.Right = 15
@@ -263,9 +263,9 @@ object Form1: TForm1
       AnchorSideTop.Control = Edit2
       AnchorSideTop.Side = asrCenter
       Left = 40
-      Height = 28
-      Top = 11
-      Width = 80
+      Height = 21
+      Top = 15
+      Width = 72
       Caption = 'Exclude'
       Checked = True
       State = cbChecked
@@ -274,9 +274,9 @@ object Form1: TForm1
     object CheckBox_Delimg: TCheckBox
       AnchorSideTop.Control = CheckBox_RemoveSSH
       Left = 520
-      Height = 28
+      Height = 21
       Top = 54
-      Width = 207
+      Width = 182
       Caption = 'If compressed delete .img'
       Checked = True
       State = cbChecked
@@ -327,10 +327,10 @@ object Form1: TForm1
     object CheckBoxChangeDeviceID: TCheckBox
       AnchorSideTop.Control = CheckBox_DelPartition3
       AnchorSideTop.Side = asrCenter
-      Left = 470
-      Height = 28
-      Top = 54
-      Width = 143
+      Left = 477
+      Height = 21
+      Top = 58
+      Width = 128
       Anchors = [akTop]
       Caption = 'change device id'
       TabOrder = 1
@@ -340,8 +340,8 @@ object Form1: TForm1
       AnchorSideTop.Control = CheckBox_DelPartition3
       AnchorSideTop.Side = asrCenter
       Left = 622
-      Height = 30
-      Top = 53
+      Height = 23
+      Top = 57
       Width = 104
       Alignment = taCenter
       Anchors = [akTop]
@@ -353,9 +353,9 @@ object Form1: TForm1
       AnchorSideTop.Control = CheckBox_DelPartition3
       AnchorSideTop.Side = asrCenter
       Left = 248
-      Height = 28
-      Top = 54
-      Width = 144
+      Height = 21
+      Top = 58
+      Width = 129
       Caption = 'delete partition 4'
       TabOrder = 3
       OnChange = GridUpdate
@@ -363,9 +363,9 @@ object Form1: TForm1
     object CheckBox_DelPartition3: TCheckBox
       AnchorSideTop.Side = asrCenter
       Left = 62
-      Height = 28
-      Top = 54
-      Width = 151
+      Height = 21
+      Top = 58
+      Width = 137
       Anchors = [akLeft]
       Caption = 'delete  partition 3 '
       DoubleBuffered = False
@@ -395,7 +395,7 @@ object Form1: TForm1
     AnchorSideRight.Side = asrBottom
     Left = 904
     Height = 30
-    Top = 82
+    Top = 78
     Width = 99
     Anchors = [akTop, akRight]
     Caption = 'Save Log'
