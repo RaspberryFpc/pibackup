@@ -3,7 +3,8 @@
 All notable changes to this project are documented in this file.
 ## [1.5.6] – 2025-09-07
 ### Improved
-- Behavior of the progress bar during resize corrected
+- Fixed progress bar behavior during resizing
+- Perform thread check on shutdown instead of using static timeout
 
 ## [1.5.5] – 2025-09-07
 ### Changed  
