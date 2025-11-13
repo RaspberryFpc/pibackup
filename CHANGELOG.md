@@ -1,7 +1,7 @@
 # Changelog
 
 All notable changes to this project are documented in this file.
-## [1.5.6] – 2025-09-07
+## [1.5.6] – 2025-12-13
 ### Improved
 - Fixed progress bar behavior during resizing
 - Perform thread check on shutdown instead of using static timeout
