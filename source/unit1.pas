@@ -116,7 +116,7 @@ implementation
 { TForm1 }
 
 const
-  appname = 'PiBackup  v1.5.6';
+  appname = 'PiBackup  v1.6.0';
   ininame = 'pibackup.ini';
 
 

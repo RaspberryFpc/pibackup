@@ -479,7 +479,7 @@ object Form1: TForm1
       Top = 78
       Width = 104
       Anchors = [akTop]
-      Caption = 'Passphrase (PKS)'
+      Caption = 'Passphrase (PSK)'
     end
     object Label6: TLabel
       AnchorSideTop.Control = EDusername
