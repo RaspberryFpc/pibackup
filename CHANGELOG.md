@@ -1,7 +1,13 @@
 # Changelog
-
 All notable changes to this project are documented in this file.
-## [1.5.6] – 2025-12-13
+## [1.6.0] – 2025-12-07
+### Added
+### options useful for setting up a fresh Raspberry Pi OS and headless systems.
+- Enable SSH on first boot
+- Set or change username and/or password
+- Configure Wi-Fi – set or change SSID and password (PSK)
+
+## [1.5.6] – 2025-11-13
 ### Improved
 - Fixed progress bar behavior during resizing
 - Perform thread check on shutdown instead of using static timeout

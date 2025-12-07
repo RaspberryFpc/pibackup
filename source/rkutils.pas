@@ -85,16 +85,6 @@ type
 
 
 type
-  TMountedPartition = record
-    ImageFile: string;
-    PartitionNumber: integer;
-    MountPoint: string;
-    LoopDevice: string;
-  end;
-
-
-
-type
   TStatVFS = record
     f_bsize: cULong;   // Filesystem block size
     f_frsize: cULong;   // Fragment size
@@ -111,42 +101,45 @@ type
   end;
 
 
+  //function FileSizeAsString(size: int64; Use1024: boolean = True): ansistring;
+  //function GetSecondField(const s: string): string;
+  //function ms2T(ms: int64): ansistring;
+  //procedure PreCheckImageWrite(const Source, Destination: string);
+procedure EnsureEnoughSpace(const FilePath: string; NewSize: int64);
+
 function statvfs(path: pchar; var buf: TStatVFS): cint; cdecl; external 'c';
 function runbash(command: ansistring): string;
 function padleft(s: string; Count: integer): string;
-function GetSecondField(const s: string): string;
+function RunsAsRoot: boolean;
 function IsProgInstalled(progname: string): boolean;
-function ReplacePartUUIDInCmdline(Device: string; NewID: string): string;
-function ReplacePartUUIDInFstab(device: string; newsignatur: string): string;
 function GetMBRPartitionTypeName(PartType: byte): string;
 function Read_Mbr(const filename: string): tmbr;
-function FileSizeAsString(size: int64; Use1024: boolean = True): ansistring;
 function GetMountPointFromProc(const path: string): string;
-function PartitionNamefromDevice(device: string; PartitionNumber: integer): string;
 function starLine(s: ansistring; len: integer): ansistring;
 function getValueAfterKeyword(s, keyword: ansistring): int64;
-function ms2T(ms: int64): ansistring;
-function getStringAfterKeyword(s, keyword: ansistring): string;
-function RunsAsRoot: boolean;
-function is_mounted(mount: string; var mountpoint: string; var device: string): boolean;
-function LoopDeviceExists(const Device: string): boolean;
 procedure Listboxaddscroll(listbox: tlistbox; item: string);
+procedure Listboxupdate(listbox: tlistbox; item: string);
 procedure getDrives(sl: TStrings);
 procedure ReplacePartuuidinmbr(device: string; NewSignature: dword);
-procedure Write_mbr(mbr: tmbr; filename: string);
+function ReplacePartUUIDInCmdline(Device: string; NewID: string): string;
+function ReplacePartUUIDInFstab(device: string; newsignatur: string): string;
+procedure ChangeHost(device: string; newHostName: string);
+procedure enableSsh(device: string);
+procedure PrepareWLAN(const Device, SSID, PSK: string);
+procedure Write_mbr(const mbr: TMbr; const Filename: string);
 procedure MakeImagefirst2partitions(Sourcedrive, Filename: ansistring; listbox: tlistbox);
-procedure Listboxupdate(listbox: tlistbox; item: string);
 procedure ImageToDeviceImgAndZstd(Source, Destination: string; delpar3, delpar4: boolean; box: TListBox);
-procedure PreCheckImageWrite(const Source, Destination: string);
-procedure SaveUmount(mount: string; listbox: TListBox);
-procedure ClearEmptyBlocks(listbox: tlistbox; Mounted: TMountedPartition);
-procedure MountPartitionFromImage(const ImageFile: string; PartitionNumber: integer; const MountPoint: string; out Mounted: TMountedPartition; ListBox: TListBox);
-procedure UnmountOnly(const Mounted: TMountedPartition; ListBox: TListBox);
-procedure RemountPartition(const Mounted: TMountedPartition; ListBox: TListBox);
-procedure ClosePartition(var Mounted: TMountedPartition; ListBox: TListBox);
-procedure EnsureEnoughSpace(const FilePath: string; NewSize: int64);
-
-
+procedure ClearEmptyBlocks(listbox: tlistbox; Mountpoint: string);
+procedure DeletePartition(const Device: string; Partition: integer);
+function PartitionName(device: string; partitionNumber: integer): string;
+function CreateLoopPartition(const FileName: string; Partition: integer): string;
+//procedure CloseLoopDevice(const LoopDev: string);
+function MountPartition(const Source: string; PartitionNumber: integer; const MountPoint: string): boolean;
+procedure CloseMountTarget(const Target: string);
+function readlosetup: string;
+function TryUnmount(const Mp: string): boolean;
+function IsMountedExact(const Mp: string): boolean;
+procedure ParseMountLine(const L: string; out Device, Mp: string);
 
 
 var
@@ -159,12 +152,34 @@ uses zstd, unit1;
 const
 
   puffersize = 48;
-  //  prexeBytesToRead = 2048;
 
 var
   ValHistory: array[0..PufferSize - 1] of int64;
   TimeHistory: array[0..PufferSize - 1] of uint64;
   pufferindex: integer;
+
+function PartitionName(device: string; partitionNumber: integer): string;
+var
+  LastChar: char;
+begin
+  LastChar := Device[Length(Device)];
+  if LastChar in ['0'..'9'] then
+    Result := Device + 'p' + IntToStr(PartitionNumber)
+  else
+    Result := Device + IntToStr(PartitionNumber);
+
+end;
+
+
+
+
+function InterlockedExchangeDouble(var Target: double; Source: double): double;
+var
+  OldInt: int64;
+begin
+  OldInt := InterlockedExchange64(PInt64(@Target)^, PInt64(@Source)^);
+  Result := PDouble(@OldInt)^;
+end;
 
 
 
@@ -177,174 +192,395 @@ begin
     Result := False;
 end;
 
-procedure MountPartitionFromImage(const ImageFile: string; PartitionNumber: integer; const MountPoint: string; out Mounted: TMountedPartition; ListBox: TListBox);
+
+function MountPartition(const Source: string; PartitionNumber: integer; const MountPoint: string): boolean;
 var
-  s, offsetStr, loopDev: string;
-  startSector: int64;
-  mbr: TMbr;
-begin
-  Mounted.ImageFile := ImageFile;
-  Mounted.PartitionNumber := PartitionNumber;
-  Mounted.MountPoint := MountPoint;
-  Mounted.LoopDevice := '';
-
-  if not FileExists(ImageFile) then
-    raise Exception.Create('Image not found: ' + ImageFile);
-
-  if not DirectoryExists(MountPoint) then
-    ForceDirectories(MountPoint);
-
-  // MBR auslesen
-  mbr := read_mbr(ImageFile);
-
-  if (PartitionNumber < Low(mbr.PartitionEntries)) or (PartitionNumber > High(mbr.PartitionEntries)) then
-    raise Exception.Create('Invalid PartitionNumber: ' + IntToStr(PartitionNumber));
-
-  startSector := mbr.PartitionEntries[PartitionNumber].FirstLBA;
-  offsetStr := IntToStr(startSector * 512); // Sektorgröße 512 Byte
-
-  // Loopdevice anlegen
-  RunCommand('losetup --find --show -o ' + offsetStr + ' "' + ImageFile + '"', loopDev);
-  loopDev := Trim(loopDev);
-  if loopDev = '' then
-    raise Exception.Create('Failed to create loop device');
-  Mounted.LoopDevice := loopDev;
-
-  // Partition mounten
-  RunCommand('mount -t auto ' + loopDev + ' "' + MountPoint + '"', s);
-  listboxaddscroll(ListBox, 'Mounted partition ' + IntToStr(PartitionNumber) + ' at ' + MountPoint + ' (' + loopDev + ')');
-end;
-
-
-
-
-procedure UnmountOnly(const Mounted: TMountedPartition; ListBox: TListBox);
-begin
-  if Mounted.MountPoint <> '' then
-    SaveUmount(Mounted.MountPoint, ListBox);
-end;
-
-procedure RemountPartition(const Mounted: TMountedPartition; ListBox: TListBox);
-var
-  s: string;
-begin
-  if (Mounted.MountPoint <> '') and (Mounted.LoopDevice <> '') then
-  begin
-    if not DirectoryExists(Mounted.MountPoint) then
-      ForceDirectories(Mounted.MountPoint);
-
-    RunCommand('mount -t auto ' + Mounted.LoopDevice + ' ' + Mounted.MountPoint, s);
-    listboxaddscroll(ListBox, 'Remounted partition at ' + Mounted.MountPoint + ' (' + Mounted.LoopDevice + ')');
-  end;
-end;
-
-
-
-function LoopDeviceExists(const Device: string): boolean;
-var
-  s: string;
+  IsImage: boolean;
+  LoopDev, PartDev: string;
+  OutStr: string;
+  rc: longint;
 begin
   Result := False;
-  if Device = '' then Exit;
+  LoopDev := '';
 
-  if RunCommand('losetup -a', s) then
-    Result := Pos(Device, s) > 0;
-end;
+  // Erkennen, ob Image oder Device
+  IsImage := FileExists(Source);
 
-
-procedure RemoveEmptyPathUpwards(const Path: string; ListBox: TListBox);
-var
-  Current: string;
-  sr: TSearchRec;
-  IsEmpty: boolean;
-begin
-  Current := ExcludeTrailingPathDelimiter(Path);
-
-  while (Current <> '') and DirectoryExists(Current) do
+  // MountPoint anlegen
+  if not DirectoryExists(MountPoint) then
   begin
-    IsEmpty := True;
-
-    if FindFirst(Current + PathDelim + '*', faAnyFile, sr) = 0 then
-    begin
-      repeat
-        if (sr.Name <> '.') and (sr.Name <> '..') then
-        begin
-          IsEmpty := False;
-          Break;
-        end;
-      until FindNext(sr) <> 0;
-    end;
-    SysUtils.FindClose(sr);
-
-    if IsEmpty then
-    begin
-      if RemoveDir(Current) then
-        listboxaddscroll(ListBox, 'Removed empty mount directory: ' + Current)
-      else
-        listboxaddscroll(ListBox, 'Failed to remove: ' + Current);
-      // nächstes Level hoch
-      Current := ExtractFilePath(Current);
-      Current := ExcludeTrailingPathDelimiter(Current);
-    end
-    else
-      Break; // nicht leer → stop
-  end;
-end;
-
-
-procedure ClosePartition(var Mounted: TMountedPartition; ListBox: TListBox);
-var
-  s: string;
-begin
-  if Mounted.MountPoint = '' then Exit;
-
-  Listboxaddscroll(ListBox, 'Closing device: ' + Mounted.LoopDevice);
-
-  // Sicher unmounten
-  SaveUmount(Mounted.MountPoint, ListBox);
-
-  // Flush write buffers
-  if Mounted.LoopDevice <> '' then
-  begin
-    if not RunCommand('blockdev --flushbufs ' + Mounted.LoopDevice, s) then
-      listboxaddscroll(ListBox, '⚠ Flush failed: ' + s);
+    rc := fpSystem(PChar('mkdir -p "' + MountPoint + '"'));
+    if rc <> 0 then Exit;
   end;
 
-  // Loopdevice detach
-  if Mounted.LoopDevice <> '' then
+  // ----------------------------------------------------
+  // A) IMAGE → Loopdevice erstellen
+  // ----------------------------------------------------
+  if IsImage then
   begin
-    if not RunCommand('losetup -d ' + Mounted.LoopDevice, s) then
-    begin
-      listboxaddscroll(ListBox, 'Detach by device failed, trying by file...');
-      if (Mounted.ImageFile <> '') and (not RunCommand('losetup -d ' + Mounted.ImageFile, s)) then
-        listboxaddscroll(ListBox, '✗ Failed to detach loop device: ' + s);
-    end;
-  end;
+    if not RunCommand('losetup -Pf --show "' + Source + '"', OutStr) then
+      Exit;
 
-  // Rekursiv leere Mountpoint-Ordner entfernen
-  RemoveEmptyPathUpwards(Mounted.MountPoint, ListBox);
+    LoopDev := Trim(OutStr);
+    if LoopDev = '' then Exit;
 
-  // Final sync
-  if not RunCommand('sync', s) then
-    listboxaddscroll(ListBox, 'Sync failed: ' + s);
-
-  // Prüfen ob Loopdevice wirklich verschwunden ist
-  if (Mounted.LoopDevice <> '') then
-  begin
-    if not LoopDeviceExists(Mounted.LoopDevice) then
-    begin
-      listboxaddscroll(ListBox, 'Loop device released: ' + Mounted.LoopDevice);
-      Mounted.LoopDevice := '';
-      Mounted.MountPoint := '';
-    end
-    else
-      listboxaddscroll(ListBox, 'Loop device still present: ' + Mounted.LoopDevice);
+    PartDev := LoopDev + 'p' + IntToStr(PartitionNumber);
   end
   else
-    Mounted.MountPoint := '';
+  begin
+    // ----------------------------------------------------
+    // B) echtes Device
+    // ----------------------------------------------------
+    PartDev := Source + IntToStr(PartitionNumber);
+  end;
+
+  // Mount ausführen
+  rc := fpSystem(PChar('mount "' + PartDev + '" "' + MountPoint + '"'));
+  if rc <> 0 then
+  begin
+    // Bei Image → Loopdevice aufräumen
+    if IsImage and (LoopDev <> '') then
+      fpSystem(PChar('losetup -d "' + LoopDev + '"'));
+    Exit;
+  end;
+
+  Result := True;
 end;
 
 
+
+
+function CreateLoopPartition(const FileName: string; Partition: integer): string;
+var
+  OutStr: string;
+  Offset: int64;
+  SectorSize: int64;
+  StartSector: dword;
+  MBR: array[0..511] of byte;
+  f: file;
+begin
+  Result := '';
+
+  if not FileExists(FileName) then
+    raise Exception.Create('Datei nicht gefunden: ' + FileName);
+
+  // MBR lesen
+  AssignFile(f, FileName);
+  Reset(f, 1);
+  BlockRead(f, MBR, 512);
+  CloseFile(f);
+
+  SectorSize := 512;
+
+  // Prüfen Partition 1..4
+  if (Partition < 1) or (Partition > 4) then
+    raise Exception.Create('Partition muss 1..4 sein');
+
+  // Startsektor aus MBR auslesen (Partition 1 = Offset 0x1BE, Partition 2 = 0x1BE + 16)
+  StartSector := PDword(@MBR[$1BE + (Partition - 1) * 16 + 8])^;
+
+  Offset := StartSector * SectorSize;
+
+  // Loopdevice erstellen mit Offset
+  if not RunCommand('/sbin/losetup --find --show --offset ' + IntToStr(Offset) + ' ' + FileName, OutStr) then
+    raise Exception.Create('losetup fehlgeschlagen: ' + OutStr);
+
+  Result := Trim(OutStr);
+end;
+
+
+
+
+procedure Write_mbr(const mbr: TMbr; const Filename: string);
+var
+  mbr_writestream: TFileStream;
+  res: ssize_t;
+  fd: cint = -1;
+begin
+  try
+    try
+      // Gerät oder Datei zum Lesen + Schreiben öffnen
+      // WICHTIG: fmShareDenyNone ist ok für Devices, blockiert nichts
+      mbr_writestream := TFileStream.Create(Filename, fmOpenReadWrite or fmShareDenyNone);
+    except
+      on E: Exception do
+        raise Exception.Create('Error opening file/device for writing MBR: ' + Filename + ' --> ' + E.Message);
+    end;
+
+    // Immer an Anfang
+    mbr_writestream.Position := 0;
+
+    // Versuchen die 512 Bytes zu schreiben
+    res := mbr_writestream.Write(mbr, 512);
+
+    if res <> 512 then
+      raise Exception.CreateFmt('Error writing MBR (only %d bytes written) to %s', [res, Filename]);
+
+    // Bei Blockdevices unbedingt flushen
+    // (TFileStream.Flush funktioniert nicht sicher bei echten Geräten)
+    fd := fpOpen(PChar(Filename), O_RDWR);   // zweiten Handle öffnen
+    if fd <> -1 then
+    begin
+      fpFSync(fd);                          // Force write to disk
+      fpClose(fd);
+    end;
+
+  finally
+    FreeAndNil(mbr_writestream);
+  end;
+end;
+
+
+function MountpointFromPartition(device: string; partitionNumber: integer): string;
+var
+  PartitionDevice: string;
+  lastchar: char;
+begin
+  LastChar := Device[Length(Device)];
+  if LastChar in ['0'..'9'] then
+    PartitionDevice := Device + 'p' + IntToStr(PartitionNumber)
+  else
+    PartitionDevice := Device + IntToStr(PartitionNumber);
+
+  runcommand('lsblk -no MOUNTPOINT ' + PartitionDevice, Result);
+  if Result > '' then Delete(Result, length(Result), 1);
+
+end;
+
+
+
+
+{------------------------------
+   Prüft, ob ein Target ein Loopdevice ist
+-------------------------------}
+function CheckLoop(Target: string): string;
+var
+  s, nr: string;
+  x: integer;
+begin
+  Result := '';
+  s := Target;
+  if Copy(Target, 1, 9) = '/dev/loop' then
+    s := Copy(Target, 10, 999);
+  nr := '';
+  for x := 1 to Length(s) do
+  begin
+    if s[x] in ['0'..'9'] then
+      nr := nr + s[x]
+    else
+      break;
+  end;
+  if nr > '' then
+    Result := '/dev/loop' + nr;
+end;
+
+
+
+{------------------------------
+   Liest losetup aus, liefert Name + Backfile
+   Ergebnis: "loopDevice backfile"
+-------------------------------}
+function readlosetup: string;
+var
+  sl: TStringList;
+  x, p: integer;
+  lo, fi, s: string;
+begin
+  sl := TStringList.Create;
+  try
+    runcommand('losetup -O NAME,BACK-FILE', s);
+    sl.Text := s;
+    if sl.Count > 0 then
+      sl.Delete(0); // Überschrift entfernen
+
+    for x := 0 to sl.Count - 1 do
+    begin
+      s := sl[x];
+      p := Pos(' ', s);
+      if p = 0 then Continue;
+      lo := Copy(s, 1, p - 1);
+      if (Pos('p', lo) > 9) then Delete(lo, p, 999); // /dev/loop0p1 → /dev/loop0
+
+      fi := Trim(Copy(s, p + 1, 999));
+      p := Pos(' ', fi);
+      if p > 0 then fi := Trim(Copy(fi, p + 1, 999)); // nur Backfile
+      sl[x] := lo + ' ' + fi;
+    end;
+
+    Result := sl.Text;
+  finally
+    sl.Free;
+  end;
+end;
+
+
+
+function GetMountPoint(const LoopDev: string): string;
+var
+  SL: TStringList;
+  i: integer;
+  Parts: TStringList;
+begin
+  Result := '';
+  SL := TStringList.Create;
+  Parts := TStringList.Create;
+  try
+    SL.LoadFromFile('/proc/mounts');
+    for i := 0 to SL.Count - 1 do
+    begin
+      Parts.DelimitedText := SL[i];
+      if Parts.Count >= 2 then
+      begin
+        if Parts[0] = LoopDev then
+        begin
+          Result := Parts[1]; // Mountpoint
+          Exit;
+        end;
+      end;
+    end;
+  finally
+    SL.Free;
+    Parts.Free;
+  end;
+end;
+
+function GetLoopDeviceFromMountPoint(const MountPoint: string): string;
+var
+  SL: TStringList;
+  i: integer;
+  Parts: TStringList;
+begin
+  Result := '';
+  SL := TStringList.Create;
+  Parts := TStringList.Create;
+  try
+    SL.LoadFromFile('/proc/mounts');
+    for i := 0 to SL.Count - 1 do
+    begin
+      Parts.DelimitedText := SL[i];
+      if Parts.Count >= 2 then
+      begin
+        if Parts[1] = MountPoint then
+        begin
+          // Prüfen ob Gerät ein Loopdevice ist
+          if Copy(Parts[0], 1, 9) = '/dev/loop' then
+          begin
+            Result := Parts[0];
+            Exit;
+          end;
+        end;
+      end;
+    end;
+  finally
+    SL.Free;
+    Parts.Free;
+  end;
+end;
+
+
+procedure CloseMountTarget(const Target: string);
+var
+  sl: TStringList;
+  i, p: integer;
+  loopDev, mountfile, mountpoint, s, loop, loopmountfile, lodev: string;
+begin
+  loop := CheckLoop(target);
+  if loop = '' then
+  begin
+    lodev := GetLoopDeviceFromMountPoint(target);
+    loop := CheckLoop(lodev);
+    if loop > '' then   // aufruf mit mountpoint der loopdevices hat
+    begin
+      tryunmount(target);  //target ist der mountpoint
+      sl := TStringList.Create;
+      sl.Text := readlosetup;
+      // holen der Datei
+      for i := 0 to sl.Count - 1 do
+      begin
+        p := Pos(' ', sl[i]);
+        if p = 0 then Continue;
+        loopDev := Trim(Copy(sl[i], 1, p - 1));
+        mountfile := Trim(Copy(sl[i], p + 1, 999));
+        if loopDev = loop then break;
+      end;
+
+      // alle loops mit mountfile löschen
+      for i := 0 to sl.Count - 1 do
+      begin
+        p := Pos(' ', sl[i]);
+        if p = 0 then Continue;
+        loopDev := Trim(Copy(sl[i], 1, p - 1));
+        if mountfile = Trim(Copy(sl[i], p + 1, 999)) then
+          runcommand('losetup -d ' + loopDev, s);
+      end;
+      sl.Free;
+    end;
+  end
+  else
+
+  //  aufruf mit Loopdevice - nicht gemountet!
+  if loop > '' then
+  begin
+    // ---- Prüfen: Loopdevices , Backfiles ----
+      sl := TStringList.Create;
+      sl.Text := readlosetup;
+    for i := 0 to sl.Count - 1 do
+    begin
+      p := Pos(' ', sl[i]);
+      if p = 0 then Continue;
+      loopDev := Trim(Copy(sl[i], 1, p - 1));
+      mountfile := Trim(Copy(sl[i], p + 1, 999));
+      if loopDev = target then break;
+    end;
+
+    //falls doch gemountet
+    mountpoint:= getmountpoint(loopdev) ;
+    if mountpoint > '' then tryunmount(mountpoint);
+
+    for i := 0 to sl.Count - 1 do
+    begin
+      p := Pos(' ', sl[i]);
+      if p = 0 then Continue;
+      loopDev := Trim(Copy(sl[i], 1, p - 1));
+      loopmountfile := Trim(Copy(sl[i], p + 1, 999));
+      if loopmountfile = mountfile then runcommand('losetup -d ' + loopDev, s);
+    end;
+    sl.Free;
+  end
+  else
+    tryunmount(target);  // target ist mountpoint ohne loop
+end;
+
+
+
+procedure DeletePartition(const Device: string; Partition: integer);
+var
+  mbr: TMbr;
+  s: string;
+  StatRec: stat;
+begin
+  // Device prüfen (fpStat für /dev)
+  if fpStat(PChar(Device), StatRec) <> 0 then
+    raise Exception.Create('DeletePartition - Device not found: ' + Device);
+
+  // Partition Index prüfen (0..3)
+  if (Partition < 1) or (Partition > 4) then
+    raise Exception.Create('DeletePartition - Partition index out of range (1..4)');
+
+  // MBR lesen
+  mbr := Read_Mbr(Device);
+
+  // Partitionseintrag löschen
+  FillChar(mbr.PartitionEntries[Partition], 16, 0);
+
+  // MBR zurückschreiben
+  Write_mbr(mbr, Device);
+
+  // Kernel Tabelle aktualisieren
+  RunCommand('partprobe ' + Device, s);
+
+  Sleep(500); // kurz warten, bis Kernel die Partitionstabelle übernommen hat
+end;
 
 procedure EnsureEnoughSpace(const FilePath: string; NewSize: int64);
 var
@@ -394,13 +630,15 @@ end;
 procedure Listboxaddscroll(listbox: tlistbox; item: string);
 var
   topindex: integer;
-  Visible, ih: integer;
+  Visible, ih, Count: integer;
 begin  // qt5 itemheight immer 0  - selbst messen oder ownerdrawfixed
-  listbox.Items.add(item);
+  Count := listbox.Items.add(item);
   //  ih := listbox.Canvas.TextHeight('Wy') + 4;
   ih := listbox.ItemHeight;
   Visible := ListBox.ClientHeight div ih;
-  topindex := ListBox.Items.Count - Visible + 2;
+  //topindex := ListBox.Items.Count - Visible + 2;
+  topindex := Count - Visible + 2;
+
   if topindex < 0 then topindex := 0;
   ListBox.TopIndex := topindex;
   listbox.Repaint;
@@ -414,96 +652,76 @@ begin
 end;
 
 
-function is_mounted(mount: string; var mountpoint: string; var device: string): boolean;
+function TryUnmount(const Mp: string): boolean;
 var
-  sl: TStringList;
-  line: string;
-  parts: TStringArray;
-  i: integer;
+  k: integer;
+  tmp: string;
 begin
-  mountpoint := '';
-  device := '';
   Result := False;
-
-  sl := TStringList.Create;
-  try
-    sl.LoadFromFile('/proc/mounts');
-    for i := 0 to sl.Count - 1 do
+  for k := 0 to 3 do
+  begin
+    case k of
+      0: RunCommand('umount ' + Mp, tmp);
+      1: RunCommand('umount -l ' + Mp, tmp);
+      2: RunCommand('umount -f ' + Mp, tmp);
+      3: RunCommand('fuser -km ' + Mp, tmp);
+    end;
+    Sleep(700);
+    if not IsMountedExact(Mp) then
     begin
-      line := sl[i];
-      parts := line.Split([' ']);
-      if Length(parts) >= 2 then
+      Result := True;
+      Exit;
+    end;
+  end;
+end;
+
+
+
+
+function IsMountedExact(const Mp: string): boolean;
+var
+  t: TStringList;
+  l, d, m: string;
+begin
+  Result := False;
+  t := TStringList.Create;
+  try
+    t.LoadFromFile('/proc/mounts');
+    for l in t do
+    begin
+      ParseMountLine(l, d, m);
+      if m = Mp then
       begin
-        if (parts[0] = mount) or (parts[1] = mount) then
-        begin
-          device := parts[0];
-          mountpoint := parts[1];
-          Result := True;
-          Exit;
-        end;
+        Result := True;
+        Exit;
       end;
     end;
   finally
-    sl.Free;
+    t.Free;
   end;
 end;
 
-
-
-procedure SaveUmount(mount: string; listbox: TListBox);
+procedure ParseMountLine(const L: string; out Device, Mp: string);
 var
-  s: string;
-  dev, mountpt: string;
-  i: integer;
+  tmp: TStringList;
 begin
-  listboxaddscroll(listbox, 'Umount: ' + mount);
-
-  if not is_mounted(mount, dev, mountpt) then
-  begin
-    listboxaddscroll(listbox, 'Not mounted: ' + mount);
-    Exit;
-  end;
-
-
-  for i := 0 to 4 do
-  begin
-    if not is_mounted(mount, dev, mountpt) then
+  Device := '';
+  Mp := '';
+  tmp := TStringList.Create;
+  try
+    tmp.StrictDelimiter := True;
+    tmp.Delimiter := ' ';
+    tmp.DelimitedText := L;
+    if tmp.Count >= 2 then
     begin
-      Exit;
+      Device := tmp[0];
+      Mp := tmp[1];
     end;
-
-    case i of
-      0: begin
-        //        listboxaddscroll(listbox, '→ umount');
-        runcommand('umount ' + mountpt, s);
-      end;
-      1: begin
-        //        listboxaddscroll(listbox, '→ lazy umount (-l)');
-        runcommand('umount -l ' + mountpt, s);
-      end;
-      2: begin
-        //        listboxaddscroll(listbox, '→ force umount (-f)');
-        runcommand('umount -f ' + mountpt, s);
-      end;
-      3: begin
-        //        listboxaddscroll(listbox, '→ killing blocking processes (fuser -km)');
-        runcommand('fuser -km ' + mountpt, s);
-      end;
-      else
-      begin
-        //        listboxaddscroll(listbox, '→ final force umount');
-        runcommand('umount -f ' + mountpt, s);
-      end;
-    end;
-
-    Sleep(1000);
+  finally
+    tmp.Free;
   end;
-
-  if is_mounted(mount, dev, mountpt) then
-    raise Exception.Create('ERROR: Still mounted: ' + mountpt)
-  else
-    listboxaddscroll(listbox, 'Successfully unmounted');
 end;
+
 
 
 
@@ -517,24 +735,6 @@ begin
   for l := 1 to l do s := ch + s;
   while utf8length(s) < len do s := s + ch;
   Result := s;
-end;
-
-function getStringAfterKeyword(s, keyword: ansistring): string;
-var
-  p, x: integer;
-  st, sx: ansistring;
-begin
-  p := pos(keyword, s);
-  Delete(s, 1, p + length(keyword) - 1);
-  s := trim(s);
-  st := '';
-  for x := 1 to length(s) do
-  begin
-    sx := copy(s, x, 1);
-    if sx < #33 then break;
-    st := st + sx;
-  end;
-  Result := st;
 end;
 
 
@@ -911,43 +1111,92 @@ begin
   end;
 end;
 
-
-
-
-procedure Write_mbr(mbr: tmbr; filename: string);
+function GenerateUUID: string;
 var
-  mbr_writestream: tfilestream;
+  i: integer;
+  Hex: array[0..15] of byte;
 begin
+  for i := 0 to 15 do
+    Hex[i] := Random(256);
+
+  // RFC4122 Version 4 UUID
+  Hex[6] := (Hex[6] and $0F) or $40; // Version 4
+  Hex[8] := (Hex[8] and $3F) or $80; // Variant
+
+  Result := Format('%2.2x%2.2x%2.2x%2.2x-%2.2x%2.2x-%2.2x%2.2x-%2.2x%2.2x-%2.2x%2.2x%2.2x%2.2x%2.2x%2.2x', [Hex[0], Hex[1], Hex[2], Hex[3], Hex[4], Hex[5], Hex[6], Hex[7], Hex[8], Hex[9], Hex[10], Hex[11], Hex[12], Hex[13], Hex[14], Hex[15]]);
+end;
+
+
+
+procedure PrepareWLAN(const Device, SSID, PSK: string);
+var
+  P1, P2: string;
+  M1, M2: string;
+  s: ansistring;
+  NMDir, NMFile: string;
+  UUID: string;
+
+  procedure WriteTextFile(const FileName: string; const Lines: array of string);
+  var
+    F: TextFile;
+    i: integer;
+  begin
+    ForceDirectories(ExtractFileDir(FileName));
+    AssignFile(F, FileName);
+    Rewrite(F);
+    for i := 0 to High(Lines) do
+      WriteLn(F, Lines[i]);
+    CloseFile(F);
+  end;
+
+begin
+  // Partitionen ermitteln
+  P1 := partitionname(Device, 1);
+  P2 := partitionname(Device, 2);
+
+  M1 := '/images/tmp_boot';
+  M2 := '/images/tmp_root';
+
+  ForceDirectories(M1);
+  ForceDirectories(M2);
+
   try
-    try
-      mbr_writestream := tfilestream.Create(Filename, fmOpenReadWrite or fmShareDenyNone);
-    except
-      on E: Exception do
-      begin
-        raise Exception.Create('error opening file/device for writing mbr to: ' + filename);
-      end;
-    end;
-    mbr_writestream.position := 0;
-    if mbr_writestream.Write(mbr, 512) <> 512 then raise Exception.Create('error writing mbr to file/device: ' + filename);
+    // Vorherige Mounts entfernen
+    RunCommand('umount', [M1], s);
+    RunCommand('umount', [M2], s);
+
+    // Partitionen mounten
+    if not RunCommand('mount', [P1, M1], s) then
+      raise Exception.Create('Failed to mount boot: ' + s);
+    if not RunCommand('mount', [P2, M2], s) then
+      raise Exception.Create('Failed to mount root: ' + s);
+
+    // --- NetworkManager File ---
+    NMDir := M2 + '/etc/NetworkManager/system-connections';
+    NMFile := NMDir + '/' + SSID + '.nmconnection';
+    UUID := GenerateUUID;
+
+    WriteTextFile(NMFile, ['[connection]', 'id=' + SSID, 'uuid=' + UUID, 'type=wifi', '[wifi]', 'mode=infrastructure', 'ssid=' + SSID, 'hidden=true', '[wifi-security]', 'key-mgmt=wpa-psk',
+      'psk=' + PSK, '[ipv4]', 'method=auto', '[ipv6]', 'addr-gen-mode=default', 'method=auto', '[proxy]']);
+
+    // Rechte korrekt setzen
+    RunCommand('chmod', ['600', NMFile], s);
+    RunCommand('chown', ['root:root', NMFile], s);
+
+    // --- NetworkManager State setzen ---
+    WriteTextFile(M2 + '/var/lib/NetworkManager/NetworkManager.state', ['[main]', 'NetworkingEnabled=true', 'WirelessEnabled=true', 'WWANEnabled=true']);
+
   finally
-    FreeAndNil(mbr_writestream);
+    RunCommand('sync', s);
+    RunCommand('umount', [M1], s);
+    RunCommand('umount', [M2], s);
+    RemoveDir(M1);
+    RemoveDir(M2);
   end;
 end;
 
 
-function PartitionNamefromDevice(device: string; PartitionNumber: integer): string;
-var
-  sl: TStringList;
-  s: string;
-begin
-  Result := '';
-  if not RunCommand('lsblk ' + device + ' -rn -o NAME', s) then  exit;
-  sl := TStringList.Create;
-  sl.Text := s;
-  if sl.Count < partitionnumber + 1 then exit;
-  Result := '/dev/' + sl[partitionnumber];
-  sl.Free;
-end;
+
 
 function ReplacePartUUIDInCmdline(Device: string; NewID: string): string;
 var
@@ -958,10 +1207,10 @@ var
 begin
   Result := ''; // leer = kein Fehler
   try
-    PartitionDevice := PartitionNameFromDevice(Device, 1); // z.B. /dev/sdX1
+    PartitionDevice := PartitionName(Device, 1); // z.B. /dev/sdX1
     MountPoint := '/images/tmp_mount';
     CommandFile := MountPoint + '/cmdline.txt';
-
+    RunCommand('sync', s);
     RunCommand('umount', [MountPoint], s);
     RunCommand('umount', ['-l', PartitionDevice], s);
     RunCommand('umount', ['-f', PartitionDevice], s);
@@ -977,6 +1226,7 @@ begin
 
     if not FileExists(CommandFile) then
     begin
+      RunCommand('sync', s);
       RunCommand('umount', [MountPoint], s);
       RemoveDir(MountPoint);
       raise Exception.Create('cmdline.txt not found on partition');
@@ -1015,7 +1265,7 @@ begin
     finally
       sl.Free;
     end;
-
+    RunCommand('sync', s);
     RunCommand('umount', [MountPoint], s);
     RemoveDir(MountPoint);
 
@@ -1023,6 +1273,7 @@ begin
     on E: Exception do
     begin
       // versuche Aufräumen auch bei Fehlern
+      RunCommand('sync', s);
       RunCommand('umount', [MountPoint], s);
       RemoveDir(MountPoint);
 
@@ -1045,9 +1296,10 @@ begin
 
   try
     // Partition Device 2 ermitteln
-    PartitionDevice := partitionnamefromdevice(device, 2);
+    PartitionDevice := partitionname(device, 2);
 
     // Sicher unmounten (unbedingt prüfen ob benötigt)
+    RunCommand('sync', s);
     RunCommand('umount', [uMountPoint], s);
     RunCommand('umount', ['-l', PartitionDevice], s);
     RunCommand('umount', ['-f', PartitionDevice], s);
@@ -1067,6 +1319,7 @@ begin
     // Prüfen ob fstab existiert
     if not FileExists(uMountPoint + '/etc/fstab') then
     begin
+      RunCommand('sync', s);
       RunCommand('umount', [uMountPoint], s);
       RemoveDir(uMountPoint);
       raise Exception.Create('/etc/fstab not found on partition');
@@ -1105,7 +1358,7 @@ begin
     finally
       sl.Free;
     end;
-
+    RunCommand('sync', s);
     RunCommand('umount', [uMountPoint], s);
     RemoveDir(uMountPoint);
 
@@ -1113,12 +1366,97 @@ begin
     on E: Exception do
     begin
       // Aufräumen bei Fehler
+      RunCommand('sync', s);
       RunCommand('umount', [uMountPoint], s);
       RemoveDir(uMountPoint);
       Result := E.Message;
     end;
   end;
 end;
+
+
+procedure ChangeHost(device: string; newHostName: string);
+var
+  sl: TStringList;
+  i: integer;
+  line: string;
+  PartitionDevice: ansistring;
+  uMountPoint: ansistring;
+  s: ansistring;
+begin
+  uMountPoint := '/images/tmp_mount';
+  sl := TStringList.Create;
+
+  try
+    // Partition Device 2 ermitteln
+    PartitionDevice := PartitionName(device, 2);
+
+    // Mountpoint vorbereiten
+    if not DirectoryExists(uMountPoint) then
+      if not ForceDirectories(uMountPoint) then
+        raise Exception.Create('Failed to create mount directory: ' + uMountPoint);
+
+    fpchmod(uMountPoint, &777);
+
+    // Partition mounten
+    if not RunCommand('mount', [PartitionDevice, uMountPoint], s) then
+      raise Exception.Create('Failed to mount partition ' + PartitionDevice + ': ' + s);
+
+    // Prüfen ob /etc/hosts existiert
+    if not FileExists(uMountPoint + '/etc/hosts') then
+      raise Exception.Create('/etc/hosts not found on partition');
+
+    // /etc/hosts laden
+    sl.LoadFromFile(uMountPoint + '/etc/hosts');
+
+    // Zeile ersetzen
+    for i := 0 to sl.Count - 1 do
+    begin
+      line := TrimLeft(sl[i]);
+
+      // exakte Erkennung: beginnt mit "127.0.1.1" + whitespace
+      if (Copy(line, 1, 9) = '127.0.1.1') and ((Length(line) = 9) or (line[10] in [' ', #9])) then
+      begin
+        sl[i] := '127.0.1.1' + #9 + newHostName;
+        Break;
+      end;
+    end;
+
+    sl.SaveToFile(uMountPoint + '/etc/hosts');
+
+    // /etc/hostname neu schreiben
+    sl.Clear;
+    sl.Add(newHostName);
+    sl.SaveToFile(uMountPoint + '/etc/hostname');
+
+  finally
+    sl.Free;
+    RunCommand('sync', s);
+    RunCommand('umount', [uMountPoint], s);
+    RunCommand('sync', s);
+    RemoveDir(uMountPoint);
+  end;
+end;
+
+procedure EnableSSH(device: string);
+var
+  s: ansistring;
+  MountPoint: ansistring;
+  F: TextFile;
+begin
+  MountPoint := '/images/tmp_mount1';
+  Tryunmount(Mountpoint);
+
+  mountpartition(device, 1, mountpoint);
+  // ssh Datei anlegen
+  AssignFile(F, MountPoint + '/ssh');
+  Rewrite(F);
+  CloseFile(F);
+  RunCommand('sync', s);
+  Tryunmount(mountpoint);
+end;
+
+
 
 
 procedure replacePartuuidinmbr(device: string; NewSignature: dword);
@@ -1134,9 +1472,6 @@ end;
 
 procedure MakeImageFirst2Partitions(Sourcedrive, Filename: ansistring; ListBox: TListBox);
 var
-  done: int64;
-  line: string;
-  sl: TStringList;
   info: string;
   s: string;
   bps: double;
@@ -1181,8 +1516,20 @@ begin
     tocopy := bytestocopy;
     toread := tocopy;
 
-    DestStream := TFileStream.Create(Filename, fmCreate or fmOpenWrite or fmShareDenyNone);
-    SourceStream := TFileStream.Create(Sourcedrive, fmOpenRead or fmShareDenyNone);
+
+    try
+      DestStream := TFileStream.Create(Filename, fmCreate or fmOpenWrite or fmShareDenyNone);
+    except
+      on E: Exception do
+        raise Exception.CreateFmt('Failed to create output file "%s": %s', [Filename, E.Message]);
+    end;
+
+    try
+      SourceStream := TFileStream.Create(SourceDrive, fmOpenRead or fmShareDenyNone);
+    except
+      on E: Exception do
+        raise Exception.CreateFmt('Failed to open source drive "%s": %s', [SourceDrive, E.Message]);
+    end;
 
     // Read MBR for safety (again)
     gelesen := SourceStream.Read(MBR, 512);
@@ -1309,6 +1656,7 @@ begin
   end;
 end;
 
+
 procedure FinalizeMBRUpdate(Source, Destination: string; delpar3, delpar4: boolean);
 var
   mbr_image, mbr_old: TMBR;
@@ -1376,7 +1724,7 @@ var
   done, tocopy: int64;
   lastUpdate: uint64;
   speedMBs, etaSecs: double;
-  lastline: integer;
+  //  lastline: integer;
   ReadCount, WrittenCount: int64;
   etaStr, status, st: string;
   totalSecs, h, m, s: integer;
@@ -1416,7 +1764,8 @@ begin
 
     lastUpdate := nowTick;
 
-    lastline := box.Items.Add('');
+    //    lastline :=
+    box.Items.Add('');
     starttick := gettickcount64;
 
     repeat
@@ -1657,11 +2006,9 @@ begin
 end;
 
 
-
-
-procedure ClearEmptyBlocks(listbox: tlistbox; Mounted: TMountedPartition);
+procedure ClearEmptyBlocks(listbox: tlistbox; mountpoint: string);
 const
-  BlockSize = 16 * 1024 * 1024; // 16 MiB          var
+  BlockSize = 16 * 1024 * 1024; // 16 MiB
 var
   Stream: TFileStream;
   BytesWritten, TotalWritten: int64;
@@ -1669,9 +2016,8 @@ var
   buffer: array of byte;
 begin
   try
-    ListBoxaddscroll(listbox, 'overwriting free blocks on partition ' + IntToStr(mounted.PartitionNumber));
     listboxaddscroll(listbox, '');
-    filepath := mounted.MountPoint + '/fillfile';
+    filepath := MountPoint + '/fillfile';
     setlength(buffer, blocksize);
     FillChar(Buffer[0], blockSize, 255);
     try
@@ -1699,9 +2045,6 @@ begin
       end;
     end;
     until BytesWritten <> BlockSize;
-
-
-
   finally
     if Assigned(Stream) then
     begin

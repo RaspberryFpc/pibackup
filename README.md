@@ -34,7 +34,10 @@ Backups are safe, flexible, and can be restored directly from `.img` or `.img.zs
 - Existing partitions remain intact by default  
 - Optional selective partition deletion  
 - Filesystem auto-resized to fit partition (manual override possible)  
-
+### The following options are especially useful for setting up a fresh Raspberry Pi OS and headless systems.
+- Enable SSH on first boot
+- Set or change username and/or password
+- Configure Wi-Fi – set or change SSID and password (PSK)
 ---
 
 ## Graphical Interface
@@ -43,7 +46,6 @@ Backups are safe, flexible, and can be restored directly from `.img` or `.img.zs
 - Partition preview in grid view  
 - Progress indicators for backup & restore  
 - Clear status and error messages  
-
 ---
 
 ## Exclude File

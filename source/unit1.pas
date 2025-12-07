@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, Grids,
   Process, inifiles, fileutil, lazutf8, Unix, baseunix, LCLIntf, rkutils, zstd,
   LCLType, MaskEdit, ExtCtrls, ComCtrls, excludeParser, DateUtils, fpjson,
-  jsonparser, Types, exethread;
+  jsonparser, Types, exethread, usersetup;
 
 type
   partitioninfo = record
@@ -30,11 +30,16 @@ type
   TForm1 = class(TForm)
     BtSaveLog: TButton;
     Button5: TButton;
-    Button2: TButton;
     Button4: TButton;
     ButtonCreateImage: TButton;
-    ButtonWriteImage: TButton;
+    ButtonWriteImagetodevice: TButton;
     CheckBox1: TCheckBox;
+    EDhost: TEdit;
+    EDuserpassword: TEdit;
+    edit_wlanssid: TEdit;
+    edit_wlanpassword: TEdit;
+    EDusername: TEdit;
+    CBEnableSSH: TCheckBox;
     CheckBoxChangeDeviceID: TCheckBox;
     CheckBox_Delimg: TCheckBox;
     CheckBox_exclude: TCheckBox;
@@ -45,9 +50,14 @@ type
     ComboBox1: TComboBox;
     Edit1: TEdit;
     Edit2: TEdit;
-    Edit3: TEdit;
+    Eddeviceid: TEdit;
+    Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label8: TLabel;
     Label_ManSelected: TLabel;
     ListBox1: TListBox;
     OpenDialog1: TOpenDialog;
@@ -63,13 +73,16 @@ type
     StringGrid1: TStringGrid;
     procedure BtSaveLogClick(Sender: TObject);
     procedure ButtonCreateImageClick(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure Button5Click(Sender: TObject);
-    procedure ButtonWriteImageClick(Sender: TObject);
+    procedure ButtonWriteImagetodeviceClick(Sender: TObject);
+    procedure CBEnableSSHChange(Sender: TObject);
+    procedure ComboBox1DropDown(Sender: TObject);
+    procedure EDhostChange(Sender: TObject);
     procedure Edit1DblClick(Sender: TObject);
-    procedure Edit3Change(Sender: TObject);
-    procedure Edit3KeyPress(Sender: TObject; var Key: char);
+    procedure EddeviceidChange(Sender: TObject);
+    procedure EddeviceidKeyPress(Sender: TObject; var Key: char);
+    procedure edit_wlanssidChange(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -88,12 +101,12 @@ type
 
   end;
 
+ const
+  p2mpoint = '/pi_images/p2_pibackup_img';
+  p1mpoint = '/pi_images/p1_pibackup_img';
+
 var
   Form1: TForm1;
-
-
-  MountedPartition1, MountedPartition2: TMountedPartition;
-
 
 
 implementation
@@ -105,8 +118,8 @@ implementation
 const
   appname = 'PiBackup  v1.5.6';
   ininame = 'pibackup.ini';
-  p2mpoint = '/pi_images/p2_pibackup_img';
-  p1mpoint = '/pi_images/p1_pibackup_img';
+
+
 
   par1 = 2;
   par2 = 3;
@@ -154,7 +167,6 @@ end;
 
 function WaitForAllThreads(basethreads, TimeoutMS: integer): boolean;
 var
-  SR: TSearchRec;
   Start: QWord;
   threadcount: integer;
 begin
@@ -238,12 +250,17 @@ begin
 end;
 
 
-procedure TForm1.Edit3KeyPress(Sender: TObject; var Key: char);
+procedure TForm1.EddeviceidKeyPress(Sender: TObject; var Key: char);
 begin
   if (key = #127) or (key = #8) then exit;  // #127 = Delete   #8 = Backspace
   Key := UpCase(Key);
   if (not CheckBoxChangeDeviceID.Checked) or (not (Key in ['0'..'9', 'A'..'F'])) then
     Key := #0;  // ungültige Taste unterdrücken
+end;
+
+procedure TForm1.edit_wlanssidChange(Sender: TObject);
+begin
+
 end;
 
 
@@ -261,9 +278,16 @@ var
   availableSectors, minimumSectors: int64;
   minsec1MB, manuellsize, par2Size, scrollrange, av: int64;
 
+
 procedure Tform1.GridUpdate(Sender: TObject);
 begin
+  if (sender = edit1) or (Sender = radiobutton2)then
+      if radiobutton2.Checked then
+                      if fileexists(edit1.text) then
+                                  ReadUserInfo(edit1.text);
+
   // Bei ScrollBar-Änderung nur die Größe aktualisieren
+
   if Sender = ScrollBar1 then
   begin
     manuellsize := minsec1mb + ScrollBar1.Position;
@@ -356,7 +380,7 @@ begin
         ScrollBar1.Min := 0;
         ScrollBar1.Max := 0;
         ScrollBar1.Position := 0;
-        Label_ManSelected.Caption := 'not enough free space';
+        Label_ManSelected.Caption := 'not enough free space on Target';
         Exit;
       end;
 
@@ -379,7 +403,7 @@ begin
       if not CheckBoxChangeDeviceID.Checked then
       begin
         s := IntToHex(imagembr.DiskSignature, 8);
-        Edit3.Text := s;
+        Eddeviceid.Text := s;
       end;
     end;
   end;
@@ -529,8 +553,11 @@ begin
   Delete(user, Length(user), 1);
   gridupdate(self);
 
-end;
+  // cleanup
 
+  CloseMountTarget(p1mpoint);
+  CloseMountTarget(p2mpoint);
+end;
 
 
 
@@ -575,10 +602,15 @@ var
   deststream: TFileStream;
   mbrwork: TMbr;
   sectorsperblock, p, p1: integer;
-  command, dirpath: string;
+   dirpath: string;
+  looppartition:string;
 begin
+  if not RunsAsRoot then
+    raise Exception.Create('This application must be run as root. Please start with sudo.');
+
   if ButtonCreateImage.Caption = 'cancel' then
   begin
+
     terminate_all := True;
     listbox1.items.add('Operation canceled by user.');
     ButtonCreateImage.Enabled := False;
@@ -593,7 +625,6 @@ begin
   Application.ProcessMessages;
   write_ini;
 
-
   try
     sourcedrive := combobox1.Text;
     sourcedrive := copy(sourcedrive, 1, pos(':', sourcedrive) - 1);
@@ -603,30 +634,34 @@ begin
     if (mp = '/') or (mp = '/boot') or (mp = '/boot/firmware') then
       raise Exception.Create('Destination is on a protected system partition: ' + mp);
 
-
     listboxaddscroll(listbox1, '');
     listboxaddscroll(listbox1, starline(Sourcedrive + ' -> ' + ExtractFileName(Filename), 80));
     listboxaddscroll(listbox1, '');
 
     if terminate_all then raise Exception.Create('Failed to create image from source drive');
 
-    MakeImageFirst2Partitions(sourcedrive, filename, listbox1);
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+       MakeImageFirst2Partitions(sourcedrive, filename, listbox1);
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     mbrwork := Read_MBR(sourcedrive);
     FillChar(mbrwork.PartitionEntries[3], SizeOf(mbrwork.PartitionEntries[3]), 0);
     FillChar(mbrwork.PartitionEntries[4], SizeOf(mbrwork.PartitionEntries[4]), 0);
     Write_MBR(mbrwork, filename);
 
-
-    MountPartitionFromImage(filename, 2, p2mpoint, MountedPartition2, listbox1);
-    unmountonly(mountedPartition2, listbox1);
-
     // check image
-    s := PrexeThreadedBash('/sbin/e2fsck -fy ' + mountedpartition2.LoopDevice, listbox1);
+    looppartition:=CreateLoopPartition(FileName,2);
+    s := PrexeThreadedBash('/sbin/e2fsck -fy ' + looppartition, listbox1);
     if Pos('errors', LowerCase(s)) > 0 then
-      Listboxaddscroll(listbox1, 'Filesystem check reported errors');
+                       Listboxaddscroll(listbox1, 'Filesystem check reported errors');
+    CloseMountTarget(looppartition);
 
-    RemountPartition(mountedPartition2, listbox1);
+
+    MountPartition(filename,2,p2mpoint);
 
     // image ändern
     ModifyImage(p2mpoint);
@@ -638,8 +673,11 @@ begin
 
 
     // umount und test filesystem
-    unmountonly(mountedPartition2, listbox1);
-    s := PrexeThreadedBash('/sbin/e2fsck -fy ' + mountedpartition2.LoopDevice, listbox1);
+
+
+     CloseMountTarget(p2mpoint);
+    looppartition:=CreateLoopPartition(FileName,2);
+     s := PrexeThreadedBash('/sbin/e2fsck -fy ' + looppartition, listbox1);
     if Pos('errors', LowerCase(s)) > 0 then
       Listboxaddscroll(listbox1, 'Filesystem check reported errors');
 
@@ -647,7 +685,7 @@ begin
 
     //s := PrexeBash('/sbin/resize2fs -M -p ' + mountedpartition2.LoopDevice , listbox1);
 
-    s := PrexeThreadedBash('/sbin/resize2fs -M -p ' + mountedpartition2.LoopDevice, listbox1, progressbar1, 1);
+    s := PrexeThreadedBash('/sbin/resize2fs -M -p ' + looppartition, listbox1, progressbar1, 1);
     progressbar1.Position := progressbar1.Max;
 
 
@@ -659,7 +697,7 @@ begin
 
     // update filesize
     blocksize := -1;
-    s := runbash('blkid ' + mountedpartition2.LoopDevice);
+    s := runbash('blkid ' + looppartition);
     p := pos('BLOCK_SIZE="', s);
     Inc(p, 12);
     p1 := pos('"', s, p + 1);
@@ -670,7 +708,7 @@ begin
     //  Listboxaddscroll(listbox1, 'Blocksize: ' + IntToStr(blocksize));
     sectorsperblock := blocksize div 512;
 
-    // grüsse korrigieren
+    // grösse korrigieren
 
     mbrwork.PartitionEntries[2].PartitionSize := NewBlockCount * sectorsperblock;
     Write_MBR(mbrwork, filename);
@@ -690,21 +728,24 @@ begin
     end;
 
     // check filesystem
-    runbash('/sbin/partprobe ' + mountedpartition2.LoopDevice);
-    PrexeThreadedBash('/sbin/e2fsck -fy ' + mountedpartition2.LoopDevice, Listbox1);
+    runbash('/sbin/partprobe ' + looppartition);
+    PrexeThreadedBash('/sbin/e2fsck -fy ' + looppartition, Listbox1);
 
 
     Listboxaddscroll(listbox1, 'image-size - root only: ' + IntToStr(mbrwork.PartitionEntries[2].PartitionSize * 512) + ' bytes');
     Listboxaddscroll(listbox1, 'image-size - all: ' + IntToStr(FileSize(filename)) + ' bytes');
 
+    CloseMountTarget(looppartition);
 
-    RemountPartition(mountedPartition2, listbox1);
-    ClearEmptyBlocks(listbox1, mountedPartition2);
-    ClosePartition(mountedPartition2, ListBox1);
+    MountPartition(filename,2,p2mpoint);
+    listboxaddscroll(listbox1,'Clean empty blocks in root-image');
+    ClearEmptyBlocks(listbox1, p2mpoint);
+    CloseMountTarget(p2mpoint);
 
-    MountPartitionFromImage(filename, 1, p1mpoint, MountedPartition1, listbox1);
-    ClearEmptyBlocks(listbox1, mountedPartition1);
-    ClosePartition(mountedPartition1, ListBox1);
+    MountPartition(filename, 1, p1mpoint);
+    listboxaddscroll(listbox1,'Clean empty blocks in boot-image');
+    ClearEmptyBlocks(listbox1, p1mpoint);
+    CloseMountTarget(p1mpoint);
 
     dirpath := ExtractFilePath(filename);
     fpchown(dirpath, 1000, 1000);
@@ -729,9 +770,6 @@ begin
       Listboxaddscroll(listbox1, 'Error: ' + E.Message);
   end;
 
-
-
-
   fpchown(filename + '.zst', 1000, 1000);
   fpchmod(filename + '.zst', &666);
 
@@ -751,13 +789,6 @@ end;
 
 
 
-
-procedure TForm1.Button2Click(Sender: TObject);
-begin
-  getdrives(combobox1.Items);
-  combobox1.ItemIndex := 0;
-end;
-
 procedure TForm1.Button3Click(Sender: TObject);
 begin
   terminate_all := True;
@@ -774,24 +805,28 @@ end;
 
 
 
-procedure TForm1.ButtonWriteImageClick(Sender: TObject);
+procedure TForm1.ButtonWriteImagetodeviceClick(Sender: TObject);
 var
   workmbr: TMbr;
-  s, par2name: string;
+  s, par2name, par1name: string;
   sig: dword;
   sigtext: string;
 begin
+  if not RunsAsRoot then
+    raise Exception.Create('This application must be run as root. Please start with sudo.');
   try
-    if ButtonWriteImage.Caption = 'cancel' then
+    if ButtonWriteImagetodevice.Caption = 'cancel' then
     begin
       terminate_all := True;
       ListBoxaddscroll(listbox1, 'Operation canceled by user.');
-      ButtonWriteImage.Caption := 'write image to device';
-      ButtonWriteImage.Enabled := False;
+      ButtonWriteImagetodevice.Caption := 'write image to device';
+      ButtonWriteImagetodevice.Enabled := False;
       Exit;
     end;
 
-    ButtonWriteImage.Caption := 'cancel';
+    ButtonWriteImagetodevice.Caption := 'cancel';
+    sleep(100);
+
     terminate_all := False;
     application.ProcessMessages;
 
@@ -805,31 +840,66 @@ begin
     Listboxaddscroll(listbox1, '---------- write image to device: ' + selecteddrive + ' ----------');
     Listboxaddscroll(listbox1, '');
 
-    ImageToDeviceImgAndZstd(edit1.Text, selecteddrive, CheckBox_DelPartition3.Checked, CheckBox_DelPartition4.Checked, listbox1);
+    // delete partition1 and partition2
+    Listboxaddscroll(listbox1, '---------- preparing destination: ' + selecteddrive + ' ----------');
+    par2name := PartitionName(selecteddrive, 2);
+    par1name := PartitionName(selecteddrive, 1);
+    CloseMountTarget( par2name );
+    CloseMountTarget( par1name );
+    runcommand('partprobe ' + selecteddrive,s);
 
-    //// Get partition 2 name
-    par2name := PartitionNamefromDevice(selecteddrive, 2);
+    deletepartition(selecteddrive, 1);
+    deletepartition(selecteddrive, 2);
+    runcommand('sync', s);
+
+    s := PrexeThreadedBash('partprobe ' + selecteddrive, listbox1);
+
+
+    ImageToDeviceImgAndZstd(edit1.Text, selecteddrive, CheckBox_DelPartition3.Checked, CheckBox_DelPartition4.Checked, listbox1);
+    runcommand('sync', s);
+
+
 
     // Update MBR to resize partition 2
     workmbr := Read_MBR(selecteddrive);
     workmbr.PartitionEntries[2].PartitionSize := strtoint64(stringgrid1.Cells[parsize, par2]) div 512;  // neue grösse in sectors
     Write_MBR(workmbr, selecteddrive);
+    runcommand('sync', s);
 
     s := PrexeThreadedBash('partprobe ' + selecteddrive, listbox1);
+    sleep(1000);
+    par2name := partitionname(selecteddrive, 2);
+    runcommand('sync', s);
+    CloseMountTarget(par2name);
 
     PrexeThreadedBash('e2fsck -fy ' + par2name, listbox1);
     ListBoxaddscroll(listbox1, 'resize...');
     s := PrexeThreadedBash('resize2fs ' + par2name, listbox1, progressbar1, 1);
+    PrexeThreadedBash('e2fsck -fy ' + par2name, listbox1);
 
-    ListBoxaddscroll(listbox1, 'partprobe - reloading partition table');
+
+  //  ListBoxaddscroll(listbox1, 'partprobe - reloading partition table');
     s := PrexeThreadedBash('partprobe ' + selecteddrive, listbox1);
+    sleep(500);
 
     Application.ProcessMessages;
+
+
+    //testparameter
+ //   cbenablessh.Checked := True;
+    edhost.Text := 'myhost';
+    edusername.Text := 'pi';
+    eduserpassword.Text := '2254';
+    edit_wlanssid.Text := 'FunkTurm2';
+    edit_wlanpassword.Text := '7043558374746653';
+
+
+
 
     if CheckBoxChangeDeviceID.Checked then
     begin
       // ListBox1.Items.Add('Changing device signature');
-      s := Trim(edit3.Text);
+      s := Trim(Eddeviceid.Text);
       sig := StrToInt('$' + s);
       sigtext := LowerCase(HexStr(sig, 8));
 
@@ -846,6 +916,15 @@ begin
 
     end;
 
+
+    if edhost.Text > '' then Changehost(selecteddrive, edhost.Text);
+    if CBEnableSSH.Checked then EnableSSH(selecteddrive);
+    if (edusername.Text > '') and (eduserpassword.Text > '') then
+      CreateUserConfFromDevice(selecteddrive, EDusername.Text, EDuserpassword.Text, ListBox1);
+
+    if (Edit_wlanssid.Text > '') and (Edit_wlanpassword.Text > '') then
+      PrepareWLAN(selecteddrive, edit_wlanssid.Text, edit_wlanpassword.Text);
+
     Listboxaddscroll(listbox1, '---------- all done ----------');
     Listboxaddscroll(listbox1, '');
 
@@ -856,8 +935,26 @@ begin
     end;
   end;
 
-  ButtonWriteImage.Caption := 'write image to device';
-  ButtonWriteImage.Enabled := True;
+  ButtonWriteImagetodevice.Caption := 'write image to device';
+  ButtonWriteImagetodevice.Enabled := True;
+end;
+
+procedure TForm1.CBEnableSSHChange(Sender: TObject);
+begin
+
+end;
+
+
+
+procedure TForm1.ComboBox1DropDown(Sender: TObject);
+begin
+   getdrives(combobox1.Items);
+   combobox1.itemindex:=0;
+end;
+
+procedure TForm1.EDhostChange(Sender: TObject);
+begin
+
 end;
 
 
@@ -873,19 +970,21 @@ begin
   begin
     if edit1.Text > '' then openDialog1.InitialDir := extractfilepath(edit1.Text);
     if opendialog1.Execute then destname := opendialog1.FileName;
+    ReadUserInfo(destname);
   end;
   edit1.Text := Destname;
+
 end;
 
 
 
-procedure TForm1.Edit3Change(Sender: TObject);
+procedure TForm1.EddeviceidChange(Sender: TObject);
 var
   s: string;
 begin
-  s := edit3.Text;
+  s := Eddeviceid.Text;
   s := copy(s, 1, 8);
-  edit3.Text := s;
+  Eddeviceid.Text := s;
 end;
 
 

@@ -223,6 +223,9 @@ begin
     Compressblock(ZSTD_e_end);
 
     // Abschluss
+
+    s := Format('Speed: %.2f MB/s  ETA: %s  Ratio: %.2f:1', [speedMBs, FormatDateTime('nn:ss', 0), compressionRatio]);
+    Listboxupdate(listbox, s);
     form1.ProgressBar1.Position := form1.ProgressBar1.Max;
     listboxaddscroll(Listbox, '');
     listboxaddscroll(Listbox, 'compressed file size is now: ' + IntToStr(totalWritten div (1024 * 1024)) + ' MiB');

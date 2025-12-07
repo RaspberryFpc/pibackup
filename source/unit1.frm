@@ -31,17 +31,7 @@ object Form1: TForm1
     TabOrder = 1
     Text = 'Laufwerk'
     OnChange = GridUpdate
-  end
-  object Button2: TButton
-    AnchorSideTop.Control = ComboBox1
-    AnchorSideTop.Side = asrCenter
-    Left = 730
-    Height = 30
-    Top = 48
-    Width = 126
-    Caption = 'reload'
-    TabOrder = 2
-    OnClick = Button2Click
+    OnDropDown = ComboBox1DropDown
   end
   object Button4: TButton
     AnchorSideTop.Control = Edit1
@@ -51,7 +41,7 @@ object Form1: TForm1
     Top = 78
     Width = 126
     Caption = 'select'
-    TabOrder = 3
+    TabOrder = 2
     OnClick = Edit1DblClick
   end
   object Label2: TLabel
@@ -96,7 +86,7 @@ object Form1: TForm1
     ItemHeight = 20
     ParentFont = False
     Style = lbOwnerDrawFixed
-    TabOrder = 4
+    TabOrder = 3
   end
   object StringGrid1: TStringGrid
     AnchorSideTop.Control = Edit1
@@ -112,7 +102,7 @@ object Form1: TForm1
     ParentFont = False
     RowCount = 6
     ScrollBars = ssNone
-    TabOrder = 5
+    TabOrder = 4
     ColWidths = (
       75
       124
@@ -135,7 +125,7 @@ object Form1: TForm1
     Checked = True
     Font.Style = [fsBold]
     ParentFont = False
-    TabOrder = 7
+    TabOrder = 6
     TabStop = True
     OnChange = RadioButton1Change
   end
@@ -151,7 +141,7 @@ object Form1: TForm1
     Caption = 'Restore Backup or other Image'
     Font.Style = [fsBold]
     ParentFont = False
-    TabOrder = 6
+    TabOrder = 5
     OnChange = RadioButton2Change
   end
   object Panel1: TPanel
@@ -169,7 +159,7 @@ object Form1: TForm1
     BevelInner = bvLowered
     ClientHeight = 100
     ClientWidth = 995
-    TabOrder = 8
+    TabOrder = 7
     object CheckBox_RemoveSSH: TCheckBox
       Left = 15
       Height = 21
@@ -300,13 +290,16 @@ object Form1: TForm1
     BevelInner = bvLowered
     ClientHeight = 100
     ClientWidth = 995
-    TabOrder = 9
+    TabOrder = 8
     Visible = False
     object ScrollBar1: TScrollBar
-      Left = 128
-      Height = 22
-      Top = 14
-      Width = 592
+      AnchorSideRight.Control = Eddeviceid
+      AnchorSideRight.Side = asrBottom
+      Left = 48
+      Height = 14
+      Top = 6
+      Width = 560
+      Anchors = [akTop, akRight]
       PageSize = 0
       TabOrder = 0
       OnChange = ScrollBar1Change
@@ -315,77 +308,196 @@ object Form1: TForm1
       AnchorSideLeft.Side = asrCenter
       AnchorSideTop.Control = ScrollBar1
       AnchorSideTop.Side = asrCenter
-      Left = 728
+      Left = 616
       Height = 18
-      Top = 16
-      Width = 112
+      Top = 4
+      Width = 288
       AutoSize = False
       Caption = '0 MB'
       Font.Height = 16
       ParentFont = False
     end
     object CheckBoxChangeDeviceID: TCheckBox
-      AnchorSideTop.Control = CheckBox_DelPartition3
+      AnchorSideTop.Control = Eddeviceid
       AnchorSideTop.Side = asrCenter
-      Left = 477
+      Left = 352
       Height = 21
-      Top = 58
+      Top = 23
       Width = 128
       Anchors = [akTop]
       Caption = 'change device id'
       TabOrder = 1
       OnChange = GridUpdate
     end
-    object Edit3: TEdit
+    object Eddeviceid: TEdit
       AnchorSideTop.Control = CheckBox_DelPartition3
       AnchorSideTop.Side = asrCenter
-      Left = 622
+      Left = 488
       Height = 23
-      Top = 57
-      Width = 104
+      Top = 22
+      Width = 120
       Alignment = taCenter
-      Anchors = [akTop]
+      Anchors = []
       TabOrder = 2
-      OnChange = Edit3Change
-      OnKeyPress = Edit3KeyPress
+      OnChange = EddeviceidChange
+      OnKeyPress = EddeviceidKeyPress
     end
     object CheckBox_DelPartition4: TCheckBox
-      AnchorSideTop.Control = CheckBox_DelPartition3
+      AnchorSideTop.Control = Eddeviceid
       AnchorSideTop.Side = asrCenter
-      Left = 248
+      Left = 192
       Height = 21
-      Top = 58
+      Top = 23
       Width = 129
+      Anchors = [akTop]
       Caption = 'delete partition 4'
       TabOrder = 3
       OnChange = GridUpdate
     end
     object CheckBox_DelPartition3: TCheckBox
+      AnchorSideTop.Control = Eddeviceid
       AnchorSideTop.Side = asrCenter
-      Left = 62
+      Left = 48
       Height = 21
-      Top = 58
+      Top = 23
       Width = 137
-      Anchors = [akLeft]
+      Anchors = [akTop]
       Caption = 'delete  partition 3 '
       DoubleBuffered = False
       ParentDoubleBuffered = False
       TabOrder = 4
       OnChange = GridUpdate
     end
-    object ButtonWriteImage: TButton
+    object ButtonWriteImagetodevice: TButton
       AnchorSideTop.Control = CheckBox_DelPartition3
       AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = Edit3
+      AnchorSideRight.Control = Panel2
       AnchorSideRight.Side = asrBottom
-      Left = 814
+      AnchorSideBottom.Control = edit_wlanpassword
+      Left = 784
       Height = 30
-      Top = 53
+      Top = 35
       Width = 164
-      Anchors = [akTop]
+      Anchors = [akRight, akBottom]
+      BorderSpacing.Right = 45
+      BorderSpacing.Bottom = 9
       Caption = 'Write image to device'
       TabOrder = 5
-      OnClick = ButtonWriteImageClick
+      OnClick = ButtonWriteImagetodeviceClick
+    end
+    object CBEnableSSH: TCheckBox
+      AnchorSideTop.Control = EDhost
+      AnchorSideTop.Side = asrCenter
+      Left = 48
+      Height = 21
+      Top = 75
+      Width = 94
+      Anchors = [akTop]
+      Caption = 'Enable SSH'
+      TabOrder = 6
+      OnChange = CBEnableSSHChange
+    end
+    object edit_wlanssid: TEdit
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = EDhost
+      AnchorSideTop.Side = asrCenter
+      Left = 416
+      Height = 23
+      Top = 74
+      Width = 192
+      Anchors = [akTop]
+      TabOrder = 7
+      OnChange = edit_wlanssidChange
+    end
+    object edit_wlanpassword: TEdit
+      AnchorSideLeft.Control = edit_wlanssid
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = EDhost
+      AnchorSideTop.Side = asrCenter
+      Left = 732
+      Height = 23
+      Top = 74
+      Width = 256
+      Anchors = [akTop]
+      TabOrder = 8
+    end
+    object EDusername: TEdit
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Side = asrCenter
+      Left = 88
+      Height = 23
+      Top = 48
+      Width = 164
+      TabOrder = 9
+    end
+    object EDuserpassword: TEdit
+      AnchorSideLeft.Control = EDusername
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = EDusername
+      AnchorSideTop.Side = asrCenter
+      Left = 328
+      Height = 23
+      Top = 48
+      Width = 280
+      Anchors = [akTop]
+      TabOrder = 10
+    end
+    object EDhost: TEdit
+      Left = 192
+      Height = 23
+      Top = 74
+      Width = 180
+      TabOrder = 11
+      Text = 'EDhost'
+      OnChange = EDhostChange
+    end
+    object Label1: TLabel
+      AnchorSideTop.Control = EDhost
+      AnchorSideTop.Side = asrCenter
+      Left = 157
+      Height = 15
+      Top = 78
+      Width = 28
+      Anchors = [akTop]
+      Caption = 'Host'
+    end
+    object Label4: TLabel
+      AnchorSideTop.Control = EDhost
+      AnchorSideTop.Side = asrCenter
+      Left = 384
+      Height = 15
+      Top = 78
+      Width = 28
+      Anchors = [akTop]
+      Caption = 'SSID'
+    end
+    object Label5: TLabel
+      AnchorSideTop.Control = EDhost
+      AnchorSideTop.Side = asrCenter
+      Left = 624
+      Height = 15
+      Top = 78
+      Width = 104
+      Anchors = [akTop]
+      Caption = 'Passphrase (PKS)'
+    end
+    object Label6: TLabel
+      AnchorSideTop.Control = EDusername
+      AnchorSideTop.Side = asrCenter
+      Left = 48
+      Height = 15
+      Top = 52
+      Width = 28
+      Caption = 'User'
+    end
+    object Label8: TLabel
+      AnchorSideTop.Control = EDusername
+      AnchorSideTop.Side = asrCenter
+      Left = 264
+      Height = 15
+      Top = 52
+      Width = 57
+      Caption = 'Password'
     end
   end
   object BtSaveLog: TButton
@@ -399,7 +511,7 @@ object Form1: TForm1
     Width = 99
     Anchors = [akTop, akRight]
     Caption = 'Save Log'
-    TabOrder = 10
+    TabOrder = 9
     OnClick = BtSaveLogClick
   end
   object ProgressBar1: TProgressBar
@@ -419,7 +531,7 @@ object Form1: TForm1
     ParentFont = False
     Smooth = True
     Step = 1
-    TabOrder = 11
+    TabOrder = 10
     BarShowText = True
   end
   object SaveDialog1: TSaveDialog

@@ -10,7 +10,7 @@ uses
   Dialogs,
   rkutils,
   unit1,
-  exethread;
+  exethread,UserSetup;
 
   //const
   //  libc = 'c';

@@ -8,33 +8,7 @@
   <meta name="keywords" content="Raspberry Pi, Backup, Restore, SD Karte, SSD, Image, Zstandard, pibackup">
   <meta name="robots" content="index, follow">
 
-  <!-- FontAwesome für Icons -->
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
-  <!-- JSON-LD für Software mit Version und Rating -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "pibackup",
-    "operatingSystem": "Linux",
-    "applicationCategory": "Utility",
-    "softwareVersion": "1.5.4",
-    "url": "https://raspberryfpc.github.io/pibackup/",
-    "description": "pibackup – Sicheres Backup & Restore für Raspberry Pi Systeme. Erstelle komprimierte Images mit Zstandard und stelle sie flexibel wieder her.",
-    "offers": {
-      "@type": "Offer",
-      "url": "https://github.com/raspberryfpc/pibackup/releases",
-      "price": "0.00",
-      "priceCurrency": "USD"
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "5",
-      "ratingCount": "12"
-    }
-  }
-  </script>
 
   <style>
     body { font-family: Arial, sans-serif; margin:0; padding:0; line-height:1.6; background:#f5f5f7; color:#222; }
@@ -67,9 +41,8 @@
 
     footer { text-align:center; padding:1rem; margin-top:2rem; font-size:0.9rem; color:#555; }
 
-    /* Sprachumschaltung */
-    [lang="de"] { display:block; }
-    [lang="en"] { display:none; }
+    /* Sprachumschaltung: initial only de visible via JS */
+    section[lang] { display:none; }
 
     .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0; }
   </style>
@@ -79,7 +52,7 @@
     <h1>pibackup – Raspberry Pi Backup & Restore Tool</h1>
     <div class="language-switch">
       <label for="lang">Sprache / Language: </label>
-      <select id="lang" onchange="switchLang()">
+      <select id="lang" aria-label="Sprache / Language" onchange="switchLang(this.value)">
         <option value="de">Deutsch</option>
         <option value="en">English</option>
       </select>
@@ -90,7 +63,7 @@
 
     <!-- Deutsch -->
     <section lang="de">
-      <div class="features">
+      <div class="features" aria-hidden="true">
         <div class="feature-box"><i class="fas fa-save"></i><span class="sr-only">Backup Icon</span><h2>Sichere Backups</h2><p>Erstelle vollständige Images deiner SD-Karte oder SSD, inklusive MBR.</p></div>
         <div class="feature-box"><i class="fas fa-compress-alt"></i><span class="sr-only">Shrink Icon</span><h2>Automatisches Shrinking</h2><p>Die Root-Partition wird automatisch auf die minimale Größe verkleinert.</p></div>
         <div class="feature-box"><i class="fas fa-file-archive"></i><span class="sr-only">Compression Icon</span><h2>Zstandard Kompression</h2><p>Effiziente .img.zst-Dateien für platzsparende Backups.</p></div>
@@ -116,28 +89,29 @@
           <li>pibackup starten und <strong>Restore to Device</strong> auswählen.</li>
           <li>Das gewünschte Backup-Image laden.</li>
           <li>Zielgerät auswählen (Partitionen 1 und 2 werden überschrieben; Partitionen 3 und 4 bleiben erhalten, außer du aktivierst die Checkbox zum Löschen).</li>
+          <li>Neu: SSH beim ersten Start automatisch aktivieren – ideal für Headless-Setups. (Einstellung wird neu angelegt oder überschrieben.)</li>
+          <li>Neu: Benutzername &amp; Passwort neu setzen oder bestehende Werte überschreiben – vollständig automatisierte Erstkonfiguration.</li>
+          <li>Neu: WLAN neu konfigurieren – SSID &amp; PSK beim Restore definieren, perfekt für Headless Raspberry&nbsp;OS Installationen. (WLAN-Konfiguration wird neu erstellt oder überschrieben.)</li>
           <li>Optional: UUID des Zielgeräts ändern.</li>
-          <li>Vorschau im Grid zeigt die Partitionen nach dem Restore.</li>
-          <li>Standardmäßig wird die maximale Größe für die root Parttion verwendet. Optional kann die Größe per Slider angepasst werden.</li>
-          <li>Wiederherstellung starten und den Fortschritt überwachen.</li>
+          <li>Vorschau im Grid zeigt die Partitionen nach dem Restore. Wiederherstellung starten und den Fortschritt überwachen.</li>
         </ol>
       </div>
 
       <div class="box tips">
-        <i class="fas fa-lightbulb"></i><h2>Anleitung & Tipps</h2>
-        <p>Erstelle regelmäßig Backups, um Datenverlust zu vermeiden. Mit pibackup kannst du Backups auch auf kleinere Speichermedien zurückspielen. Ein Notfall-Image ist sehr hilfreich, um dein System im Ernstfall schnell wiederherzustellen.</p>
+        <i class="fas fa-lightbulb"></i><h2>Anleitung &amp; Tipps</h2>
+        <p>Erstelle regelmäßig Backups, um Datenverlust zu vermeiden. Mit pibackup kannst du Backups auch auf kleinere Speichermedien zurückspielen. Ein Notfall-Image ist sehr hilfreich, um dein System im Ernstfall schnell wiederherzustellen. Die neuen Optionen ermöglichen das Schreiben von komplett konfigurierten, headless-fähigen Raspberry&nbsp;OS-Images.</p>
       </div>
 
       <div class="box download">
         <h2>Download</h2>
         <p>Die neueste Version von pibackup ist auf GitHub verfügbar:</p>
-        <a href="https://github.com/raspberryfpc/pibackup/releases" target="_blank">Download von GitHub</a>
+        <a href="https://github.com/raspberryfpc/pibackup/releases" target="_blank" rel="noopener">Download von GitHub</a>
       </div>
     </section>
 
     <!-- Englisch -->
     <section lang="en">
-      <div class="features">
+      <div class="features" aria-hidden="true">
         <div class="feature-box"><i class="fas fa-save"></i><span class="sr-only">Backup Icon</span><h2>Secure Backups</h2><p>Create full images of your SD card or SSD, including the MBR.</p></div>
         <div class="feature-box"><i class="fas fa-compress-alt"></i><span class="sr-only">Shrink Icon</span><h2>Automatic Shrinking</h2><p>The root partition is automatically resized to its minimum size.</p></div>
         <div class="feature-box"><i class="fas fa-file-archive"></i><span class="sr-only">Compression Icon</span><h2>Zstandard Compression</h2><p>Efficient .img.zst files for space-saving backups.</p></div>
@@ -162,39 +136,65 @@
         <ol>
           <li>Start pibackup and select <strong>Restore to Device</strong>.</li>
           <li>Load the desired backup image.</li>
-          <li>Select the target device (Partitions 1 and 2 will be overwritten; Partitions 3 and 4 remain unless checkbox is enabled).</li>
-          <li>Optionally: change the UUID of the target device.</li>
-          <li>Grid preview shows the partitions after restore.</li>
-          <li>By default, the root partition is set to maximum size. You can adjust sizes via slider.</li>
-          <li>Start restoration and monitor progress.</li>
+          <li>Select target device (Partitions 1 and 2 will be overwritten; Partitions 3 and 4 remain unless you enable the checkbox to delete them).</li>
+          <li>New: Automatically enable SSH on first boot – perfect for headless setups. (Setting will be created or overwritten.)</li>
+          <li>New: Create or change username &amp; password – full automated initial configuration.</li>
+          <li>New: Configure Wi-Fi from scratch – define SSID &amp; PSK during restore for headless Raspberry&nbsp;OS installations. (Wi‑Fi config will be created or overwritten.)</li>
+          <li>Optionally change UUID.</li>
+          <li>Grid preview shows the partitions after the restore. Start restoration and monitor progress.</li>
         </ol>
       </div>
 
       <div class="box tips">
-        <i class="fas fa-lightbulb"></i><h2>Instructions & Tips</h2>
-        <p>Create backups regularly to prevent data loss. Backups can also be restored to smaller media. Keeping an emergency image ready allows quick system recovery.</p>
+        <i class="fas fa-lightbulb"></i><h2>Instructions &amp; Tips</h2>
+        <p>Create backups regularly to prevent data loss. Backups can also be restored to smaller media. The new options allow writing fully configured, headless-ready Raspberry&nbsp;OS images.</p>
       </div>
 
       <div class="box download">
         <h2>Download</h2>
         <p>The latest version of pibackup is available on GitHub:</p>
-        <a href="https://github.com/raspberryfpc/pibackup/releases" target="_blank">Download from GitHub</a>
+        <a href="https://github.com/raspberryfpc/pibackup/releases" target="_blank" rel="noopener">Download from GitHub</a>
       </div>
     </section>
 
   </div>
 
-  <footer>&copy; 2025 pibackup – Raspberry Pi Backup & Restore Tool</footer>
+  <footer>&copy; 2025 pibackup – Raspberry Pi Backup &amp; Restore Tool</footer>
 
   <script>
-    function switchLang() {
-      var lang = document.getElementById('lang').value;
-      document.querySelectorAll('section[lang]').forEach(function(el) {
-        el.style.display = (el.getAttribute('lang') === lang) ? 'block' : 'none';
+    /*
+      Defines switchLang(value) which the <select> onchange handler calls.
+      - Shows only the chosen language <section lang="xx"> and hides others.
+      - Stores user preference in localStorage so the selection persists.
+      - Safe to call even if JS was referenced before the function was parsed.
+    */
+    function switchLang(value) {
+      var lang = value || document.getElementById('lang').value;
+      var sections = document.querySelectorAll('section[lang]');
+      sections.forEach(function(sec) {
+        if (sec.getAttribute('lang') === lang) {
+          sec.style.display = 'block';
+          sec.setAttribute('aria-hidden', 'false');
+        } else {
+          sec.style.display = 'none';
+          sec.setAttribute('aria-hidden', 'true');
+        }
       });
+      try {
+        localStorage.setItem('pibackup_lang', lang);
+      } catch (e) {
+        // ignore localStorage errors (e.g. in private mode)
+      }
     }
+
     document.addEventListener('DOMContentLoaded', function() {
-      switchLang();
+      // restore saved language or default to 'de'
+      var saved = null;
+      try { saved = localStorage.getItem('pibackup_lang'); } catch (e) { saved = null; }
+      var defaultLang = saved || 'de';
+      var select = document.getElementById('lang');
+      if (select) select.value = defaultLang;
+      switchLang(defaultLang);
     });
   </script>
 </body>

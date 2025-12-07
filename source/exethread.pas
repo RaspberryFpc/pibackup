@@ -5,7 +5,7 @@ unit exethread;
 interface
 
 uses
-  Classes, SysUtils, process, baseunix, unix, LazUTF8, fileutil, dateutils, StdCtrls, Forms, Dialogs, UnixType,
+  Classes, SysUtils, process, baseunix, unix, LazUTF8, fileutil, dateutils, StdCtrls, Forms, Dialogs,
   ExtCtrls, ComCtrls, rkutils;
 
 type
@@ -69,13 +69,11 @@ const
   p_sum = basestart4 + pass4step * 40;
 var
   x, Count: integer;
-  s, s_pass: string;
+  s: string;
   pass: integer;
 begin
   if Assigned(FListBox) then
     FListBox.Items[FListBox.Items.Count - 1] := FTempString;
-
-
 
   if fprogressmode = 1 then
   begin
