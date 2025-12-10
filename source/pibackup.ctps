@@ -26,8 +26,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="442"/>
-        <CursorPos X="30" Y="119"/>
+        <TopLine Value="986"/>
+        <CursorPos X="3" Y="991"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -322,7 +322,7 @@
         <Loaded Value="True"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="16">
+    <JumpHistory HistoryIndex="13">
       <Position>
         <Filename Value="unit1.pas"/>
         <Caret Line="641" Column="36" TopLine="626"/>
@@ -389,6 +389,10 @@
       </Position>
       <Position>
         <Filename Value="../../../Desktop/Projekt_hzg1/Projekt/unit1.frm"/>
+      </Position>
+      <Position>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="119" Column="30" TopLine="442"/>
       </Position>
     </JumpHistory>
     <RunParams>
