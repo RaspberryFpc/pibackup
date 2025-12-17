@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project are documented in this file.
-## [1.6.0] – 2025-12-07
+
+## [1.6.1] – 2025-12-17
+### Bugfix
+Fixed issues where unmounting failed due to mount points left behind from earlier runs.
+
+## [1.6.0] – 2025-12-16
 ### Added
 ### options useful for setting up a fresh Raspberry Pi OS and headless systems.
 - Enable SSH on first boot

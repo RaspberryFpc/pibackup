@@ -478,78 +478,176 @@ begin
 end;
 
 
+//procedure CloseMountTarget(const Target: string);
+//var
+//  sl: TStringList;
+//  i, p: integer;
+//  loopDev, mountfile, mountpoint, s, loop, loopmountfile, lodev: string;
+//begin
+//  loop := CheckLoop(target);
+//  if loop = '' then
+//  begin
+//    lodev := GetLoopDeviceFromMountPoint(target);
+//    loop := CheckLoop(lodev);
+//    if loop > '' then   // aufruf mit mountpoint der loopdevices hat
+//    begin
+//      tryunmount(target);  //target ist der mountpoint
+//      sl := TStringList.Create;
+//      sl.Text := readlosetup;
+//      // holen der Datei
+//      for i := 0 to sl.Count - 1 do
+//      begin
+//        p := Pos(' ', sl[i]);
+//        if p = 0 then Continue;
+//        loopDev := Trim(Copy(sl[i], 1, p - 1));
+//        mountfile := Trim(Copy(sl[i], p + 1, 999));
+//        if loopDev = loop then break;
+//      end;
+//
+//      // alle loops mit mountfile löschen
+//      for i := 0 to sl.Count - 1 do
+//      begin
+//        p := Pos(' ', sl[i]);
+//        if p = 0 then Continue;
+//        loopDev := Trim(Copy(sl[i], 1, p - 1));
+//        if mountfile = Trim(Copy(sl[i], p + 1, 999)) then
+//          runcommand('losetup -d ' + loopDev, s);
+//      end;
+//      sl.Free;
+//    end;
+//  end
+//  else
+//
+//  //  aufruf mit Loopdevice - nicht gemountet!
+//  if loop > '' then
+//  begin
+//    // ---- Prüfen: Loopdevices , Backfiles ----
+//      sl := TStringList.Create;
+//      sl.Text := readlosetup;
+//    for i := 0 to sl.Count - 1 do
+//    begin
+//      p := Pos(' ', sl[i]);
+//      if p = 0 then Continue;
+//      loopDev := Trim(Copy(sl[i], 1, p - 1));
+//      mountfile := Trim(Copy(sl[i], p + 1, 999));
+//      if loopDev = target then break;
+//    end;
+//
+//    //falls doch gemountet
+//    mountpoint:= getmountpoint(loopdev) ;
+//    if mountpoint > '' then tryunmount(mountpoint);
+//
+//    for i := 0 to sl.Count - 1 do
+//    begin
+//      p := Pos(' ', sl[i]);
+//      if p = 0 then Continue;
+//      loopDev := Trim(Copy(sl[i], 1, p - 1));
+//      loopmountfile := Trim(Copy(sl[i], p + 1, 999));
+//      if loopmountfile = mountfile then runcommand('losetup -d ' + loopDev, s);
+//    end;
+//    sl.Free;
+//  end
+//  else
+//    tryunmount(target);  // target ist mountpoint ohne loop
+//end;
+
+
+
 procedure CloseMountTarget(const Target: string);
 var
   sl: TStringList;
-  i, p: integer;
-  loopDev, mountfile, mountpoint, s, loop, loopmountfile, lodev: string;
+  i, p: Integer;
+  loopDev, backfile, s: string;
+  loop, mountpoint: string;
+
+  procedure DetachAllLoopsForBackfile(const ABackfile: string);
+  var
+    i, p: Integer;
+    ldev, bf: string;
+  begin
+    for i := 0 to sl.Count - 1 do
+    begin
+      p := Pos(' ', sl[i]);
+      if p = 0 then Continue;
+      ldev := Trim(Copy(sl[i], 1, p - 1));
+      bf   := Trim(Copy(sl[i], p + 1, 999));
+      if bf = ABackfile then
+        runcommand('losetup -d ' + ldev, s);
+    end;
+  end;
+
 begin
-  loop := CheckLoop(target);
-  if loop = '' then
-  begin
-    lodev := GetLoopDeviceFromMountPoint(target);
-    loop := CheckLoop(lodev);
-    if loop > '' then   // aufruf mit mountpoint der loopdevices hat
+  sl := TStringList.Create;
+  try
+    sl.Text := readlosetup;
+
+    // ---------- Fall 1: Target ist Loopdevice ----------
+    loop := CheckLoop(Target);
+    if loop > '' then
     begin
-      tryunmount(target);  //target ist der mountpoint
-      sl := TStringList.Create;
-      sl.Text := readlosetup;
-      // holen der Datei
+      mountpoint := getmountpoint(loop);
+      if mountpoint > '' then
+        tryunmount(mountpoint);
+
+      // Backfile ermitteln
+      backfile := '';
       for i := 0 to sl.Count - 1 do
       begin
         p := Pos(' ', sl[i]);
         if p = 0 then Continue;
         loopDev := Trim(Copy(sl[i], 1, p - 1));
-        mountfile := Trim(Copy(sl[i], p + 1, 999));
-        if loopDev = loop then break;
+        if loopDev = loop then
+        begin
+          backfile := Trim(Copy(sl[i], p + 1, 999));
+          Break;
+        end;
       end;
 
-      // alle loops mit mountfile löschen
+      if backfile > '' then
+        DetachAllLoopsForBackfile(backfile);
+
+      Exit;
+    end;
+
+    // ---------- Fall 2: Target ist Mountpoint ----------
+    loop := CheckLoop(GetLoopDeviceFromMountPoint(Target));
+    if loop > '' then
+    begin
+      tryunmount(Target);
+
+      // Backfile suchen
+      backfile := '';
       for i := 0 to sl.Count - 1 do
       begin
         p := Pos(' ', sl[i]);
         if p = 0 then Continue;
         loopDev := Trim(Copy(sl[i], 1, p - 1));
-        if mountfile = Trim(Copy(sl[i], p + 1, 999)) then
-          runcommand('losetup -d ' + loopDev, s);
+        if loopDev = loop then
+        begin
+          backfile := Trim(Copy(sl[i], p + 1, 999));
+          Break;
+        end;
       end;
-      sl.Free;
-    end;
-  end
-  else
 
-  //  aufruf mit Loopdevice - nicht gemountet!
-  if loop > '' then
-  begin
-    // ---- Prüfen: Loopdevices , Backfiles ----
-      sl := TStringList.Create;
-      sl.Text := readlosetup;
-    for i := 0 to sl.Count - 1 do
-    begin
-      p := Pos(' ', sl[i]);
-      if p = 0 then Continue;
-      loopDev := Trim(Copy(sl[i], 1, p - 1));
-      mountfile := Trim(Copy(sl[i], p + 1, 999));
-      if loopDev = target then break;
+      if backfile > '' then
+        DetachAllLoopsForBackfile(backfile);
+
+      Exit;
     end;
 
-    //falls doch gemountet
-    mountpoint:= getmountpoint(loopdev) ;
-    if mountpoint > '' then tryunmount(mountpoint);
+    // ---------- Fall 3: normales Mount ohne Loop ----------
+    tryunmount(Target);
 
-    for i := 0 to sl.Count - 1 do
-    begin
-      p := Pos(' ', sl[i]);
-      if p = 0 then Continue;
-      loopDev := Trim(Copy(sl[i], 1, p - 1));
-      loopmountfile := Trim(Copy(sl[i], p + 1, 999));
-      if loopmountfile = mountfile then runcommand('losetup -d ' + loopDev, s);
-    end;
+  finally
     sl.Free;
-  end
-  else
-    tryunmount(target);  // target ist mountpoint ohne loop
+  end;
 end;
+
+
+
+
+
+
 
 
 

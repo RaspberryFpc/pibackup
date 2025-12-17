@@ -116,7 +116,7 @@ implementation
 { TForm1 }
 
 const
-  appname = 'PiBackup  v1.6.0';
+  appname = 'PiBackup  v1.6.1';
   ininame = 'pibackup.ini';
 
 
@@ -887,13 +887,6 @@ begin
 
     //testparameter
  //   cbenablessh.Checked := True;
-    edhost.Text := 'myhost';
-    edusername.Text := 'pi';
-    eduserpassword.Text := '2254';
-    edit_wlanssid.Text := 'FunkTurm2';
-    edit_wlanpassword.Text := '7043558374746653';
-
-
 
 
     if CheckBoxChangeDeviceID.Checked then
