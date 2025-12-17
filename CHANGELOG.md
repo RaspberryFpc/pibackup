@@ -1,9 +1,13 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
+## [1.6.2] – 2025-12-17
+### Added
+- Info for usersetup
+
 ## [1.6.1] – 2025-12-17
 ### Bugfix
-Fixed issues where unmounting failed due to mount points left behind from earlier runs.
+- Fixed issues where unmounting failed due to mount points left behind from earlier runs.
 
 ## [1.6.0] – 2025-12-16
 ### Added

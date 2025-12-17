@@ -101,12 +101,8 @@ type
   end;
 
 
-  //function FileSizeAsString(size: int64; Use1024: boolean = True): ansistring;
-  //function GetSecondField(const s: string): string;
-  //function ms2T(ms: int64): ansistring;
-  //procedure PreCheckImageWrite(const Source, Destination: string);
-procedure EnsureEnoughSpace(const FilePath: string; NewSize: int64);
 
+procedure EnsureEnoughSpace(const FilePath: string; NewSize: int64);
 function statvfs(path: pchar; var buf: TStatVFS): cint; cdecl; external 'c';
 function runbash(command: ansistring): string;
 function padleft(s: string; Count: integer): string;
@@ -133,7 +129,6 @@ procedure ClearEmptyBlocks(listbox: tlistbox; Mountpoint: string);
 procedure DeletePartition(const Device: string; Partition: integer);
 function PartitionName(device: string; partitionNumber: integer): string;
 function CreateLoopPartition(const FileName: string; Partition: integer): string;
-//procedure CloseLoopDevice(const LoopDev: string);
 function MountPartition(const Source: string; PartitionNumber: integer; const MountPoint: string): boolean;
 procedure CloseMountTarget(const Target: string);
 function readlosetup: string;
@@ -476,80 +471,6 @@ begin
     Parts.Free;
   end;
 end;
-
-
-//procedure CloseMountTarget(const Target: string);
-//var
-//  sl: TStringList;
-//  i, p: integer;
-//  loopDev, mountfile, mountpoint, s, loop, loopmountfile, lodev: string;
-//begin
-//  loop := CheckLoop(target);
-//  if loop = '' then
-//  begin
-//    lodev := GetLoopDeviceFromMountPoint(target);
-//    loop := CheckLoop(lodev);
-//    if loop > '' then   // aufruf mit mountpoint der loopdevices hat
-//    begin
-//      tryunmount(target);  //target ist der mountpoint
-//      sl := TStringList.Create;
-//      sl.Text := readlosetup;
-//      // holen der Datei
-//      for i := 0 to sl.Count - 1 do
-//      begin
-//        p := Pos(' ', sl[i]);
-//        if p = 0 then Continue;
-//        loopDev := Trim(Copy(sl[i], 1, p - 1));
-//        mountfile := Trim(Copy(sl[i], p + 1, 999));
-//        if loopDev = loop then break;
-//      end;
-//
-//      // alle loops mit mountfile löschen
-//      for i := 0 to sl.Count - 1 do
-//      begin
-//        p := Pos(' ', sl[i]);
-//        if p = 0 then Continue;
-//        loopDev := Trim(Copy(sl[i], 1, p - 1));
-//        if mountfile = Trim(Copy(sl[i], p + 1, 999)) then
-//          runcommand('losetup -d ' + loopDev, s);
-//      end;
-//      sl.Free;
-//    end;
-//  end
-//  else
-//
-//  //  aufruf mit Loopdevice - nicht gemountet!
-//  if loop > '' then
-//  begin
-//    // ---- Prüfen: Loopdevices , Backfiles ----
-//      sl := TStringList.Create;
-//      sl.Text := readlosetup;
-//    for i := 0 to sl.Count - 1 do
-//    begin
-//      p := Pos(' ', sl[i]);
-//      if p = 0 then Continue;
-//      loopDev := Trim(Copy(sl[i], 1, p - 1));
-//      mountfile := Trim(Copy(sl[i], p + 1, 999));
-//      if loopDev = target then break;
-//    end;
-//
-//    //falls doch gemountet
-//    mountpoint:= getmountpoint(loopdev) ;
-//    if mountpoint > '' then tryunmount(mountpoint);
-//
-//    for i := 0 to sl.Count - 1 do
-//    begin
-//      p := Pos(' ', sl[i]);
-//      if p = 0 then Continue;
-//      loopDev := Trim(Copy(sl[i], 1, p - 1));
-//      loopmountfile := Trim(Copy(sl[i], p + 1, 999));
-//      if loopmountfile = mountfile then runcommand('losetup -d ' + loopDev, s);
-//    end;
-//    sl.Free;
-//  end
-//  else
-//    tryunmount(target);  // target ist mountpoint ohne loop
-//end;
 
 
 

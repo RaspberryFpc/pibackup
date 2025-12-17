@@ -116,10 +116,8 @@ implementation
 { TForm1 }
 
 const
-  appname = 'PiBackup  v1.6.1';
+  appname = 'PiBackup  v1.6.2';
   ininame = 'pibackup.ini';
-
-
 
   par1 = 2;
   par2 = 3;
@@ -140,7 +138,7 @@ var
   FirstAktiv: boolean = True;
   device: string;
   basicthreads: integer;
-
+  messageuserinfo:boolean;
 
 function CountThreads: integer;
 var
@@ -284,7 +282,17 @@ begin
   if (sender = edit1) or (Sender = radiobutton2)then
       if radiobutton2.Checked then
                       if fileexists(edit1.text) then
-                                  ReadUserInfo(edit1.text);
+                                  if lowercase(extractfileext(edit1.text))='.zst' then
+                                          begin
+                                          if not messageuserinfo then
+                                          begin
+                                          Listboxaddscroll(listbox1,'User settings, Wi-Fi settings, and hostname can only be read from uncompressed .img files.');
+                                          Listboxaddscroll(listbox1,'However, settings can still be applied without any limitations.');
+                                          Listboxaddscroll(listbox1,'If values are not changed, the existing settings will be preserved.');
+                                          messageuserinfo:=true;
+                                          end;
+                                          end else
+                                          ReadUserInfo(edit1.text);
 
   // Bei ScrollBar-Änderung nur die Größe aktualisieren
 
@@ -414,6 +422,7 @@ procedure TForm1.RadioButton1Change(Sender: TObject);
 begin
   if radiobutton1.Checked then
   begin
+    Label2.Caption:='Source Device';
     panel1.Visible := True;
     panel1.BringToFront;
   end
@@ -426,12 +435,13 @@ procedure TForm1.RadioButton2Change(Sender: TObject);
 begin
   if radiobutton2.Checked then
   begin
+    Label2.Caption:='Target Device';
     panel2.Visible := True;
     panel2.BringToFront;
   end
   else
     panel2.Visible := False;
-  GridUpdate(Sender);
+    GridUpdate(Sender);
 end;
 
 
