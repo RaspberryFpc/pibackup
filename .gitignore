@@ -1,0 +1,6 @@
+# Debug-Dateien
+source/pibackup.dbg
+
+# Binärdateien / alte Builds
+bin/pibackup
+source/pibackup
