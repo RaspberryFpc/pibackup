@@ -76,9 +76,7 @@ type
     procedure Button3Click(Sender: TObject);
     procedure Button5Click(Sender: TObject);
     procedure ButtonWriteImagetodeviceClick(Sender: TObject);
-    procedure CBEnableSSHChange(Sender: TObject);
     procedure ComboBox1DropDown(Sender: TObject);
-    procedure EDhostChange(Sender: TObject);
     procedure Edit1DblClick(Sender: TObject);
     procedure EddeviceidChange(Sender: TObject);
     procedure EddeviceidKeyPress(Sender: TObject; var Key: char);
@@ -942,22 +940,12 @@ begin
   ButtonWriteImagetodevice.Enabled := True;
 end;
 
-procedure TForm1.CBEnableSSHChange(Sender: TObject);
-begin
-
-end;
-
 
 
 procedure TForm1.ComboBox1DropDown(Sender: TObject);
 begin
    getdrives(combobox1.Items);
    combobox1.itemindex:=0;
-end;
-
-procedure TForm1.EDhostChange(Sender: TObject);
-begin
-
 end;
 
 
