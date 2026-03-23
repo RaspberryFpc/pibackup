@@ -26,7 +26,7 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="73"/>
+        <TopLine Value="74"/>
         <CursorPos X="50" Y="79"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
@@ -49,7 +49,7 @@
         <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1883"/>
-        <CursorPos X="48" Y="1893"/>
+        <CursorPos X="36" Y="1893"/>
         <UsageCount Value="203"/>
         <Loaded Value="True"/>
       </Unit>
@@ -69,7 +69,7 @@
         <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="108"/>
-        <CursorPos X="9" Y="108"/>
+        <CursorPos X="5" Y="108"/>
         <UsageCount Value="186"/>
         <Loaded Value="True"/>
       </Unit>
@@ -80,7 +80,7 @@
         <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="370"/>
-        <CursorPos X="30" Y="385"/>
+        <CursorPos Y="385"/>
         <UsageCount Value="162"/>
         <Loaded Value="True"/>
       </Unit>
