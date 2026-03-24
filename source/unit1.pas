@@ -99,7 +99,7 @@ type
 
   end;
 
- const
+const
   p2mpoint = '/pi_images/p2_pibackup_img';
   p1mpoint = '/pi_images/p1_pibackup_img';
 
@@ -114,7 +114,7 @@ implementation
 { TForm1 }
 
 const
-  appname = 'PiBackup  v1.6.2';
+  appname = 'PiBackup  v1.6.3';
   ininame = 'pibackup.ini';
 
   par1 = 2;
@@ -136,7 +136,7 @@ var
   FirstAktiv: boolean = True;
   device: string;
   basicthreads: integer;
-  messageuserinfo:boolean;
+  messageuserinfo: boolean;
 
 function CountThreads: integer;
 var
@@ -277,20 +277,21 @@ var
 
 procedure Tform1.GridUpdate(Sender: TObject);
 begin
-  if (sender = edit1) or (Sender = radiobutton2)then
-      if radiobutton2.Checked then
-                      if fileexists(edit1.text) then
-                                  if lowercase(extractfileext(edit1.text))='.zst' then
-                                          begin
-                                          if not messageuserinfo then
-                                          begin
-                                          Listboxaddscroll(listbox1,'User settings, Wi-Fi settings, and hostname can only be read from uncompressed .img files.');
-                                          Listboxaddscroll(listbox1,'However, settings can still be applied without any limitations.');
-                                          Listboxaddscroll(listbox1,'If values are not changed, the existing settings will be preserved.');
-                                          messageuserinfo:=true;
-                                          end;
-                                          end else
-                                          ReadUserInfo(edit1.text);
+  if (Sender = edit1) or (Sender = radiobutton2) then
+    if radiobutton2.Checked then
+      if fileexists(edit1.Text) then
+        if lowercase(extractfileext(edit1.Text)) = '.zst' then
+        begin
+          if not messageuserinfo then
+          begin
+            Listboxaddscroll(listbox1, 'User settings, Wi-Fi settings, and hostname can only be read from uncompressed .img files.');
+            Listboxaddscroll(listbox1, 'However, settings can still be applied without any limitations.');
+            Listboxaddscroll(listbox1, 'If values are not changed, the existing settings will be preserved.');
+            messageuserinfo := True;
+          end;
+        end
+        else
+          ReadUserInfo(edit1.Text);
 
   // Bei ScrollBar-Änderung nur die Größe aktualisieren
 
@@ -420,7 +421,7 @@ procedure TForm1.RadioButton1Change(Sender: TObject);
 begin
   if radiobutton1.Checked then
   begin
-    Label2.Caption:='Source Device';
+    Label2.Caption := 'Source Device';
     panel1.Visible := True;
     panel1.BringToFront;
   end
@@ -433,13 +434,13 @@ procedure TForm1.RadioButton2Change(Sender: TObject);
 begin
   if radiobutton2.Checked then
   begin
-    Label2.Caption:='Target Device';
+    Label2.Caption := 'Target Device';
     panel2.Visible := True;
     panel2.BringToFront;
   end
   else
     panel2.Visible := False;
-    GridUpdate(Sender);
+  GridUpdate(Sender);
 end;
 
 
@@ -610,8 +611,8 @@ var
   deststream: TFileStream;
   mbrwork: TMbr;
   sectorsperblock, p, p1: integer;
-   dirpath: string;
-  looppartition:string;
+  dirpath: string;
+  looppartition: string;
 begin
   if not RunsAsRoot then
     raise Exception.Create('This application must be run as root. Please start with sudo.');
@@ -652,7 +653,7 @@ begin
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-       MakeImageFirst2Partitions(sourcedrive, filename, listbox1);
+    MakeImageFirst2Partitions(sourcedrive, filename, listbox1);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -662,14 +663,14 @@ begin
     Write_MBR(mbrwork, filename);
 
     // check image
-    looppartition:=CreateLoopPartition(FileName,2);
+    looppartition := CreateLoopPartition(FileName, 2);
     s := PrexeThreadedBash('/sbin/e2fsck -fy ' + looppartition, listbox1);
     if Pos('errors', LowerCase(s)) > 0 then
-                       Listboxaddscroll(listbox1, 'Filesystem check reported errors');
+      Listboxaddscroll(listbox1, 'Filesystem check reported errors');
     CloseMountTarget(looppartition);
 
 
-    MountPartition(filename,2,p2mpoint);
+    MountPartition(filename, 2, p2mpoint);
 
     // image ändern
     ModifyImage(p2mpoint);
@@ -683,9 +684,9 @@ begin
     // umount und test filesystem
 
 
-     CloseMountTarget(p2mpoint);
-    looppartition:=CreateLoopPartition(FileName,2);
-     s := PrexeThreadedBash('/sbin/e2fsck -fy ' + looppartition, listbox1);
+    CloseMountTarget(p2mpoint);
+    looppartition := CreateLoopPartition(FileName, 2);
+    s := PrexeThreadedBash('/sbin/e2fsck -fy ' + looppartition, listbox1);
     if Pos('errors', LowerCase(s)) > 0 then
       Listboxaddscroll(listbox1, 'Filesystem check reported errors');
 
@@ -745,13 +746,13 @@ begin
 
     CloseMountTarget(looppartition);
 
-    MountPartition(filename,2,p2mpoint);
-    listboxaddscroll(listbox1,'Clean empty blocks in root-image');
+    MountPartition(filename, 2, p2mpoint);
+    listboxaddscroll(listbox1, 'Clean empty blocks in root-image');
     ClearEmptyBlocks(listbox1, p2mpoint);
     CloseMountTarget(p2mpoint);
 
     MountPartition(filename, 1, p1mpoint);
-    listboxaddscroll(listbox1,'Clean empty blocks in boot-image');
+    listboxaddscroll(listbox1, 'Clean empty blocks in boot-image');
     ClearEmptyBlocks(listbox1, p1mpoint);
     CloseMountTarget(p1mpoint);
 
@@ -845,22 +846,27 @@ begin
 
     selecteddrive := '/dev/' + stringgrid1.Cells[0, 1];
 
-    Listboxaddscroll(listbox1, '---------- write image to device: ' + selecteddrive + ' ----------');
+
     Listboxaddscroll(listbox1, '');
 
     // delete partition1 and partition2
     Listboxaddscroll(listbox1, '---------- preparing destination: ' + selecteddrive + ' ----------');
+
     par2name := PartitionName(selecteddrive, 2);
     par1name := PartitionName(selecteddrive, 1);
-    CloseMountTarget( par2name );
-    CloseMountTarget( par1name );
-    runcommand('partprobe ' + selecteddrive,s);
+    CloseMountTarget(par2name);
+    CloseMountTarget(par1name);
+    runcommand('partprobe ' + selecteddrive, s);
 
     deletepartition(selecteddrive, 1);
     deletepartition(selecteddrive, 2);
     runcommand('sync', s);
 
     s := PrexeThreadedBash('partprobe ' + selecteddrive, listbox1);
+
+
+    Listboxaddscroll(listbox1, '---------- write image to device: ' + selecteddrive + ' ----------');
+    Listboxaddscroll(listbox1, '');
 
 
     ImageToDeviceImgAndZstd(edit1.Text, selecteddrive, CheckBox_DelPartition3.Checked, CheckBox_DelPartition4.Checked, listbox1);
@@ -886,7 +892,7 @@ begin
     PrexeThreadedBash('e2fsck -fy ' + par2name, listbox1);
 
 
-  //  ListBoxaddscroll(listbox1, 'partprobe - reloading partition table');
+    //  ListBoxaddscroll(listbox1, 'partprobe - reloading partition table');
     s := PrexeThreadedBash('partprobe ' + selecteddrive, listbox1);
     sleep(500);
 
@@ -894,7 +900,7 @@ begin
 
 
     //testparameter
- //   cbenablessh.Checked := True;
+    //   cbenablessh.Checked := True;
 
 
     if CheckBoxChangeDeviceID.Checked then
@@ -944,8 +950,8 @@ end;
 
 procedure TForm1.ComboBox1DropDown(Sender: TObject);
 begin
-   getdrives(combobox1.Items);
-   combobox1.itemindex:=0;
+  getdrives(combobox1.Items);
+  combobox1.ItemIndex := 0;
 end;
 
 

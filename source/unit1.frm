@@ -13,7 +13,7 @@ object Form1: TForm1
   OnCreate = FormCreate
   object Edit1: TEdit
     Left = 113
-    Height = 33
+    Height = 23
     Top = 82
     Width = 608
     ParentFont = False
@@ -23,11 +23,11 @@ object Form1: TForm1
   end
   object ComboBox1: TComboBox
     Left = 114
-    Height = 33
-    Top = 47
+    Height = 23
+    Top = 52
     Width = 608
     Anchors = [akLeft]
-    ItemHeight = 29
+    ItemHeight = 15
     TabOrder = 1
     Text = 'Laufwerk'
     OnChange = GridUpdate
@@ -38,7 +38,7 @@ object Form1: TForm1
     AnchorSideTop.Side = asrCenter
     Left = 736
     Height = 30
-    Top = 83
+    Top = 78
     Width = 126
     Caption = 'select'
     TabOrder = 2
@@ -46,16 +46,16 @@ object Form1: TForm1
   end
   object Label2: TLabel
     Left = 32
-    Height = 23
+    Height = 15
     Top = 56
-    Width = 99
+    Width = 86
     Caption = 'Source Device'
   end
   object Label3: TLabel
     Left = 32
-    Height = 23
+    Height = 15
     Top = 84
-    Width = 68
+    Width = 60
     Caption = 'image file'
   end
   object ListBox1: TListBox
@@ -116,9 +116,9 @@ object Form1: TForm1
     AnchorSideTop.Control = StringGrid1
     AnchorSideTop.Side = asrBottom
     Left = 111
-    Height = 28
-    Top = 8
-    Width = 260
+    Height = 21
+    Top = 12
+    Width = 235
     Anchors = [akLeft]
     BorderSpacing.Top = 3
     Caption = 'Create System Backup (Image)'
@@ -133,10 +133,10 @@ object Form1: TForm1
     AnchorSideLeft.Control = RadioButton1
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = RadioButton1
-    Left = 401
-    Height = 28
-    Top = 8
-    Width = 261
+    Left = 376
+    Height = 21
+    Top = 12
+    Width = 237
     BorderSpacing.Left = 30
     Caption = 'Restore Backup or other Image'
     Font.Style = [fsBold]
@@ -162,9 +162,9 @@ object Form1: TForm1
     TabOrder = 7
     object CheckBox_RemoveSSH: TCheckBox
       Left = 15
-      Height = 28
+      Height = 21
       Top = 54
-      Width = 118
+      Width = 99
       Caption = 'remove SSH'
       Color = clDefault
       ParentColor = False
@@ -174,9 +174,9 @@ object Form1: TForm1
       AnchorSideTop.Control = CheckBox_RemoveSSH
       AnchorSideTop.Side = asrCenter
       Left = 136
-      Height = 28
+      Height = 21
       Top = 54
-      Width = 136
+      Width = 112
       Caption = 'Remove DHCP'
       TabOrder = 1
     end
@@ -185,8 +185,8 @@ object Form1: TForm1
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = ButtonCreateImage
       Left = 120
-      Height = 33
-      Top = 9
+      Height = 23
+      Top = 14
       Width = 724
       Anchors = [akLeft, akRight]
       BorderSpacing.Left = 5
@@ -212,9 +212,9 @@ object Form1: TForm1
       AnchorSideTop.Control = CheckBox_RemoveSSH
       AnchorSideTop.Side = asrCenter
       Left = 272
-      Height = 28
+      Height = 21
       Top = 54
-      Width = 198
+      Width = 169
       Caption = 'Compress Image   Level'
       Checked = True
       State = cbChecked
@@ -224,7 +224,7 @@ object Form1: TForm1
       AnchorSideTop.Control = CheckBox_RemoveSSH
       AnchorSideTop.Side = asrCenter
       Left = 464
-      Height = 33
+      Height = 24
       Top = 52
       Width = 50
       Alignment = taCenter
@@ -240,7 +240,7 @@ object Form1: TForm1
       AnchorSideRight.Side = asrBottom
       Left = 852
       Height = 30
-      Top = 53
+      Top = 49
       Width = 126
       Anchors = [akTop, akRight]
       BorderSpacing.Right = 15
@@ -253,9 +253,9 @@ object Form1: TForm1
       AnchorSideTop.Control = Edit2
       AnchorSideTop.Side = asrCenter
       Left = 40
-      Height = 28
-      Top = 11
-      Width = 86
+      Height = 21
+      Top = 15
+      Width = 72
       Caption = 'Exclude'
       Checked = True
       State = cbChecked
@@ -264,9 +264,9 @@ object Form1: TForm1
     object CheckBox_Delimg: TCheckBox
       AnchorSideTop.Control = CheckBox_RemoveSSH
       Left = 520
-      Height = 28
+      Height = 21
       Top = 54
-      Width = 273
+      Width = 238
       Caption = 'Remove .img file after compression'
       Checked = True
       State = cbChecked
@@ -320,10 +320,10 @@ object Form1: TForm1
     object CheckBoxChangeDeviceID: TCheckBox
       AnchorSideTop.Control = Eddeviceid
       AnchorSideTop.Side = asrCenter
-      Left = 343
-      Height = 28
-      Top = 19
-      Width = 147
+      Left = 352
+      Height = 21
+      Top = 23
+      Width = 128
       Anchors = [akTop]
       Caption = 'change device id'
       TabOrder = 1
@@ -333,8 +333,8 @@ object Form1: TForm1
       AnchorSideTop.Control = CheckBox_DelPartition3
       AnchorSideTop.Side = asrCenter
       Left = 488
-      Height = 33
-      Top = 17
+      Height = 23
+      Top = 22
       Width = 120
       Alignment = taCenter
       Anchors = []
@@ -345,10 +345,10 @@ object Form1: TForm1
     object CheckBox_DelPartition4: TCheckBox
       AnchorSideTop.Control = Eddeviceid
       AnchorSideTop.Side = asrCenter
-      Left = 181
-      Height = 28
-      Top = 19
-      Width = 150
+      Left = 192
+      Height = 21
+      Top = 23
+      Width = 129
       Anchors = [akTop]
       Caption = 'delete partition 4'
       TabOrder = 3
@@ -357,10 +357,10 @@ object Form1: TForm1
     object CheckBox_DelPartition3: TCheckBox
       AnchorSideTop.Control = Eddeviceid
       AnchorSideTop.Side = asrCenter
-      Left = 37
-      Height = 28
-      Top = 19
-      Width = 158
+      Left = 48
+      Height = 21
+      Top = 23
+      Width = 137
       Anchors = [akTop]
       Caption = 'delete  partition 3 '
       DoubleBuffered = False
@@ -388,10 +388,10 @@ object Form1: TForm1
     object CBEnableSSH: TCheckBox
       AnchorSideTop.Control = EDhost
       AnchorSideTop.Side = asrCenter
-      Left = 38
-      Height = 28
-      Top = 76
-      Width = 115
+      Left = 48
+      Height = 21
+      Top = 75
+      Width = 94
       Anchors = [akTop]
       Caption = 'Enable SSH'
       TabOrder = 6
@@ -401,7 +401,7 @@ object Form1: TForm1
       AnchorSideTop.Control = EDhost
       AnchorSideTop.Side = asrCenter
       Left = 416
-      Height = 33
+      Height = 23
       Top = 74
       Width = 192
       Anchors = [akTop]
@@ -414,7 +414,7 @@ object Form1: TForm1
       AnchorSideTop.Control = EDhost
       AnchorSideTop.Side = asrCenter
       Left = 732
-      Height = 33
+      Height = 23
       Top = 74
       Width = 256
       Anchors = [akTop]
@@ -424,7 +424,7 @@ object Form1: TForm1
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Side = asrCenter
       Left = 88
-      Height = 33
+      Height = 23
       Top = 48
       Width = 164
       TabOrder = 9
@@ -435,7 +435,7 @@ object Form1: TForm1
       AnchorSideTop.Control = EDusername
       AnchorSideTop.Side = asrCenter
       Left = 328
-      Height = 33
+      Height = 23
       Top = 48
       Width = 280
       Anchors = [akTop]
@@ -443,7 +443,7 @@ object Form1: TForm1
     end
     object EDhost: TEdit
       Left = 192
-      Height = 33
+      Height = 23
       Top = 74
       Width = 180
       TabOrder = 11
@@ -451,30 +451,30 @@ object Form1: TForm1
     object Label1: TLabel
       AnchorSideTop.Control = EDhost
       AnchorSideTop.Side = asrCenter
-      Left = 154
-      Height = 23
-      Top = 79
-      Width = 35
+      Left = 157
+      Height = 15
+      Top = 78
+      Width = 28
       Anchors = [akTop]
       Caption = 'Host'
     end
     object Label4: TLabel
       AnchorSideTop.Control = EDhost
       AnchorSideTop.Side = asrCenter
-      Left = 381
-      Height = 23
-      Top = 79
-      Width = 35
+      Left = 384
+      Height = 15
+      Top = 78
+      Width = 28
       Anchors = [akTop]
       Caption = 'SSID'
     end
     object Label5: TLabel
       AnchorSideTop.Control = EDhost
       AnchorSideTop.Side = asrCenter
-      Left = 615
-      Height = 23
-      Top = 79
-      Width = 122
+      Left = 624
+      Height = 15
+      Top = 78
+      Width = 104
       Anchors = [akTop]
       Caption = 'Passphrase (PSK)'
     end
@@ -482,18 +482,18 @@ object Form1: TForm1
       AnchorSideTop.Control = EDusername
       AnchorSideTop.Side = asrCenter
       Left = 48
-      Height = 23
-      Top = 53
-      Width = 34
+      Height = 15
+      Top = 52
+      Width = 28
       Caption = 'User'
     end
     object Label8: TLabel
       AnchorSideTop.Control = EDusername
       AnchorSideTop.Side = asrCenter
       Left = 264
-      Height = 23
-      Top = 53
-      Width = 69
+      Height = 15
+      Top = 52
+      Width = 57
       Caption = 'Password'
     end
   end
@@ -504,7 +504,7 @@ object Form1: TForm1
     AnchorSideRight.Side = asrBottom
     Left = 904
     Height = 30
-    Top = 83
+    Top = 78
     Width = 99
     Anchors = [akTop, akRight]
     Caption = 'Save Log'

@@ -37,8 +37,7 @@ implementation
 
 
 
-constructor TPrexeThreaded.Create(const Cmd: ansistring; Params: array of string; ListBox: TListBox; ProgressBar: TProgressBar;
-  ProgressMode: integer);
+constructor TPrexeThreaded.Create(const Cmd: ansistring; Params: array of string; ListBox: TListBox; ProgressBar: TProgressBar; ProgressMode: integer);
 begin
   inherited Create(True); // Thread suspendiert
   FCmd := Cmd;

@@ -1,32 +1,22 @@
-    unit UserSetup;
+unit UserSetup;
 
 {$mode objfpc}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, FileUtil, StdCtrls, Process, Unix,baseunix, StrUtils, rkutils;
+  Classes, SysUtils, FileUtil, StdCtrls, Process, Unix, baseunix, StrUtils, rkutils;
 
 type
   EUserSetup = class(Exception);
 
-procedure EnsureUserConfigured(
-  const Device: string;
-  const NewUserName: string;
-  const NewPassword: string;
-  Log: TListBox
-);
+procedure EnsureUserConfigured(const Device: string; const NewUserName: string; const NewPassword: string; Log: TListBox);
 
-procedure CreateUserConfFromDevice(
-  const Device: string;
-  const UserName: string;
-  const Password: string;
-  Log: TListBox
-);
+procedure CreateUserConfFromDevice(const Device: string; const UserName: string; const Password: string; Log: TListBox);
 
 
 
- type
+type
   TUserInfo = record
     HostName: string;
     UserName: string;
@@ -38,7 +28,7 @@ procedure CreateUserConfFromDevice(
 
 
 
-  procedure ReadUserInfo(filename: string);
+procedure ReadUserInfo(filename: string);
 
 
 
@@ -49,9 +39,9 @@ uses unit1;
 // ---------------------------------------------------------------
 // Logging
 // ---------------------------------------------------------------
-procedure LogMsg(log:tlistbox;const s: string);
+procedure LogMsg(log: tlistbox; const s: string);
 begin
-  if Assigned(Log) then listboxaddscroll(Log,s);
+  if Assigned(Log) then listboxaddscroll(Log, s);
 end;
 
 
@@ -70,8 +60,8 @@ end;
 function FindExistingUser(const RootMount: string): string;
 var
   SL: TStringList;
-  line, name, uid: string;
-  i, uidInt: Integer;
+  line, Name, uid: string;
+  i, uidInt: integer;
 begin
   Result := '';
   SL := TStringList.Create;
@@ -82,12 +72,12 @@ begin
       line := SL[i].Trim;
       if line = '' then Continue;
 
-      name := Copy(line, 1, Pos(':', line) - 1);
+      Name := Copy(line, 1, Pos(':', line) - 1);
       uid := ExtractDelimited(3, line, [':']);
 
       if TryStrToInt(uid, uidInt) and (uidInt >= 1000) then
       begin
-        Result := name;
+        Result := Name;
         Exit;
       end;
     end;
@@ -99,12 +89,12 @@ end;
 // ---------------------------------------------------------------
 // Create userconf.txt on boot partition
 // ---------------------------------------------------------------
-procedure CreateUserConfFromDevice( const Device: string; const UserName: string; const Password: string; Log: TListBox);
+procedure CreateUserConfFromDevice(const Device: string; const UserName: string; const Password: string; Log: TListBox);
 var
   Hash, FileName: string;
 begin
 
-  mountpartition(Device,1,p1mpoint);
+  mountpartition(Device, 1, p1mpoint);
 
   try
     if not RunCommand('openssl passwd -6 "' + Password + '"', Hash) then
@@ -139,12 +129,10 @@ procedure RenameUser(const RootMount, OldUser, NewUser: string; Log: TListBox);
 begin
   LogMsg(Log, '→ Rename ' + OldUser + ' → ' + NewUser);
 
-  if RunInChroot(RootMount,
-       'usermod -l ' + NewUser + ' ' + OldUser ) <> 0 then
+  if RunInChroot(RootMount, 'usermod -l ' + NewUser + ' ' + OldUser) <> 0 then
     raise EUserSetup.Create('usermod rename failed');
 
-  if RunInChroot(RootMount,
-       'usermod -d /home/' + NewUser + ' -m ' + NewUser ) <> 0 then
+  if RunInChroot(RootMount, 'usermod -d /home/' + NewUser + ' -m ' + NewUser) <> 0 then
     raise EUserSetup.Create('usermod move home failed');
 end;
 
@@ -152,8 +140,7 @@ procedure CreateUser(const RootMount, UserName: string; Log: TListBox);
 begin
   LogMsg(Log, '→ Creating user "' + UserName + '"');
 
-  if RunInChroot(RootMount,
-       'useradd -m -G sudo -s /bin/bash ' + UserName ) <> 0 then
+  if RunInChroot(RootMount, 'useradd -m -G sudo -s /bin/bash ' + UserName) <> 0 then
     raise EUserSetup.Create('useradd failed');
 end;
 
@@ -167,30 +154,24 @@ begin
 
   LogMsg(Log, '→ Setting password');
 
-  if RunInChroot(RootMount,
-     'bash -c "echo ''' + UserName + ':' + NewPassword + ''' | chpasswd"') <> 0 then
+  if RunInChroot(RootMount, 'bash -c "echo ''' + UserName + ':' + NewPassword + ''' | chpasswd"') <> 0 then
     raise EUserSetup.Create('chpasswd failed');
 end;
 
 // ---------------------------------------------------------------
 // HAUPTFUNKTION – only Device required
 // ---------------------------------------------------------------
-procedure EnsureUserConfigured(
-  const Device: string;
-  const NewUserName: string;
-  const NewPassword: string;
-  Log: TListBox
-);
+procedure EnsureUserConfigured(const Device: string; const NewUserName: string; const NewPassword: string; Log: TListBox);
 var
-   RootMount, OldUser: string;
+  RootMount, OldUser: string;
 begin
   LogMsg(Log, '--- User Setup on ' + Device + ' ---');
 
   RootMount := '/images/tmp_root_user';
-  mountpartition(Device,2, RootMount);
+  mountpartition(Device, 2, RootMount);
 
-//  if not MountPartition(Part2, RootMount) then
-//    raise Exception.Create('Failed to mount root partition: ' + Part2);
+  //  if not MountPartition(Part2, RootMount) then
+  //    raise Exception.Create('Failed to mount root partition: ' + Part2);
 
   try
     OldUser := FindExistingUser(RootMount);
@@ -206,7 +187,7 @@ begin
 
     LogMsg(Log, '✔ User setup complete.');
   finally
-    CloseMountTarget( RootMount);
+    CloseMountTarget(RootMount);
   end;
 end;
 
@@ -222,15 +203,14 @@ var
   x, uid: integer;
   PasswdPath, HostnamePath, SSIDFile, ShadowPath: string;
   ui: TUserInfo;
-   parts:tstringarray;
+  parts: tstringarray;
 
-  // -------------------------------
-  // sichere Split-Funktion
-  // -------------------------------
+// -------------------------------
+// sichere Split-Funktion
+// -------------------------------
   function Split(const S: string; const Delim: char): TStringArray;
   var
     i, p, last: integer;
-
   begin
     SetLength(Result, 0);
     last := 1;
@@ -385,7 +365,4 @@ end;
 
 
 
-
-
 end.
-

@@ -100,6 +100,14 @@ type
     f_spare: array[0..5] of cULong;
   end;
 
+type
+  rngbuffer = record
+    position: integer;   // Schreibposition
+    size: integer;       // maximale Größe
+    time: array of int64;
+    val: array of qword;
+  end;
+
 
 
 procedure EnsureEnoughSpace(const FilePath: string; NewSize: int64);
@@ -144,14 +152,52 @@ implementation
 
 uses zstd, unit1;
 
-const
-
-  puffersize = 48;
-
+function mstostr(secs: double): string;
 var
-  ValHistory: array[0..PufferSize - 1] of int64;
-  TimeHistory: array[0..PufferSize - 1] of uint64;
-  pufferindex: integer;
+  h, m, s: integer;
+  sec: integer;
+begin
+  sec := trunc(secs);
+  h := Sec div 3600;
+  m := (Sec mod 3600) div 60;
+  s := Sec mod 60;
+  Result := Format('%.2d:%.2d:%.2d', [h, m, s]);
+end;
+
+procedure InitRingBuffer(var b: rngbuffer; size: integer; time, val: int64);
+var
+  x: integer;
+begin
+  b.size := size;
+  b.position := 0;
+  SetLength(b.val, size);
+  SetLength(b.time, size);
+  for x := 0 to b.size - 1 do
+  begin
+    b.val[x] := val;
+    b.time[x] := time;
+  end;
+end;
+
+function AddRingBuffer(var b: rngbuffer; time: qword; val: int64): int64;
+var
+  lastval: int64;
+  lasttime: int64;
+  dval, dtime: int64;
+begin
+  lastval := b.val[b.position];
+  lasttime := b.time[b.position];
+  dval := val - lastval;
+  dtime := time - lasttime;
+
+  Result := dval * 1000 div dtime;
+  b.val[b.position] := val;
+  b.time[b.position] := time;
+  b.position := (b.position + 1) mod b.size;
+end;
+
+
+
 
 function PartitionName(device: string; partitionNumber: integer): string;
 var
@@ -166,8 +212,6 @@ begin
 end;
 
 
-
-
 function InterlockedExchangeDouble(var Target: double; Source: double): double;
 var
   OldInt: int64;
@@ -178,7 +222,6 @@ end;
 
 
 
-
 function RunsAsRoot: boolean;
 begin
   if fpGetEUID = 0 then
@@ -186,6 +229,8 @@ begin
   else
     Result := False;
 end;
+
+
 
 
 function MountPartition(const Source: string; PartitionNumber: integer; const MountPoint: string): boolean;
@@ -477,13 +522,13 @@ end;
 procedure CloseMountTarget(const Target: string);
 var
   sl: TStringList;
-  i, p: Integer;
+  i, p: integer;
   loopDev, backfile, s: string;
   loop, mountpoint: string;
 
   procedure DetachAllLoopsForBackfile(const ABackfile: string);
   var
-    i, p: Integer;
+    i, p: integer;
     ldev, bf: string;
   begin
     for i := 0 to sl.Count - 1 do
@@ -491,7 +536,7 @@ var
       p := Pos(' ', sl[i]);
       if p = 0 then Continue;
       ldev := Trim(Copy(sl[i], 1, p - 1));
-      bf   := Trim(Copy(sl[i], p + 1, 999));
+      bf := Trim(Copy(sl[i], p + 1, 999));
       if bf = ABackfile then
         runcommand('losetup -d ' + ldev, s);
     end;
@@ -563,11 +608,6 @@ begin
     sl.Free;
   end;
 end;
-
-
-
-
-
 
 
 
@@ -1696,59 +1736,23 @@ end;
 
 
 
-
-function CalculateSpeed: double;
-var
-  iFirst: integer;
-  bytesWritten: int64;
-  totalTimeMs: uint64;
-begin
-  // index steht auf letztem eintrag
-  iFirst := (pufferIndex + 1) mod PufferSize;
-  bytesWritten := ValHistory[pufferindex] - ValHistory[iFirst];
-  totalTimeMs := TimeHistory[pufferindex] - TimeHistory[iFirst];
-  if totalTimeMs < 1 then totalTimeMs := 1;
-  Result := (bytesWritten / 1048576) / (totalTimeMs / 1000.0);  // MB/s
-end;
-
-
-
-procedure AddHistory(Val: int64; timestamp: uint64);
-begin
-  pufferindex := (pufferindex + 1) mod puffersize;
-  ValHistory[pufferIndex] := Val;
-  TimeHistory[pufferIndex] := timestamp;
-end;
-
-procedure inizRingBuffer(Val: int64; timestamp: uint64);
-var
-  i: integer;
-begin
-  pufferIndex := 0;
-  for i := 0 to puffersize - 1 do
-  begin
-    ValHistory[i] := Val;
-    TimeHistory[i] := timestamp;
-  end;
-end;
-
-
 procedure ImageToDeviceStandard(Source, Destination: string; delpar3, delpar4: boolean; box: TListBox);
 const
   BufferSize = 16 * 1024 * 1024;
-  PufferSize = 48;   // Anzahl Messungen +1 im Ringpuffer 48 * 5 sec
 var
   fsource, fdest: TFileStream;
   ibuffer: array of byte;
   done, tocopy: int64;
   lastUpdate: uint64;
-  speedMBs, etaSecs: double;
+  speed: int64;
+  etaSecs: double;
   //  lastline: integer;
   ReadCount, WrittenCount: int64;
   etaStr, status, st: string;
   totalSecs, h, m, s: integer;
   i: integer;
   nowTick, starttick: uint64;
+  ringbuffer: rngbuffer;
 begin
   form1.ProgressBar1.Max := 1000;
   form1.ProgressBar1.Position := 0;
@@ -1770,22 +1774,14 @@ begin
 
     tocopy := fsource.Size;
 
-
-
     // Ringpuffer initialisieren
     nowTick := GetTickCount64;
 
-    for i := 0 to PufferSize - 1 do
-    begin
-      ValHistory[i] := 0;
-      TimeHistory[i] := nowTick;
-    end;
-
+    InitRingBuffer(ringbuffer, 48, nowTick, 0);
     lastUpdate := nowTick;
 
-    //    lastline :=
     box.Items.Add('');
-    starttick := gettickcount64;
+    starttick := nowTick;
 
     repeat
       ReadCount := fsource.Read(ibuffer, BufferSize);
@@ -1796,35 +1792,23 @@ begin
           raise Exception.Create('Write error: Bytes written do not match bytes read.');
 
         Inc(done, WrittenCount);
-        nowTick := GetTickCount64;
 
+        nowTick := GetTickCount64;
         // Anzeige alle 5 Sekunden
         if (nowTick - lastUpdate) >= 5000 then
         begin
-          lastUpdate := nowTick;
-          if nowtick - starttick > 10000 then
-          begin
-            AddHistory(done, nowTick);
-          end
-          else
-            inizringbuffer(done, nowtick);
-
-          speedMBs := CalculateSpeed;
+          lastUpdate:=nowTick;
+          speed := addringbuffer(ringbuffer, nowtick, done);
 
 
-
-          if speedMBs > 0 then
-            etaSecs := ((tocopy - done) / 1048576) / speedMBs
+          if speed > 0 then
+            etaSecs := (tocopy - done) / speed
           else
             etaSecs := 0;
 
-          totalSecs := Trunc(etaSecs);
-          h := totalSecs div 3600;
-          m := (totalSecs mod 3600) div 60;
-          s := totalSecs mod 60;
-          etaStr := Format('%.2d:%.2d:%.2d', [h, m, s]);
+          etaStr := mstostr(etaSecs);
 
-          status := Format('%.1f MiB  %.2f MB/s  ETA: %s', [done / 1048576, speedMBs, etaStr]);
+          status := Format('%.1f MiB  %.2f MB/s  ETA: %s', [done / 1048576, speed / 1048576, etaStr]);
           listboxupdate(box, status);
         end;
         form1.ProgressBar1.Position := done * 1000 div tocopy;
@@ -1832,6 +1816,8 @@ begin
       application.ProcessMessages;
     until (ReadCount = 0) or (done >= tocopy) or terminate_all;
 
+    if not terminate_all then status := Format('%.1f MiB  %.2f MB/s', [done / 1048576, speed / 1048576]);
+    listboxupdate(box, status);
 
     if terminate_all then
       raise Exception.Create('Writing to device: process terminated.');
@@ -1859,14 +1845,18 @@ var
   InData: array of byte;
   OutData: array of byte;
   done: int64 = 0;
-  startTime, lastUpdate, etaSecs: double;
+  starttime: int64;
+  lastUpdate, etaSecsZ, etaSecsDone: double;
   lastline, res: integer;
-  speedMBs: double;
+  speedZMBs, speeddonembs: double;
   etaStr, status: string;
   totalSecs, h, m, s, percent: integer;
   tocopy, nowtick, starttick: int64;
   skipBytes: integer = 512;
   sumread: int64;
+  byteswritten: int64;
+  speedmsdone: double;
+  ringdonebuffer, ringZbuffer: rngbuffer;
 begin
   form1.ProgressBar1.max := 1000;
   form1.ProgressBar1.Position := 0;
@@ -1893,12 +1883,15 @@ begin
     SetLength(OutData, BufferSize);
 
     //    done := 0;
-    startTime := Now;
-    lastUpdate := startTime;
+    startTime := gettickcount64;
     listboxaddscroll(box, '');
     lastline := box.Count - 1;
     lastUpdate := gettickcount64;
     starttick := gettickcount64;
+
+    initringbuffer(Ringdonebuffer, 48, starttime, 0);
+    initringbuffer(ringZbuffer, 48, starttime, 0);
+
     repeat
       // Eingabe lesen
       InBuffer.size := fin.Read(InData[0], BufferSize);
@@ -1939,39 +1932,28 @@ begin
           end;
         end;
 
-        // Fortschrittsanzeige alle 3 Sekunden
-
         // Anzeige alle 5 Sekunden
+
         nowtick := gettickcount64;
 
         if (nowTick - lastUpdate) >= 5000 then
         begin
           lastUpdate := nowTick;
-          if nowtick - starttick > 10000 then
-          begin
-            AddHistory(fin.Position, nowTick);
-          end
+
+          speedZMBs := AddRingbuffer(ringZbuffer, nowTick, fin.Position);
+          speedDoneMBs := AddRingbuffer(ringDonebuffer, nowTick, done);
+
+
+          if (speedZMBs > 0) and (fin.Size > 0) then
+            etaSecsZ := (fin.Size - fin.Position) / speedZMBs
           else
-            inizringbuffer(fin.Position, nowtick);
+            etaSecsZ := 0;
 
-          speedMBs := CalculateSpeed;
-
-          if (speedMBs > 0) and (fin.Size > 0) then
-
-
-            etaSecs := ((fin.Size - fin.Position) / 1048576) / speedMBs
-          else
-            etaSecs := 0;
-
-          totalSecs := Trunc(etaSecs);
-          h := totalSecs div 3600;
-          m := (totalSecs mod 3600) div 60;
-          s := totalSecs mod 60;
-          etaStr := Format('%.2d:%.2d:%.2d', [h, m, s]);
+          etaStr := mstostr(etaSecsZ);
 
           if fin.Size > 0 then
             form1.ProgressBar1.Position := fin.Position * 1000 div fin.Size;
-          status := Format(' %.1f MB  %1f MB/s  ETA %s', [fin.Position / 1048576, speedMBs, etaStr]);
+          status := Format(' %.1f MB  %1f MB/s  ETA %s', [done / 1048576, speedDoneMBs / 1048576, etaStr]);   //fin.Position / 1048576,
           box.Items[lastline] := status;
         end;
         Application.ProcessMessages;
@@ -1983,14 +1965,14 @@ begin
 
 
     // Abschluss-Update nach erfolgreicher Dekompression
-    speedMBs := 0;
+    speedZMBs := 0;
     percent := 100;
     etaStr := '00:00:00';
 
     if fin.Size > 0 then
       form1.ProgressBar1.Position := fin.Position * 1000 div fin.Size;
 
-    status := Format(' %.1f MB  %1f MB/s  ETA %s', [fin.Position / 1048576, speedMBs, etaStr]);
+    status := Format(' %.1f MB  %1f MB/s  ETA %s', [done / 1048576, speedDoneMBs / 1048576, etaStr]);
 
     box.Items[lastline] := status;
     Application.ProcessMessages;
