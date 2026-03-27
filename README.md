@@ -24,7 +24,7 @@ Backups are safe, flexible, and can be restored directly from .img or
 ## 🔄 Restore Features
 
 📂 Restore from .img or .img.zst\
-🎯 Device selection via dropdown\
+🎯 Device selection via dropdown list\
 📏 Adjustable partition size\
 👀 Live partition preview\
 🧱 Optional partition deletion\
