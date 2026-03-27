@@ -80,15 +80,12 @@ type
     procedure Edit1DblClick(Sender: TObject);
     procedure EddeviceidChange(Sender: TObject);
     procedure EddeviceidKeyPress(Sender: TObject; var Key: char);
-    procedure edit_wlanssidChange(Sender: TObject);
-    procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure RadioButton1Change(Sender: TObject);
     procedure RadioButton2Change(Sender: TObject);
     procedure ScrollBar1Change(Sender: TObject);
     procedure ModifyImage(mountpoint: string);
-    function InstallMissingRoutines: boolean;
     procedure write_ini;
     procedure readDeviceInfo(drive: string; var deviceinfo: Tdriveinfo);
     procedure GridUpdate(Sender: TObject);
@@ -102,6 +99,11 @@ type
 const
   p2mpoint = '/pi_images/p2_pibackup_img';
   p1mpoint = '/pi_images/p1_pibackup_img';
+   appname = 'PiBackup  v1.7.0';
+   ininame = '/etc/pibackup/pibackup.ini';
+
+
+
 
 var
   Form1: TForm1;
@@ -114,9 +116,6 @@ implementation
 { TForm1 }
 
 const
-  appname = 'PiBackup  v1.6.3';
-  ininame = 'pibackup.ini';
-
   par1 = 2;
   par2 = 3;
   par3 = 4;
@@ -129,6 +128,7 @@ const
   parMOUNTPOINT = 3;
 
 var
+
   selecteddrive: string;
   devicePartitionInfo: Tdriveinfo;
   user: ansistring;
@@ -252,11 +252,6 @@ begin
   Key := UpCase(Key);
   if (not CheckBoxChangeDeviceID.Checked) or (not (Key in ['0'..'9', 'A'..'F'])) then
     Key := #0;  // ungültige Taste unterdrücken
-end;
-
-procedure TForm1.edit_wlanssidChange(Sender: TObject);
-begin
-
 end;
 
 
@@ -463,45 +458,6 @@ begin
 end;
 
 
-function TForm1.InstallMissingRoutines: boolean;
-var
-  zstdinstalled, installdone: boolean;
-begin
-  installdone := False;
-  Result := False;
-  zstdinstalled := isproginstalled('zstd');
-
-
-  if not zstdinstalled then
-  begin
-    if MessageDlg('Question', 'Zstd is used for compression.'#13#10'Zstd was not found on your system.'#13#10'Would you like to install it?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
-    begin
-
-      Listboxaddscroll(listbox1, starline('Installing zstd', 80));
-
-      PrexeThreadedBash('apt-get update && sudo apt upgrade -y', listbox1);
-      PrexeThreadedBash('apt-get -y -q install zstd', listbox1);
-      installdone := True;
-    end;
-  end;
-  zstdinstalled := isproginstalled('zstd');
-  if not zstdinstalled then Listboxaddscroll(listbox1, starline('zstd is not installed - compression won' + #39 + 't work without it.', 80));
-  Result := zstdinstalled;
-  if Result then
-  begin
-    FirstAktiv := False;
-  end;
-  if installdone then Listboxaddscroll(listbox1, starline('OK', 80));
-end;
-
-
-procedure TForm1.FormActivate(Sender: TObject);
-begin
-  if firstaktiv then
-    installmissingroutines;
-  firstaktiv := False;
-end;
-
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
@@ -554,6 +510,7 @@ begin
   checkbox1.Checked := ini.ReadBool('Option', 'compress', False);
   spinedit1.Value := ini.readinteger('Option', 'compresslevel', 2);
   edit2.Text := ini.ReadString('Exclude', 'Last', '');
+  s:= ini.ReadString('Exclude', 'Last', '');
   checkbox_Delimg.Checked := ini.ReadBool('Option', 'DeletePastCompress', False);
   checkboxChangeDeviceID.Checked := ini.ReadBool('Option', 'ChangeDeviceID', False);
   ini.Free;
@@ -586,13 +543,13 @@ begin
 
     if CheckBox_RemoveSSH.Checked then
     begin
-      ExcludeList.LoadFromFile(extractfilepath(application.ExeName) + 'ssh-cleanup.exclude', mountpoint);
+      ExcludeList.LoadFromFile(extractfilepath(application.ExeName) + '/etc/pibackup/ssh-cleanup.exclude', mountpoint);
       ExcludeList.ExecuteAll;
     end;
 
     if CheckBox_RemoveDHCP.Checked then
     begin
-      ExcludeList.LoadFromFile(extractfilepath(application.ExeName) + 'dhcp-cleanup.exclude', mountpoint);
+      ExcludeList.LoadFromFile(extractfilepath(application.ExeName) + '/etc/pibackup/dhcp-cleanup.exclude', mountpoint);
       ExcludeList.ExecuteAll;
     end;
 

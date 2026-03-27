@@ -107,7 +107,20 @@
         <p>Die neueste Version von pibackup ist auf GitHub verfügbar:</p>
         <a href="https://github.com/raspberryfpc/pibackup/releases" target="_blank" rel="noopener">Download von GitHub</a>
       </div>
-    </section>
+      
+   
+    
+       
+   <section id="install" style="background:#e6f7e6; padding:1em; border-radius:8px;">
+    <h2>Direkte Installation</h2>
+    <p>Lade die neueste Version herunter, entpacke das Archiv und installiere das Debian-Paket automatisch:</p>
+    <pre># Neueste Version herunterladen, entpacken und installieren
+    wget -O /tmp/pibackup.zip https://sourceforge.net/projects/pibackup/files/latest/download \
+    && unzip -o /tmp/pibackup.zip -d /tmp/pibackup \
+    && sudo apt install /tmp/pibackup/bin/pibackup_*.deb</pre>
+    <p>Die Installation verwendet das Verzeichnis <code>/tmp</code>, sodass keine Dateien im Home-Verzeichnis zurückbleiben.</p>
+</section> 
+ </section>  
 
     <!-- Englisch -->
     <section lang="en">
@@ -155,11 +168,24 @@
         <p>The latest version of pibackup is available on GitHub:</p>
         <a href="https://github.com/raspberryfpc/pibackup/releases" target="_blank" rel="noopener">Download from GitHub</a>
       </div>
-    </section>
+  
+   
+  
+   <section id="install" style="background:#e6f7e6; padding:1em; border-radius:8px;">
+    <h2>Direct Installation</h2>
+    <p>Download the latest release, extract the archive, and install the Debian package automatically:</p>
+    <pre># Download latest release, unzip, and install
+     wget -O /tmp/pibackup.zip https://sourceforge.net/projects/pibackup/files/latest/download \
+     && unzip -o /tmp/pibackup.zip -d /tmp/pibackup \
+     && sudo apt install /tmp/pibackup/bin/pibackup_*.deb</pre>
+    <p>The installation uses the <code>/tmp</code> directory, so no files remain in your home directory.</p>
+  </section>  
+    </section>       
+   
 
   </div>
 
-  <footer>&copy; 2025 pibackup – Raspberry Pi Backup &amp; Restore Tool</footer>
+  <footer>&copy; 2026 pibackup – Raspberry Pi Backup &amp; Restore Tool</footer>
 
   <script>
     /*

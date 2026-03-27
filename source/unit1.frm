@@ -8,7 +8,6 @@ object Form1: TForm1
   ClientWidth = 1016
   Position = poDesktopCenter
   LCLVersion = '8.8'
-  OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
   object Edit1: TEdit
@@ -406,7 +405,6 @@ object Form1: TForm1
       Width = 192
       Anchors = [akTop]
       TabOrder = 7
-      OnChange = edit_wlanssidChange
     end
     object edit_wlanpassword: TEdit
       AnchorSideLeft.Control = edit_wlanssid

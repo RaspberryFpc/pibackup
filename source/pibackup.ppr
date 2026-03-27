@@ -1,37 +1,46 @@
-program pibackup;
+ program pibackup;
 {$mode objfpc}{$H+}
 
 uses
   {$IFDEF UNIX}
   cthreads, unix,
   {$ENDIF}
-  Interfaces, // includes LCL widgetset (Qt in deinem Fall)
+  qtfix,        // 🔥 setzt Environment VOR Qt
+  Interfaces,   // Qt wird hier geladen
   Forms,
   Dialogs,
   rkutils,
   unit1,
   exethread,
-  UserSetup;
+  UserSetup,
+  uitheme;      // 🔥 Theme + Font
 
-  //const
-  //  libc = 'c';
-
-  //function setenv(name: PChar; value: PChar; overwrite: cint): cint; cdecl; external libc name 'setenv';
-
-  {$R *.res}
+{$R *.res}
 
 begin
-
   RequireDerivedFormResource := True;
 
+  // ===== Root Check =====
   if not RunsAsRoot then
   begin
-    MessageDlg('Error', 'This program requires root privileges.' + sLineBreak + 'Please run it using sudo, su, or as the root user.', mtError, [mbOK], 0);
+    MessageDlg('Error',
+      'This program requires root privileges.' + LineEnding +
+      'Please run it using sudo, su, or as the root user.',
+      mtError, [mbOK], 0);
     Halt(1);
   end;
 
-  Application.Scaled := True;
+  // ===== Kein DPI Scaling =====
+  Application.Scaled:=True;
+
+  // ===== Qt starten =====
   Application.Initialize;
+
+  // ===== Style + Font setzen =====
+// ApplyCodeTyphonStyle;  // Farben + Fusion Style
+ // ApplyFont;             // feste Schrift
+
+  // ===== Form erstellen =====
   Application.CreateForm(TForm1, Form1);
   Application.Run;
 end.

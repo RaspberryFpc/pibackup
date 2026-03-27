@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -5,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- SEO Meta Tags -->
-  <title>pibackup – Raspberry Pi Backup & Restore Tool</title>
-  <meta name="description" content="pibackup – Backup- und Wiederherstellungs-Tool für Raspberry Pi. Erstellt und stellt SD-Karten-Images wieder her, inklusive Live-Backup, Image-Verkleinerung und schneller zstd-Kompression (.img.zst).">
+  <title>pibackup – Raspberry Pi Backup- & Restore-Tool</title>
+  <meta name="description" content="pibackup – Raspberry Pi Backup-Tool zum Erstellen und Wiederherstellen von SD-Karten-Images. Live-Backup, Verkleinern und Komprimieren von Images (.img.zst). Funktioniert mit SD-Karten, SSDs, HDDs, USB und NAS.">
 
   <!-- Canonical URL -->
   <link rel="canonical" href="https://raspberryfpc.github.io/pibackup/index-de.html">
@@ -15,9 +16,12 @@
   <!-- Favicon -->
   <link rel="icon" href="rkicon.ico" type="image/x-icon">
 
+  <!-- Google Site Verification -->
+  <meta name="google-site-verification" content="9R0_acOmUPXTuQXBqsgF1j8WIMsb0tLe0sQp7RPOBpU" />
+
   <!-- Open Graph / Social Media -->
-  <meta property="og:title" content="pibackup – Raspberry Pi Backup & Restore Tool">
-  <meta property="og:description" content="Portables 64-Bit Live-Backup- und Restore-Tool für Raspberry Pi und Linux. Erstellt Sicherungen, verkleinert Images und komprimiert sie effizient zu .img.zst.">
+  <meta property="og:title" content="pibackup – Raspberry Pi Backup- & Restore-Tool">
+  <meta property="og:description" content="Portables 64-Bit Live-Backup- und Restore-Tool für Raspberry Pi und Linux. Live-Backup, Image-Verkleinerung und effiziente zstd-Komprimierung (.img.zst).">
   <meta property="og:image" content="https://raspberryfpc.github.io/pibackup/screenshot1.png">
   <meta property="og:url" content="https://raspberryfpc.github.io/pibackup/index-de.html">
   <meta property="og:type" content="website">
@@ -36,105 +40,121 @@
     nav { margin-bottom: 1rem; text-align: center; }
     nav a { margin: 0 0.5rem; color: #0366d6; text-decoration: none; }
     p a { color: #0366d6; text-decoration: underline; }
+    pre { background:#f4f4f4; padding:1em; border-radius:8px; overflow-x:auto; }
   </style>
 </head>
 <body>
   <header>
-    <h1>pibackup – Raspberry Pi Backup & Restore Tool</h1>
-    <p>Portables Live-Backup und Restore für Raspberry Pi, Linux, SD-Karten & SSDs</p>
+    <h1>pibackup – Raspberry Pi Backup- & Restore-Tool</h1>
+    <p>Portables Live-Backup & Restore für Raspberry Pi, Linux, SD-Karten und SSDs</p>
   </header>
 
   <!-- Navigation -->
   <nav>
-    <a href="#features">Funktionen</a> | 
-    <a href="#restore">Wiederherstellen</a> | 
-    <a href="raspberry-pi-backup-de.html">Backup-Anleitung</a> |
-    <a href="#download">Download</a> | 
-    <a href="#faq">FAQ</a> | 
+    <a href="#features">Funktionen</a> |
+    <a href="#restore">Wiederherstellung</a> |
+    <a href="#install">Installation</a> |
+    <a href="raspberry-pi-backup-de.html">Anleitung</a> |
+    <a href="#download">Download</a> |
+    <a href="#faq">FAQ</a> |
     <a href="index.html">English</a> |
-    <a href="sitemap.html">Sitemap</a>
+    <a href="sitemap.html">Site Map</a>
   </nav>
 
   <main>
-    <!-- Features Section -->
     <section id="features" style="background:#e3f2fd; padding:1em; border-radius:8px;">
       <h2>Raspberry Pi Backup – Hauptfunktionen</h2>
-      <p>Mit <a href="#download">pibackup</a> erstellen Sie ein zuverlässiges <strong>Raspberry Pi Backup</strong> einer SD-Karte, SSD oder HDD. Unterstützt werden Live-Backups laufender Systeme inklusive der ersten beiden Partitionen (<code>/boot</code> und <code>/root</code>).</p>
-      <p>Eine vollständige Schritt-für-Schritt-Anleitung finden Sie in der <a href="raspberry-pi-backup-de.html">Raspberry Pi Backup- & Restore-Anleitung</a>.</p>
+      <p>Mit <a href="#download">pibackup</a> können Sie ein zuverlässiges <strong>Raspberry Pi Backup</strong> auf SD-Karte, SSD oder HDD erstellen. Unterstützt Live-Backups laufender Systeme inklusive der ersten beiden Partitionen (<code>/boot</code> und <code>/root</code>).</p>
+      <p>Eine ausführliche Schritt-für-Schritt-Anleitung finden Sie im <a href="raspberry-pi-backup-de.html">Raspberry Pi Backup- & Restore-Handbuch</a>.</p>
       <ul>
-        <li>Einfache grafische Oberfläche – keine Installation erforderlich</li>
-        <li>64-Bit-Linux-Anwendung – läuft direkt</li>
-        <li>Automatisches Backup der ersten zwei Partitionen (<code>/boot</code> und <code>/root</code>) einschließlich MBR</li>
-        <li>Unterstützung für Live-Backups – Backup ohne Neustart</li>
-        <li>Exclude-Datei zum Ausschließen unerwünschter Daten</li>
-        <li>Optionales Entfernen von SSH- und DHCP-Konfigurationen</li>
-        <li>Image-Verkleinerung mit <code>resize2fs</code> und Kompression mit <strong>zstd</strong></li>
-        <li>Backups optional als <code>.img.zst</code></li>
-        <li>Leere Sektoren werden mit <code>0xFF</code> gefüllt – bessere Kompression & Sicherheit</li>
+        <li>Einfache grafische Benutzeroberfläche</li>
+        <li>64-Bit Linux-Anwendung</li>
+        <li>Automatisches Backup der ersten beiden Partitionen (<code>/boot</code> und <code>/root</code>) inklusive MBR</li>
+        <li>Live-Backup-Unterstützung – Sicherung laufender Systeme</li>
+        <li>Unterstützung für Exclude-Dateien zum Entfernen unerwünschter Daten</li>
+        <li>Optionale Entfernung von SSH- und DHCP-Konfigurationen</li>
+        <li>Image-Verkleinerung mit <code>resize2fs</code> und Komprimierung mit <strong>zstd</strong></li>
+        <li>Backups werden optional als <code>.img.zst</code> gespeichert</li>
+        <li>Leere Sektoren werden mit <code>0xFF</code> gefüllt für bessere Komprimierung und Sicherheit</li>
         <li>Kompatibel mit SD-Karten, SSDs, HDDs, USB-Laufwerken und NAS</li>
       </ul>
     </section>
 
-    <!-- Restore Section -->
     <section id="restore" style="background:#fff3e0; padding:1em; border-radius:8px;">
-      <h2>Raspberry Pi Backup – Wiederherstellungsoptionen</h2>
-      <p>Mit <a href="#download">pibackup</a> stellen Sie <code>/boot</code> und <code>/root</code> vollständig wieder her – inklusive MBR (Sektor 0). Das Backup umfasst immer den Bereich von Sektor 0 bis zum Ende der zweiten Partition. Die endgültige Größe der <code>/root</code>-Partition kann vor dem Schreiben in der Live-GUI angepasst werden.</p>
+      <h2>Raspberry Pi Backup – Wiederherstellung</h2>
+      <p>Mit <a href="#download">pibackup</a> können Sie <code>/boot</code> und <code>/root</code> vollständig wiederherstellen, inklusive MBR (Sektor 0). Das Backup umfasst immer den Bereich von Sektor 0 bis zum Ende der zweiten Partition. Die endgültige Größe der <code>/root</code>-Partition kann vor dem Schreiben über die Live-GUI angepasst werden.</p>
       <ul>
-        <li>Direktes Wiederherstellen aus <code>.img</code> oder <code>.img.zst</code></li>
-        <li>Anpassen der <code>/root</code>-Partitionsgröße per Schieberegler</li>
-        <li>Dateisystem wird automatisch auf die neue Größe erweitert</li>
+        <li>Wiederherstellung direkt aus <code>.img</code> oder <code>.img.zst</code></li>
         <li>SSH beim ersten Start aktivieren</li>
         <li>Benutzername und/oder Passwort setzen oder ändern</li>
-        <li>WLAN konfigurieren – SSID und Passwort (PSK) festlegen</li>
-        <li>Live-Vorschau des Partitionslayouts</li>
+        <li>WLAN konfigurieren – SSID und Passwort (PSK) setzen oder ändern</li>
+        <li>Live-Vorschau der Partitionsaufteilung</li>
         <li>Optionales Löschen vorhandener Partitionen auf dem Zielgerät</li>
-        <li>Dateisystem wird automatisch passend erweitert</li>
+        <li>Anpassung der <code>/root</code>-Partitionsgröße per Schieberegler</li>
+        <li>Dateisystem wird automatisch passend vergrößert oder verkleinert</li>
       </ul>
     </section>
 
-    <!-- Screenshot Section -->
-    <section id="screenshot" style="padding:2em 0; text-align:center;">
-      <h2>Raspberry Pi Backup – Screenshot</h2>
-      <img src="screenshot1.png" alt="Screenshot der pibackup-GUI" style="max-width:90%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.1); border:1px solid #ccc;">
+    <section id="install" style="background:#f1f8e9; padding:1em; border-radius:8px;">
+      <h2>Direkte Installation</h2>
+      <p>Laden Sie die neueste Version herunter, entpacken Sie das Archiv und installieren Sie das Debian-Paket automatisch:</p>
+
+      <pre># Download latest release, unzip, and install
+wget -O /tmp/pibackup.zip https://sourceforge.net/projects/pibackup/files/latest/download \
+&& unzip -o /tmp/pibackup.zip -d /tmp/pibackup \
+&& sudo apt install /tmp/pibackup/bin/pibackup_*.deb</pre>
+
+      <p>Die Installation verwendet den Ordner <code>/tmp</code>, sodass keine Dateien im Home-Verzeichnis zurückbleiben.</p>
     </section>
 
-    <!-- Download Section -->
+    <section id="screenshot" style="padding:2em 0; text-align:center;">
+      <h2>Screenshot</h2>
+      <img src="screenshot1.png" alt="Screenshot der pibackup-Oberfläche" style="max-width:90%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.1); border:1px solid #ccc;">
+    </section>
+
     <section id="download">
       <h2>Download & Quellcode</h2>
       <a class="button" href="https://github.com/RaspberryFpc/pibackup" target="_blank">GitHub-Projekt</a>
     </section>
 
-    <!-- FAQ Section -->
     <section id="faq">
       <h2>FAQ</h2>
 
-      <h3>Wie sichere ich meine Raspberry-Pi-SD-Karte?</h3>
-      <p>Mit <a href="#features">pibackup</a> können Sie ein vollständiges <strong>Raspberry Pi SD-Karten-Backup</strong> erstellen. Das Tool unterstützt Live-Backups laufender Systeme – ein Neustart ist nicht nötig.</p>
+      <h3>Wie kann ich meine Raspberry Pi SD-Karte sichern?</h3>
+      <p>Mit <a href="#features">pibackup</a> können Sie ein vollständiges Backup Ihrer Raspberry Pi SD-Karte erstellen. Das Tool unterstützt Live-Backups laufender Systeme, sodass kein Herunterfahren erforderlich ist.</p>
 
-      <h3>Wie erstelle ich ein Raspberry-Pi-Image-Backup?</h3>
-      <p><a href="#features">pibackup</a> kann ein komprimiertes <code>.img.zst</code>-Image ihres Raspberry Pi erzeugen. Dieses Backup kann später auf dieselbe, eine größere oder kleinere SD-Karte oder sogar auf SSD/HDD wiederhergestellt werden.</p>
+      <h3>Wie erstelle ich ein Raspberry Pi Image-Backup?</h3>
+      <p>Mit <a href="#features">pibackup</a> können Sie eine komprimierte <code>.img.zst</code>-Datei Ihres Raspberry Pi erstellen. Dieses Backup kann später auf dieselbe SD-Karte, eine größere oder kleinere Karte oder auch auf SSD/HDD wiederhergestellt werden.</p>
 
-      <h3>Kann ich Raspberry-Pi-Backups auf USB oder NAS speichern?</h3>
-      <p>Ja, Sie können Backups auf USB-Laufwerken, SSDs, HDDs oder direkt auf einem NAS speichern – dies ist die sicherste Methode zur Archivierung.</p>
+      <h3>Kann ich mein Raspberry Pi Backup auf USB oder NAS speichern?</h3>
+      <p>Ja, Backups können auf externen USB-Laufwerken, SSDs, HDDs oder direkt auf NAS gespeichert werden.</p>
 
       <h3>Ist pibackup eine Alternative zu raspiBackup?</h3>
-      <p>Ja. <a href="#features">pibackup</a> ist eine portable Alternative zu raspiBackup – mit grafischer Oberfläche, Live-Backup und moderner zstd-Kompression.</p>
+      <p>Ja. <a href="#features">pibackup</a> ist eine portable Alternative zu raspiBackup mit grafischer Oberfläche, Live-Backup-Funktion und moderner zstd-Komprimierung.</p>
 
       <h3>Was wird immer gesichert?</h3>
-      <p><a href="#features">pibackup</a> sichert stets <code>/boot</code> und <code>/root</code> inklusive MBR. Das Backup deckt alles von Sektor 0 bis zum Ende der zweiten Partition ab.</p>
+      <p><a href="#features">pibackup</a> sichert immer <code>/boot</code> und <code>/root</code> inklusive MBR. Das Backup deckt alles von Sektor 0 bis zum Ende der zweiten Partition ab.</p>
 
-      <h3>Wie funktioniert das Wiederherstellen?</h3>
-      <p>Während der Wiederherstellung werden <code>/boot</code> und <code>/root</code> vollständig wiederhergestellt – inklusive MBR. Zusätzlich können Sie SSH aktivieren, Benutzername/Passwort setzen und WLAN konfigurieren (SSID + PSK). Die Root-Partition kann vor dem Schreiben über die Live-GUI in ihrer Größe angepasst werden.</p>
-
-      <h3>Kann ich die Root-Partition beim Restore anpassen?</h3>
-      <p>Ja, die Größe der <code>/root</code>-Partition kann während des Wiederherstellungsprozesses angepasst werden. Die Live-GUI zeigt einen Schieberegler sowie eine Vorschau des Partitionslayouts an.</p>
+      <h3>Wie funktioniert die Wiederherstellung?</h3>
+      <p>Bei der Wiederherstellung werden <code>/boot</code> und <code>/root</code> vollständig inklusive MBR zurückgeschrieben. Zusätzlich können SSH aktiviert, Benutzername und Passwort geändert und WLAN konfiguriert werden.</p>
     </section>
   </main>
 
-  <!-- Other Projects Section -->
   <section id="other-projects" style="background:#f1f8e9; padding:1em; border-radius:8px; max-width:800px; margin:2rem auto;">
     <h2>Weitere Projekte des Autors</h2>
     <ul>
-      <li><a href="https://github.com/RaspberryFpc/raspberry-udp_audio_receiver" target="_blank">raspberry-udp_audio_receiver</a> – Netzwerk-Audioempfänger (UDP) mit direkter ALSA-Ausgabe und sehr niedriger Latenz.</li>
-      <li><a href="https://github.com/RaspberryFpc/DS18B20-FPC-Pi-GUI" target="_blank">DS18B20-FPC-Pi-GUI</a> – GUI-Tool zum Auslesen von DS18B20-Temperatursensoren mit Linearisation für hohe Genauigkeit.</li>
-      <li><a href="https://gith
+      <li><a href="https://github.com/RaspberryFpc/raspberry-udp_audio_receiver" target="_blank">raspberry-udp_audio_receiver</a> – Netzwerk-Audioempfänger (UDP) mit direkter ALSA-Ausgabe und sehr geringer Latenz.</li>
+      <li><a href="https://github.com/RaspberryFpc/DS18B20-FPC-Pi-GUI" target="_blank">DS18B20-FPC-Pi-GUI</a> – GUI-Tool zum Auslesen von DS18B20-Temperatursensoren mit Linearisierung für hohe Genauigkeit.</li>
+      <li><a href="https://github.com/RaspberryFpc/RaspberryPi-BME280-GUI" target="_blank">RaspberryPi-BME280-GUI</a> – GUI-Anwendung für den Zugriff auf den BME280-I²C-Sensor mit Free Pascal.</li>
+      <li><a href="https://github.com/RaspberryFpc/RaspberryPi-GPIOv2-FPC" target="_blank">RaspberryPi-GPIOv2-FPC</a> – Einfache und schnelle Pascal-Unit zur Steuerung von GPIO-Pins über das Linux GPIO Character Device Interface.</li>
+    </ul>
+  </section>
+
+  <footer>
+    &copy; 2026 pibackup – MIT-Lizenz –
+    <a href="https://github.com/RaspberryFpc/pibackup" target="_blank">GitHub</a> |
+    <a href="sitemap.html">Site Map</a>
+  </footer>
+</body>
+</html>
+```

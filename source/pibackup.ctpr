@@ -141,6 +141,16 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="UserSetup"/>
       </Unit>
+      <Unit>
+        <Filename Value="qtfix.pas"/>
+        <FRMtype Value="0"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uitheme.pas"/>
+        <FRMtype Value="0"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
+## [1.7.0] – 2026-03-27
+### ✨ Improvements
+- Installation now via `sudo apt install ./pibackup.deb` from the `/bin` directory  
+- No startup script needed anymore.
+- Corrected display of transfer speed and written bytes during recover operation with compressed images.
+- Updated doc files.
+
 ## [1.6.2] – 2025-12-17
 ### Added
 - Info for usersetup
@@ -36,8 +43,6 @@ All notable changes to this project are documented in this file.
 - External programs (`resize2fs`, `e2fsck`, etc.) are now executed in a separate thread:  
 - GUI remains responsive during long-running operations.  
 - Progress and cancellation are handled more consistently.  
-
-
 
 
 ## [1.5.3] – 2025-08-30
