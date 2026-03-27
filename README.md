@@ -36,7 +36,6 @@ Backups are safe, flexible, and can be restored directly from .img or
 For fresh Raspberry Pi setups:
 Enable SSH on first boot\
 Set username & password\
-
 Configure WiFi (SSID + PSK)
 ---
 ##📦 Download and Installation
