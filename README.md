@@ -28,31 +28,26 @@ Backups are safe, flexible, and can be restored directly from .img or
 📏 Adjustable partition size\
 👀 Live partition preview\
 🧱 Optional partition deletion\
-
-📐 Filesystem auto-resize
+📐 Filesystem auto-resize\
 
 ## ⚙️ Headless Setup Options
 
-For fresh Raspberry Pi setups:
-Enable SSH on first boot\
-Set username & password\
-Configure WiFi (SSID + PSK)
+ For fresh Raspberry Pi setups:
+- enable SSH on first boot\
+- Set username & password\
+- Configure WiFi (SSID + PSK)\
 ---
-##📦 Download and Installation
-🔽 Download .deb
-``` bash
-
-```
+## 📦 Download and Installation
 📥 Install (Recommended)
 ``` bash
 # Download latest release, unzip, and install
+# Automatically installs all dependencies (e.g. zstd)
 wget -O /tmp/pibackup.zip https://sourceforge.net/projects/pibackup/files/latest/download \
 && unzip -o /tmp/pibackup.zip -d /tmp/pibackup \
 && sudo apt install /tmp/pibackup/bin/pibackup_*.deb
 ```
-👉 Automatically installs all dependencies (e.g. zstd)
----
-▶️ Start
+
+## ▶️ Start
 ``` bash
 pibackup
 ```
