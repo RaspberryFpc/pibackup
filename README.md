@@ -61,13 +61,13 @@ Utility → PiBackup
 sudo dpkg -i pibackup.deb
 sudo apt -f install
 ```
----
-🧰 Requirements
-Linux (ARM64)\
+## 🧰 Requirements  
+
+###### Linux (ARM64)\  
 No manual dependency installation required\
 All dependencies are handled via .deb
 ---
-🛠️ Build Information
+## 🛠️ Build Information
 Developed with CodeTyphon\
 GUI: Qt5\
 Target: 64-bit ARM (arm64)
@@ -76,7 +76,7 @@ Raspberry Pi 4\
 Raspberry Pi 5\
 Debian Bookworm / Trixie (X11)
 ---
-📜 License
+## 📜 License
 MIT License -- see LICENSE
 ⚠️ Disclaimer:  
 This tool works directly on storage devices.  
@@ -85,7 +85,7 @@ Incorrect usage may result in data loss.
 👤 Author
 RaspberryFpc
 ---
-🛟 Emergency Recovery
+## 🛟 Emergency Recovery
 💡 Create a rescue SD card with Linux + pibackup.
 In case of system failure:
 Boot rescue system\
