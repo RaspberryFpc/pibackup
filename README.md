@@ -42,8 +42,8 @@ Backups are safe, flexible, and can be restored directly from .img or
 ``` bash
 # Download latest release, unzip, and install
 # Automatically installs all dependencies (e.g. zstd)
-wget -O /tmp/pibackup.zip https://sourceforge.net/projects/pibackup/files/latest/download \
-&& unzip -o /tmp/pibackup.zip -d /tmp/pibackup \
+wget -O /tmp/pibackup.zip https://sourceforge.net/projects/pibackup/files/latest/download\
+&& unzip -o /tmp/pibackup.zip -d /tmp/pibackup\
 && sudo apt install /tmp/pibackup/bin/pibackup_*.deb
 ```
 
@@ -56,7 +56,7 @@ Or via menu:
 Utility → PiBackup
 ```
 ---
-⚙️ Alternative Installation (Fallback)
+## ⚙️ Alternative Installation (Fallback)
 ``` bash
 sudo dpkg -i pibackup.deb
 sudo apt -f install
@@ -70,31 +70,38 @@ All dependencies are handled via .deb
 ---
 ## 🛠️ Build Information  
 
-Developed with CodeTyphon  
-GUI: Qt5  
-Target: 64-bit ARM (arm64)  
-Tested on:  
-Raspberry Pi 4  
-Raspberry Pi 5  
-Debian Bookworm / Trixie (X11)
+Developed with CodeTyphon\
+Gui:Qt5\
+Target: 64-bit ARM (arm64)\ 
+Tested on:\  
+Raspberry Pi 4\  
+Raspberry Pi 5\  
+Debian Bookworm / Trixie (X11) 
+
 ---
 ## 📜 License
 
 MIT License -- see LICENSE
-⚠️ Disclaimer:  
-This tool works directly on storage devices.  
+
+
+## ⚠️ Disclaimer:
+
+This tool works directly on storage devices.\  
 Incorrect usage may result in data loss.
+
 ---
-👤 Author
+## 👤 Author
 RaspberryFpc
+
 ---
 ## 🛟 Emergency Recovery
 
-💡 Create a rescue SD card with Linux + pibackup.
-In case of system failure:
+💡 Create a rescue SD card with Linux + pibackup.\
+In case of system failure:\
 Boot rescue system\
 Restore your backup image\
-Get your system back instantly
+Get your system back instantly\
+
 ---
 🔗 Other Projects
 raspberry-udp_audio_receiver -- Low latency audio over UDP\
