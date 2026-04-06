@@ -42,9 +42,9 @@ Backups are safe, flexible, and can be restored directly from .img or
 ``` bash
 # Download latest release, unzip, and install
 # Automatically installs all dependencies (e.g. zstd)
-wget -O /tmp/pibackup.zip https://sourceforge.net/projects/pibackup/files/latest/download\
-&& unzip -o /tmp/pibackup.zip -d /tmp/pibackup\
-&& sudo apt install /tmp/pibackup/bin/pibackup_*.deb
+wget -O /tmp/pibackup.zip https://sourceforge.net/projects/pibackup/files/latest/download \
+&& unzip -o /tmp/pibackup.zip -d /tmp/pibackup \
+&& sudo apt install /tmp/pibackup/RaspberryFpc-pibackup-*/bin/pibackup.deb
 ```
 
 ## ▶️ Start
