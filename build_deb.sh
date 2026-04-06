@@ -83,7 +83,7 @@ Section: utils
 Priority: optional
 Architecture: arm64
 Maintainer: RaspberryFpc
-Depends: zstd, e2fsprogs, sudo, libQt5Pas.so.1
+Depends: zstd, e2fsprogs, sudo, libqt5pas1
 Description: Raspberry Pi Backup Tool
  Fast backup and restore tool with ZSTD compression.
 EOF
