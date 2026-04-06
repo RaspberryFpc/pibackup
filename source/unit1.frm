@@ -44,7 +44,7 @@ object Form1: TForm1
     OnClick = Edit1DblClick
   end
   object Label2: TLabel
-    Left = 32
+    Left = 24
     Height = 15
     Top = 56
     Width = 86

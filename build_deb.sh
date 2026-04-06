@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PKG="pibackup_pkg"
-version="1.7.0"
+version="1.7.1"
 OUTDIR="/home/pi/git/pibackup/bin"
 
 SRC_BIN="/home/pi/git/pibackup/source/pibackup"
@@ -83,7 +83,7 @@ Section: utils
 Priority: optional
 Architecture: arm64
 Maintainer: RaspberryFpc
-Depends: zstd, e2fsprogs, sudo
+Depends: zstd, e2fsprogs, sudo, libQt5Pas.so.1
 Description: Raspberry Pi Backup Tool
  Fast backup and restore tool with ZSTD compression.
 EOF
