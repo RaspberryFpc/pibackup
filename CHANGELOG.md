@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
+## [1.7.1] – 2026-04-07
+### Bugfix
+- Corrected download instructions in README
+- Added missing dependency for Qt5
+- 
 ## [1.7.0] – 2026-03-27
 ### ✨ Improvements
 - Installation now via `sudo apt install ./pibackup.deb` from the `/bin` directory  
