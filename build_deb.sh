@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PKG="pibackup_pkg"
-version="1.7.1"
+version="1.7.5"
 OUTDIR="/home/pi/git/pibackup/bin"
 
 SRC_BIN="/home/pi/git/pibackup/source/pibackup"
@@ -29,10 +29,10 @@ mkdir -p "$PKG/usr/share/icons/hicolor/256x256/apps"
 install -Dm755 "$SRC_BIN" \
     "$PKG/usr/lib/pibackup/pibackup"
     
-install -Dm755 /usr/lib/aarch64-linux-gnu/libQt5Pas.so.1 \
-    "$PKG/usr/lib/pibackup/libQt5Pas.so.1"
-install -Dm755 /usr/lib/aarch64-linux-gnu/libQt5Pas.so.1.2.14 \
-    "$PKG/usr/lib/pibackup/libQt5Pas.so.1.2.14"    
+#install -Dm755 /usr/lib/aarch64-linux-gnu/libQt5Pas.so.1 \
+#    "$PKG/usr/lib/pibackup/libQt5Pas.so.1"
+#install -Dm755 /usr/lib/aarch64-linux-gnu/libQt5Pas.so.1.2.14 \
+#    "$PKG/usr/lib/pibackup/libQt5Pas.so.1.2.14"    
 
 # Exclude-Dateien → /etc
 install -Dm644 /home/pi/git/pibackup/source/dhcp-cleanup.exclude \
@@ -88,7 +88,7 @@ Section: utils
 Priority: optional
 Architecture: arm64
 Maintainer: RaspberryFpc
-Depends: zstd, e2fsprogs, sudo
+Depends: zstd, e2fsprogs, sudo, libqt5pas1
 Description: Raspberry Pi Backup Tool
  Fast backup and restore tool with ZSTD compression.
 EOF
