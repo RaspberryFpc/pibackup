@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
-## [1.7.1] – 2026-04-07
+## [1.7.5] – 2026-04-07
 ### Bugfix
 - Corrected download instructions in README
 - Added missing dependency for Qt5
