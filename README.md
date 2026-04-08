@@ -104,8 +104,9 @@ Restore your backup image\
 Get your system back instantly\
 
 ---
-🔗 Other Projects
-raspberry-udp_audio_receiver -- Low latency audio over UDP\
+## 🔗 Other Projects
+
+raspberry-udp_audio_receiver -- Low latency audio sender and receiver over UDP\
 DS18B20-FPC-Pi-GUI -- Temperature sensor GUI\
 RaspberryPi-BME280-GUI -- Sensor access GUI\
 RaspberryPi-GPIOv2-FPC -- GPIO control unit
