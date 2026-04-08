@@ -3,6 +3,13 @@ All notable changes to this project are documented in this file.
 
 ## [1.7.7] – 2026-04-08
 
+### ✨ Improvements
+
+*Removed checkbox to optionally ignore the MBR signature, no need anymore
+
+
+## [1.7.7] – 2026-04-08
+
 ### Bugfix
 
 * In some cases MBR signature not read properly.Changed MBR reading from low level reading with fpopen to filestream.

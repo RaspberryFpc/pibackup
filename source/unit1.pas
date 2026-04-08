@@ -34,7 +34,6 @@ type
     ButtonCreateImage: TButton;
     ButtonWriteImagetodevice: TButton;
     CheckBox1: TCheckBox;
-    CBinvalidMbr: TCheckBox;
     EDhost: TEdit;
     EDuserpassword: TEdit;
     edit_wlanssid: TEdit;
@@ -100,7 +99,7 @@ type
 const
   p2mpoint = '/pi_images/p2_pibackup_img';
   p1mpoint = '/pi_images/p1_pibackup_img';
-   appname = 'PiBackup  v1.7.7';
+   appname = 'PiBackup  v1.7.8';
    ininame = '/etc/pibackup/pibackup.ini';
 
 

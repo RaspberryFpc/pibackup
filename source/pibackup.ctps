@@ -10,8 +10,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="19"/>
-        <CursorPos X="28" Y="36"/>
+        <CursorPos X="45" Y="6"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
       </Unit>
@@ -26,8 +25,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="100"/>
-        <CursorPos X="31" Y="103"/>
+        <TopLine Value="99"/>
+        <CursorPos X="27" Y="107"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -38,7 +37,6 @@
         <UnitName Value="ExcludeParser"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="37"/>
         <CursorPos X="32" Y="47"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
@@ -48,8 +46,8 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1118"/>
-        <CursorPos X="70" Y="1131"/>
+        <TopLine Value="601"/>
+        <CursorPos X="49" Y="1172"/>
         <UsageCount Value="203"/>
         <Loaded Value="True"/>
       </Unit>
@@ -349,14 +347,6 @@
     <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="rkutils.pas"/>
-        <Caret Line="1124" Column="109" TopLine="1112"/>
-      </Position>
-      <Position>
-        <Filename Value="rkutils.pas"/>
-        <Caret Line="1126" Column="79" TopLine="1114"/>
-      </Position>
-      <Position>
-        <Filename Value="rkutils.pas"/>
         <Caret Line="1129" Column="19" TopLine="1117"/>
       </Position>
       <Position>
@@ -467,6 +457,14 @@
         <Filename Value="rkutils.pas"/>
         <Caret Line="361" Column="11" TopLine="355"/>
       </Position>
+      <Position>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="286" Column="50" TopLine="278"/>
+      </Position>
+      <Position>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="285" Column="50" TopLine="277"/>
+      </Position>
     </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
@@ -487,14 +485,14 @@
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="rkutils.pas"/>
-        <Line Value="1587"/>
+        <Line Value="1578"/>
       </Item>
       <Item>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="rkutils.pas"/>
-        <Line Value="1585"/>
+        <Line Value="1576"/>
       </Item>
     </BreakPoints>
   </Debugging>

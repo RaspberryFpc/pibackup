@@ -1115,11 +1115,8 @@ begin
       F.Position := 0;
       Bytesread := F.Read(Rmbr, 512);
       if bytesread <> 512 then raise Exception.Create('error reading MBR: ' + filename);
-      if (RMbr.Signature <> $aa55) and (Form1.CBinvalidMbr.Checked = False) then
-      begin
-        listboxaddscroll(form1.listbox1, 'reading mbr - wrong mbr signature: ' + filename + ' = 0x' + hexstr(RMbr.Signature, 4) + ' instead of 0xaa55.');
-        raise Exception.Create('You can enable the checkbox "igmore invalid MBR signature" and try again');
-      end;
+      if (RMbr.Signature <> $aa55)  then
+        raise Exception.Create( 'reading mbr - wrong mbr signature: ' + filename + ' = 0x' + hexstr(RMbr.Signature, 4) + ' instead of 0xaa55.');
     finally
        if assigned(F) then F.Free;
     end;
@@ -1147,11 +1144,8 @@ begin
       F.Position := 0;
       Bytesread := F.Read(Rmbr, 512);
       if bytesread <> 512 then raise Exception.Create('reading mbr - error reading file: ' + filename);
-      if (RMbr.Signature <> $aa55) and (Form1.CBinvalidMbr.Checked = False) then
-      begin
-        listboxaddscroll(form1.listbox1, 'reading mbr - wrong mbr signature: ' + filename + ' = 0x' + hexstr(RMbr.Signature, 4) + ' instead of 0xaa55.');
-        raise Exception.Create('You can enable the checkbox "igmore invalid MBR signature" and try again');
-      end;
+      if (RMbr.Signature <> $aa55)  then
+        raise Exception.Create( 'reading mbr - wrong mbr signature: ' + filename + ' = 0x' + hexstr(RMbr.Signature, 4) + ' instead of 0xaa55.');
       Result := Rmbr;
     finally
       if assigned(F) then F.Free;
@@ -1168,11 +1162,8 @@ begin
       Proc.Execute;
       BytesRead := Proc.Output.Read(RMbr, 512);
       if bytesread <> 512 then raise Exception.Create('reading mbr - error reading file: ' + filename);
-      if (RMbr.Signature <> $aa55) and (Form1.CBinvalidMbr.Checked = False) then
-      begin
-        listboxaddscroll(form1.listbox1, 'reading mbr - wrong mbr signature: ' + filename + ' = 0x' + hexstr(RMbr.Signature, 4) + ' instead of 0xaa55.');
-        raise Exception.Create('You can enable the checkbox "igmore invalid MBR signature" and try again');
-      end;
+      if (RMbr.Signature <> $aa55)  then
+        raise Exception.Create( 'reading mbr - wrong mbr signature: ' + filename + ' = 0x' + hexstr(RMbr.Signature, 4) + ' instead of 0xaa55.');
       Result := Rmbr;
     finally
       Proc.Free;

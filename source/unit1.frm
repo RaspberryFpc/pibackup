@@ -271,14 +271,6 @@ object Form1: TForm1
       State = cbChecked
       TabOrder = 8
     end
-    object CBinvalidMbr: TCheckBox
-      Left = 15
-      Height = 21
-      Top = 76
-      Width = 198
-      Caption = 'ignore invalid MBR signature'
-      TabOrder = 9
-    end
   end
   object Panel2: TPanel
     AnchorSideLeft.Control = StringGrid1
