@@ -34,6 +34,7 @@ type
     ButtonCreateImage: TButton;
     ButtonWriteImagetodevice: TButton;
     CheckBox1: TCheckBox;
+    CBinvalidMbr: TCheckBox;
     EDhost: TEdit;
     EDuserpassword: TEdit;
     edit_wlanssid: TEdit;
@@ -99,7 +100,7 @@ type
 const
   p2mpoint = '/pi_images/p2_pibackup_img';
   p1mpoint = '/pi_images/p1_pibackup_img';
-   appname = 'PiBackup  v1.7.5';
+   appname = 'PiBackup  v1.7.6';
    ininame = '/etc/pibackup/pibackup.ini';
 
 
@@ -565,7 +566,7 @@ var
   filename, sourcedrive, s, mp: ansistring;
   NewBlockCount: int64;
   blocksize: integer;
-  deststream: TFileStream;
+  deststream: TFileStream=nil;
   mbrwork: TMbr;
   sectorsperblock, p, p1: integer;
   dirpath: string;
@@ -733,7 +734,7 @@ begin
 
   except
     on E: Exception do
-      Listboxaddscroll(listbox1, 'Error: ' + E.Message);
+      Listboxaddscroll(listbox1, E.Message);
   end;
 
   fpchown(filename + '.zst', 1000, 1000);

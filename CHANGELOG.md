@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
+## [1.7.6] – 2026-04-08
+
+### Bugfix
+
+* Invalid MBR signature could cause a crash
+* Added a checkbox to optionally ignore the MBR signature (the image is checked with e2fsck after creation anyway)
+* Improved error messages
+
+
 ## [1.7.5] – 2026-04-07
 ### Bugfix
 - Corrected download instructions in README

@@ -271,6 +271,14 @@ object Form1: TForm1
       State = cbChecked
       TabOrder = 8
     end
+    object CBinvalidMbr: TCheckBox
+      Left = 15
+      Height = 21
+      Top = 76
+      Width = 198
+      Caption = 'ignore invalid MBR signature'
+      TabOrder = 9
+    end
   end
   object Panel2: TPanel
     AnchorSideLeft.Control = StringGrid1
@@ -531,15 +539,15 @@ object Form1: TForm1
   end
   object SaveDialog1: TSaveDialog
     DefaultExt = '.img'
-    Left = 537
-    Top = 56
+    Left = 672
+    Top = 8
   end
   object OpenDialog1: TOpenDialog
-    Left = 586
-    Top = 56
+    Left = 712
+    Top = 16
   end
   object OpenDialog2: TOpenDialog
-    Left = 634
-    Top = 50
+    Left = 752
+    Top = 16
   end
 end

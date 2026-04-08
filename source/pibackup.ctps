@@ -26,8 +26,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="92"/>
-        <CursorPos X="55" Y="104"/>
+        <TopLine Value="94"/>
+        <CursorPos X="31" Y="103"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -38,7 +38,7 @@
         <UnitName Value="ExcludeParser"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="58"/>
+        <TopLine Value="43"/>
         <CursorPos Y="59"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
@@ -46,10 +46,10 @@
       <Unit>
         <Filename Value="rkutils.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="693"/>
-        <CursorPos X="65" Y="704"/>
+        <TopLine Value="328"/>
+        <CursorPos X="31" Y="336"/>
         <UsageCount Value="203"/>
         <Loaded Value="True"/>
       </Unit>
@@ -66,10 +66,10 @@
       <Unit>
         <Filename Value="exethread.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="43"/>
-        <CursorPos X="32" Y="11"/>
+        <TopLine Value="33"/>
+        <CursorPos X="14" Y="49"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
@@ -79,19 +79,18 @@
         <UnitName Value="UserSetup"/>
         <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <UsageCount Value="192"/>
+        <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="qtfix.pas"/>
         <FRMtype Value="0"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="-1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="4"/>
         <CursorPos X="10" Y="11"/>
-        <UsageCount Value="32"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="40"/>
       </Unit>
       <Unit>
         <Filename Value="uitheme.pas"/>
@@ -100,8 +99,8 @@
         <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="48"/>
-        <CursorPos X="49" Y="55"/>
-        <UsageCount Value="31"/>
+        <CursorPos X="35" Y="55"/>
+        <UsageCount Value="39"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -340,130 +339,129 @@
       <Unit>
         <Filename Value="/usr/local/codetyphon/typhon/components/ca_libQT5/source/qt5.pas"/>
         <FRMtype Value="0"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="-1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="5017"/>
         <CursorPos X="11" Y="5026"/>
-        <UsageCount Value="15"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="19"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="28">
       <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="957" Column="8" TopLine="944"/>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="336" Column="31" TopLine="328"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="344" Column="37" TopLine="330"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="360" Column="20" TopLine="347"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="1098" Column="17" TopLine="1084"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="1111" Column="62" TopLine="1098"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="1134" Column="19" TopLine="1121"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="1145" Column="21" TopLine="1132"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="1569" Column="29" TopLine="1556"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="1570" Column="28" TopLine="1557"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="1599" Column="32" TopLine="1586"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="1606" Column="34" TopLine="1593"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="1774" Column="23" TopLine="1760"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="1775" Column="21" TopLine="1761"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="1795" Column="25" TopLine="1782"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="1796" Column="23" TopLine="1783"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="1873" Column="19" TopLine="1859"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="1874" Column="22" TopLine="1860"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="1900" Column="23" TopLine="1887"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="1901" Column="24" TopLine="1888"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="2047" Column="22" TopLine="2033"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="2058" Column="28" TopLine="2045"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="624" Column="15" TopLine="617"/>
+        <Caret Line="605" Column="99" TopLine="585"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="646" Column="15" TopLine="634"/>
+        <Caret Line="685" Column="32" TopLine="672"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="652" Column="17" TopLine="640"/>
+        <Caret Line="569" Column="33" TopLine="561"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="654" Column="15" TopLine="642"/>
+        <Caret Line="685" Column="32" TopLine="672"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="698" Column="10" TopLine="686"/>
+        <Caret Line="569" Column="26" TopLine="561"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="822" Column="15" TopLine="810"/>
+        <Caret Line="685" Column="32" TopLine="672"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="840" Column="15" TopLine="828"/>
+        <Caret Line="569" Column="26" TopLine="561"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="846" Column="10" TopLine="834"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="848" Column="15" TopLine="836"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="849" Column="10" TopLine="837"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="853" Column="15" TopLine="841"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="955" Column="8" TopLine="942"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="956" Column="8" TopLine="943"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="957" Column="8" TopLine="944"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="624" Column="15" TopLine="617"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="646" Column="15" TopLine="634"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="652" Column="17" TopLine="640"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="654" Column="15" TopLine="642"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="698" Column="10" TopLine="686"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="822" Column="15" TopLine="810"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="840" Column="15" TopLine="828"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="846" Column="10" TopLine="834"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="848" Column="15" TopLine="836"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="846" Column="15" TopLine="837"/>
-      </Position>
-      <Position>
-        <Filename Value="exethread.pas"/>
-        <Caret Line="33" Column="27" TopLine="30"/>
-      </Position>
-      <Position>
-        <Filename Value="exethread.pas"/>
-        <Caret Line="247" Column="18" TopLine="241"/>
-      </Position>
-      <Position>
-        <Filename Value="exethread.pas"/>
-        <Caret Line="116" Column="27" TopLine="106"/>
-      </Position>
-      <Position>
-        <Filename Value="exethread.pas"/>
-        <Caret Line="246" Column="93" TopLine="239"/>
+        <Caret Line="685" Column="32" TopLine="672"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -484,8 +482,15 @@
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
-        <Source Value="unit1.pas"/>
-        <Line Value="447"/>
+        <Source Value="rkutils.pas"/>
+        <Line Value="1592"/>
+      </Item>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="rkutils.pas"/>
+        <Line Value="1590"/>
       </Item>
     </BreakPoints>
   </Debugging>
