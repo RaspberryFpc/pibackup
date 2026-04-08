@@ -50,7 +50,7 @@ sudo apt install /tmp/pibackup/*/bin/pibackup.deb
 
 ## ▶️ Start
 ``` bash
-pibackup
+sudo /path/to/pibackup
 ```
 Or via menu:
 ``` text

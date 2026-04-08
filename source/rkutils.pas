@@ -333,7 +333,7 @@ end;
 
 procedure Write_mbr(const mbr: TMbr; const Filename: string);
 var
-  mbr_writestream: TFileStream=nil;
+  mbr_writestream: TFileStream = nil;
   res: ssize_t;
   fd: cint = -1;
 begin
@@ -1095,38 +1095,35 @@ function Read_Mbr(const filename: string): tmbr;
 var
   Header: array[0..3] of byte;
   IsZstd, IsDevice: boolean;
-  F: TFileStream=nil;
-  FD: cint;
+  F: TFileStream = nil;
   BytesRead: ssize_t;
   Proc: TProcess;
-  mbr: tmbr;
+  Rmbr: tmbr;
 begin
-  FillChar(Mbr, 512, 0);
+  FillChar(RMbr, 512, 0);
 
-  if not FileExists(filename) then           //  and ) not FileExists('/dev/' + ExtractFileName(filename)
-    raise Exception.Create('reading mbr from: ' + filename);
+  if not FileExists(filename) then
+    raise Exception.Create('reading mbr from: ' + filename + ' not found');
 
   IsDevice := Pos('/dev/', filename) = 1;
 
-  // Bei Geräten: direkt low-level öffnen (kein TFileStream)
   if IsDevice then
   begin
-    FD := fpOpen(PChar(filename), O_RDONLY);
-    if FD < 0 then  raise Exception.Create('reading mbr - can''''t open device: ' + filename);
+    try
+    F := TFileStream.Create(filename, fmOpenRead or fmShareDenyNone);
 
-    BytesRead := fpRead(FD, @Mbr, 512);
-    fpClose(FD);
-    if BytesRead <> 512 then raise Exception.Create('reading mbr - error reading file: ' + filename);
-
-
-     if (Mbr.Signature <> $aa55) and (Form1.CBinvalidMbr.Checked=false) then
-     begin
-       listboxaddscroll(form1.listbox1,'reading mbr - wrong mbr signature: ' + filename+' = 0x'+ hexstr(Mbr.Signature,4) +
-        ' instead of 0xaa55.');
-       raise Exception.Create('You can enable the checkbox "igmore invalid MBR signature" and try again');
-     end;
-
-    Result := mbr;
+      F.Position := 0;
+      Bytesread := F.Read(Rmbr, 512);
+      if bytesread <> 512 then raise Exception.Create('error reading MBR: ' + filename);
+      if (RMbr.Signature <> $aa55) and (Form1.CBinvalidMbr.Checked = False) then
+      begin
+        listboxaddscroll(form1.listbox1, 'reading mbr - wrong mbr signature: ' + filename + ' = 0x' + hexstr(RMbr.Signature, 4) + ' instead of 0xaa55.');
+        raise Exception.Create('You can enable the checkbox "igmore invalid MBR signature" and try again');
+      end;
+    finally
+       if assigned(F) then F.Free;
+    end;
+    Result := Rmbr;
     Exit;
   end;
 
@@ -1136,7 +1133,7 @@ begin
     if F.Read(Header, 4) <> 4 then Exit;   // 4byte lesen
     IsZstd := (Header[0] = $28) and (Header[1] = $B5) and (Header[2] = $2F) and (Header[3] = $FD);
   finally
-    F.Free;
+    if assigned(F) then F.Free;
   end;
 
   ////////////////////////////  ist Datei  ////////////////////////////////////////////////
@@ -1148,17 +1145,16 @@ begin
         raise Exception.Create('reading mbr - file to small: ' + filename);
 
       F.Position := 0;
-      Bytesread := F.Read(mbr, 512);
+      Bytesread := F.Read(Rmbr, 512);
       if bytesread <> 512 then raise Exception.Create('reading mbr - error reading file: ' + filename);
-    if (Mbr.Signature <> $aa55) and (Form1.CBinvalidMbr.Checked=false) then
-     begin
-       listboxaddscroll(form1.listbox1,'reading mbr - wrong mbr signature: ' + filename+' = 0x'+ hexstr(Mbr.Signature,4) +
-        ' instead of 0xaa55.');
-       raise Exception.Create('You can enable the checkbox "igmore invalid MBR signature" and try again');
-     end;
-      Result := mbr;
+      if (RMbr.Signature <> $aa55) and (Form1.CBinvalidMbr.Checked = False) then
+      begin
+        listboxaddscroll(form1.listbox1, 'reading mbr - wrong mbr signature: ' + filename + ' = 0x' + hexstr(RMbr.Signature, 4) + ' instead of 0xaa55.');
+        raise Exception.Create('You can enable the checkbox "igmore invalid MBR signature" and try again');
+      end;
+      Result := Rmbr;
     finally
-      F.Free;
+      if assigned(F) then F.Free;
     end;
   end
   else
@@ -1170,15 +1166,14 @@ begin
       Proc.Parameters.Add(Format('zstd -dc "%s" | head -c 512', [filename]));
       Proc.Options := [poUsePipes];
       Proc.Execute;
-      BytesRead := Proc.Output.Read(Mbr, SizeOf(Mbr));
+      BytesRead := Proc.Output.Read(RMbr, 512);
       if bytesread <> 512 then raise Exception.Create('reading mbr - error reading file: ' + filename);
-     if (Mbr.Signature <> $aa55) and (Form1.CBinvalidMbr.Checked=false) then
-     begin
-       listboxaddscroll(form1.listbox1,'reading mbr - wrong mbr signature: ' + filename+' = 0x'+ hexstr(Mbr.Signature,4) +
-        ' instead of 0xaa55.');
-       raise Exception.Create('You can enable the checkbox "igmore invalid MBR signature" and try again');
-     end;
-      Result := mbr;
+      if (RMbr.Signature <> $aa55) and (Form1.CBinvalidMbr.Checked = False) then
+      begin
+        listboxaddscroll(form1.listbox1, 'reading mbr - wrong mbr signature: ' + filename + ' = 0x' + hexstr(RMbr.Signature, 4) + ' instead of 0xaa55.');
+        raise Exception.Create('You can enable the checkbox "igmore invalid MBR signature" and try again');
+      end;
+      Result := Rmbr;
     finally
       Proc.Free;
     end;
@@ -1566,8 +1561,8 @@ var
   gelesen: ssize_t;
   geschrieben: ssize_t;
   MBR: TMbr;
-  SourceStream : TFileStream = nil;
-    DestStream: TFileStream = nil;
+  SourceStream: TFileStream = nil;
+  DestStream: TFileStream = nil;
   promille: int64;
   buffer: array of byte;
   BufferSize: int64 = 32 * 1024 * 1024;
@@ -1575,7 +1570,7 @@ begin
   form1.progressbar1.Max := 1000;
   form1.progressbar1.Position := 0;
   try
-//    try
+    //    try
     setlength(Buffer, BufferSize);
     bps := 0;
     bps_time := 0;
@@ -1689,19 +1684,19 @@ begin
     RunCommand('sync', s);
 
 
-  //except
-  //  on E: Exception do
-  //  begin
-  //    ListBoxaddscroll(listbox,'ERROR: ' + E.Message);
-  //          if FileExists(Filename) then DeleteFile(Filename);
-  //      raise;
-  //  end;
-  //end;
+    //except
+    //  on E: Exception do
+    //  begin
+    //    ListBoxaddscroll(listbox,'ERROR: ' + E.Message);
+    //          if FileExists(Filename) then DeleteFile(Filename);
+    //      raise;
+    //  end;
+    //end;
 
-finally
-  if Assigned(SourceStream) then FreeAndNil(SourceStream);
-  if Assigned(DestStream) then FreeAndNil(DestStream);
-end;
+  finally
+    if Assigned(SourceStream) then FreeAndNil(SourceStream);
+    if Assigned(DestStream) then FreeAndNil(DestStream);
+  end;
 
 end;
 
@@ -1771,8 +1766,8 @@ procedure ImageToDeviceStandard(Source, Destination: string; delpar3, delpar4: b
 const
   BufferSize = 16 * 1024 * 1024;
 var
-  fsource :tfilestream =nil;
-  fdest: TFileStream=nil;
+  fsource: tfilestream = nil;
+  fdest: TFileStream = nil;
   ibuffer: array of byte;
   done, tocopy: int64;
   lastUpdate: uint64;
@@ -1781,8 +1776,6 @@ var
   //  lastline: integer;
   ReadCount, WrittenCount: int64;
   etaStr, status, st: string;
-  totalSecs, h, m, s: integer;
-  i: integer;
   nowTick, starttick: uint64;
   ringbuffer: rngbuffer;
 begin
@@ -1829,7 +1822,7 @@ begin
         // Anzeige alle 5 Sekunden
         if (nowTick - lastUpdate) >= 5000 then
         begin
-          lastUpdate:=nowTick;
+          lastUpdate := nowTick;
           speed := addringbuffer(ringbuffer, nowtick, done);
 
 
@@ -1870,8 +1863,8 @@ function ImageToDeviceZstd(Source, Destination: string; delpar3, delpar4: boolea
 const
   BufferSize = 32 * 1024 * 1024;
 var
-  fin: TFileStream=nil;
-    fout: TFileStream=nil;
+  fin: TFileStream = nil;
+  fout: TFileStream = nil;
   dctx: TZSTD_DCtx;
   InBuffer: TZSTD_inBuffer;
   OutBuffer: TZSTD_outBuffer;
@@ -1879,16 +1872,14 @@ var
   OutData: array of byte;
   done: int64 = 0;
   starttime: int64;
-  lastUpdate, etaSecsZ, etaSecsDone: double;
+  lastUpdate, etaSecsZ: double;
   lastline, res: integer;
   speedZMBs, speeddonembs: double;
   etaStr, status: string;
-  totalSecs, h, m, s, percent: integer;
+  percent: integer;
   tocopy, nowtick, starttick: int64;
   skipBytes: integer = 512;
   sumread: int64;
-  byteswritten: int64;
-  speedmsdone: double;
   ringdonebuffer, ringZbuffer: rngbuffer;
 begin
   form1.ProgressBar1.max := 1000;
@@ -2044,7 +2035,7 @@ procedure ClearEmptyBlocks(listbox: tlistbox; mountpoint: string);
 const
   BlockSize = 16 * 1024 * 1024; // 16 MiB
 var
-  Stream: TFileStream=nil;
+  Stream: TFileStream = nil;
   BytesWritten, TotalWritten: int64;
   s, filepath: string;
   buffer: array of byte;

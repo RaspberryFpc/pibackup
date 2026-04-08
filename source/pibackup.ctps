@@ -26,7 +26,7 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="94"/>
+        <TopLine Value="100"/>
         <CursorPos X="31" Y="103"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
@@ -38,8 +38,8 @@
         <UnitName Value="ExcludeParser"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="43"/>
-        <CursorPos Y="59"/>
+        <TopLine Value="37"/>
+        <CursorPos X="32" Y="47"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
       </Unit>
@@ -48,8 +48,8 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="328"/>
-        <CursorPos X="31" Y="336"/>
+        <TopLine Value="1118"/>
+        <CursorPos X="70" Y="1131"/>
         <UsageCount Value="203"/>
         <Loaded Value="True"/>
       </Unit>
@@ -90,7 +90,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="4"/>
         <CursorPos X="10" Y="11"/>
-        <UsageCount Value="40"/>
+        <UsageCount Value="43"/>
       </Unit>
       <Unit>
         <Filename Value="uitheme.pas"/>
@@ -100,7 +100,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="48"/>
         <CursorPos X="35" Y="55"/>
-        <UsageCount Value="39"/>
+        <UsageCount Value="42"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -346,122 +346,126 @@
         <UsageCount Value="19"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="28">
+    <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="rkutils.pas"/>
-        <Caret Line="336" Column="31" TopLine="328"/>
-      </Position>
-      <Position>
-        <Filename Value="rkutils.pas"/>
-        <Caret Line="344" Column="37" TopLine="330"/>
+        <Caret Line="1124" Column="109" TopLine="1112"/>
       </Position>
       <Position>
         <Filename Value="rkutils.pas"/>
-        <Caret Line="360" Column="20" TopLine="347"/>
+        <Caret Line="1126" Column="79" TopLine="1114"/>
       </Position>
       <Position>
         <Filename Value="rkutils.pas"/>
-        <Caret Line="1098" Column="17" TopLine="1084"/>
+        <Caret Line="1129" Column="19" TopLine="1117"/>
       </Position>
       <Position>
         <Filename Value="rkutils.pas"/>
-        <Caret Line="1111" Column="62" TopLine="1098"/>
+        <Caret Line="1148" Column="44" TopLine="1136"/>
       </Position>
       <Position>
         <Filename Value="rkutils.pas"/>
-        <Caret Line="1134" Column="19" TopLine="1121"/>
+        <Caret Line="1151" Column="31" TopLine="1139"/>
       </Position>
       <Position>
         <Filename Value="rkutils.pas"/>
-        <Caret Line="1145" Column="21" TopLine="1132"/>
+        <Caret Line="1152" Column="67" TopLine="1140"/>
       </Position>
       <Position>
         <Filename Value="rkutils.pas"/>
-        <Caret Line="1569" Column="29" TopLine="1556"/>
+        <Caret Line="1153" Column="57" TopLine="1141"/>
       </Position>
       <Position>
         <Filename Value="rkutils.pas"/>
-        <Caret Line="1570" Column="28" TopLine="1557"/>
+        <Caret Line="1155" Column="109" TopLine="1143"/>
       </Position>
       <Position>
         <Filename Value="rkutils.pas"/>
-        <Caret Line="1599" Column="32" TopLine="1586"/>
+        <Caret Line="1157" Column="79" TopLine="1145"/>
       </Position>
       <Position>
         <Filename Value="rkutils.pas"/>
-        <Caret Line="1606" Column="34" TopLine="1593"/>
+        <Caret Line="1159" Column="21" TopLine="1147"/>
       </Position>
       <Position>
         <Filename Value="rkutils.pas"/>
-        <Caret Line="1774" Column="23" TopLine="1760"/>
+        <Caret Line="1175" Column="58" TopLine="1164"/>
       </Position>
       <Position>
         <Filename Value="rkutils.pas"/>
-        <Caret Line="1775" Column="21" TopLine="1761"/>
+        <Caret Line="1177" Column="109" TopLine="1165"/>
       </Position>
       <Position>
         <Filename Value="rkutils.pas"/>
-        <Caret Line="1795" Column="25" TopLine="1782"/>
+        <Caret Line="1179" Column="79" TopLine="1167"/>
       </Position>
       <Position>
         <Filename Value="rkutils.pas"/>
-        <Caret Line="1796" Column="23" TopLine="1783"/>
+        <Caret Line="1181" Column="21" TopLine="1169"/>
       </Position>
       <Position>
         <Filename Value="rkutils.pas"/>
-        <Caret Line="1873" Column="19" TopLine="1859"/>
+        <Caret Line="1531" Column="118" TopLine="1527"/>
       </Position>
       <Position>
         <Filename Value="rkutils.pas"/>
-        <Caret Line="1874" Column="22" TopLine="1860"/>
+        <Caret Line="1173" Column="51" TopLine="1166"/>
       </Position>
       <Position>
         <Filename Value="rkutils.pas"/>
-        <Caret Line="1900" Column="23" TopLine="1887"/>
+        <Caret Line="1127" Column="39" TopLine="1119"/>
       </Position>
       <Position>
         <Filename Value="rkutils.pas"/>
-        <Caret Line="1901" Column="24" TopLine="1888"/>
+        <Caret Line="1887" Column="2" TopLine="1880"/>
       </Position>
       <Position>
         <Filename Value="rkutils.pas"/>
-        <Caret Line="2047" Column="22" TopLine="2033"/>
+        <Caret Line="1883" Column="19" TopLine="1876"/>
       </Position>
       <Position>
         <Filename Value="rkutils.pas"/>
-        <Caret Line="2058" Column="28" TopLine="2045"/>
+        <Caret Line="1879" Column="23" TopLine="1873"/>
       </Position>
       <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="605" Column="99" TopLine="585"/>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="1883" Column="5" TopLine="1877"/>
       </Position>
       <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="685" Column="32" TopLine="672"/>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="1781" Column="18" TopLine="1776"/>
       </Position>
       <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="569" Column="33" TopLine="561"/>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="1883" Column="2" TopLine="1877"/>
       </Position>
       <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="685" Column="32" TopLine="672"/>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="1781" Column="12" TopLine="1776"/>
       </Position>
       <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="569" Column="26" TopLine="561"/>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="1780" Column="30" TopLine="1775"/>
       </Position>
       <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="685" Column="32" TopLine="672"/>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="1098" Column="24" TopLine="1093"/>
       </Position>
       <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="569" Column="26" TopLine="561"/>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="133" Column="27" TopLine="127"/>
       </Position>
       <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="685" Column="32" TopLine="672"/>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="361" Column="11" TopLine="355"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="133" Column="27" TopLine="127"/>
+      </Position>
+      <Position>
+        <Filename Value="rkutils.pas"/>
+        <Caret Line="361" Column="11" TopLine="355"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -483,14 +487,14 @@
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="rkutils.pas"/>
-        <Line Value="1592"/>
+        <Line Value="1587"/>
       </Item>
       <Item>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="rkutils.pas"/>
-        <Line Value="1590"/>
+        <Line Value="1585"/>
       </Item>
     </BreakPoints>
   </Debugging>

@@ -100,7 +100,7 @@ type
 const
   p2mpoint = '/pi_images/p2_pibackup_img';
   p1mpoint = '/pi_images/p1_pibackup_img';
-   appname = 'PiBackup  v1.7.6';
+   appname = 'PiBackup  v1.7.7';
    ininame = '/etc/pibackup/pibackup.ini';
 
 
