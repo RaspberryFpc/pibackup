@@ -1,4 +1,0 @@
-Sitemap: https://raspberryfpc.github.io/pibackup/sitemap.xml
-
-User-agent: *
-Disallow:
