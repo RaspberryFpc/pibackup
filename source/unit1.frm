@@ -26,10 +26,12 @@ object Form1: TForm1
     Top = 52
     Width = 608
     Anchors = [akLeft]
-    ItemHeight = 15
+    ItemHeight = 23
+    ReadOnly = True
+    Style = csDropDownList
     TabOrder = 1
-    Text = 'Laufwerk'
     OnChange = GridUpdate
+    OnCloseUp = ComboBox1CloseUp
     OnDropDown = ComboBox1DropDown
   end
   object Button4: TButton
@@ -220,13 +222,16 @@ object Form1: TForm1
       TabOrder = 4
     end
     object SpinEdit1: TSpinEdit
+      AnchorSideLeft.Control = CheckBox1
+      AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = CheckBox_RemoveSSH
       AnchorSideTop.Side = asrCenter
-      Left = 464
+      Left = 443
       Height = 24
       Top = 52
       Width = 50
       Alignment = taCenter
+      BorderSpacing.Left = 2
       MaxValue = 19
       MinValue = 1
       TabOrder = 5
@@ -535,11 +540,11 @@ object Form1: TForm1
     Top = 8
   end
   object OpenDialog1: TOpenDialog
-    Left = 712
-    Top = 16
+    Left = 768
+    Top = 8
   end
   object OpenDialog2: TOpenDialog
-    Left = 752
-    Top = 16
+    Left = 880
+    Top = 8
   end
 end

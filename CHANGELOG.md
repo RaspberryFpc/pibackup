@@ -1,11 +1,20 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
-## [1.7.7] – 2026-04-08
+## [1.7.10] – 2026-04-10
 
 ### ✨ Improvements
 
-*Removed checkbox to optionally ignore the MBR signature, no need anymore
+* Added a tips/help file with compression recommendations and exclude file syntax documentation.
+* Added installation of README, CHANGELOG, LICENSE and tips documentation to `/usr/share/doc/pibackup/`.
+* Critical buttons and UI elements are now disabled while backup or restore processes are running to prevent invalid operations and accidental user interaction.
+
+
+## [1.7.9] – 2026-04-08
+
+### ✨ Improvements
+
+* Removed checkbox to optionally ignore the MBR signature, no need anymore
 
 
 ## [1.7.7] – 2026-04-08

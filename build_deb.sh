@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PKG="pibackup_pkg"
-version="1.7.9"
+version="1.7.10"
 OUTDIR="/home/pi/git/pibackup/bin"
 
 SRC_BIN="/home/pi/git/pibackup/source/pibackup"
@@ -24,6 +24,7 @@ mkdir -p "$PKG/DEBIAN"
 mkdir -p "$PKG/usr/lib/pibackup"
 mkdir -p "$PKG/usr/share/applications"
 mkdir -p "$PKG/usr/share/icons/hicolor/256x256/apps"
+mkdir -p "$PKG/usr/share/doc/pibackup"
 
 # Binary
 install -Dm755 "$SRC_BIN" \
@@ -43,6 +44,20 @@ install -Dm644 /home/pi/git/pibackup/source/raspberry.exclude \
 
 install -Dm644 /home/pi/git/pibackup/source/ssh-cleanup.exclude \
     "$PKG/etc/pibackup/ssh-cleanup.exclude"
+
+install -Dm644 /home/pi/git/pibackup/docs/tips.md \
+    "$PKG/usr/share/doc/pibackup/tips.txt"
+
+install -Dm644 /home/pi/git/pibackup/README.md \
+    "$PKG/usr/share/doc/pibackup/README.md"
+
+install -Dm644 /home/pi/git/pibackup/CHANGELOG.md \
+    "$PKG/usr/share/doc/pibackup/CHANGELOG.md"
+
+install -Dm644 /home/pi/git/pibackup/LICENSE \
+    "$PKG/usr/share/doc/pibackup/LICENSE"
+
+
 
 
 cat > "$PKG/etc/pibackup/pibackup.ini" <<EOF

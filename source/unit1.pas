@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, Grids,
   Process, inifiles, fileutil, lazutf8, Unix, baseunix, LCLIntf, rkutils, zstd,
   LCLType, MaskEdit, ExtCtrls, ComCtrls, excludeParser, DateUtils, fpjson,
-  jsonparser, Types, exethread, usersetup;
+  jsonparser, Types, exethread, usersetup, LMessages;
 
 type
   partitioninfo = record
@@ -76,6 +76,7 @@ type
     procedure Button3Click(Sender: TObject);
     procedure Button5Click(Sender: TObject);
     procedure ButtonWriteImagetodeviceClick(Sender: TObject);
+    procedure ComboBox1CloseUp(Sender: TObject);
     procedure ComboBox1DropDown(Sender: TObject);
     procedure Edit1DblClick(Sender: TObject);
     procedure EddeviceidChange(Sender: TObject);
@@ -89,6 +90,8 @@ type
     procedure write_ini;
     procedure readDeviceInfo(drive: string; var deviceinfo: Tdriveinfo);
     procedure GridUpdate(Sender: TObject);
+    procedure enablesel;
+    procedure disablesel;
 
   private
     procedure SetBaseThreadCount(Data: PtrInt);
@@ -99,11 +102,8 @@ type
 const
   p2mpoint = '/pi_images/p2_pibackup_img';
   p1mpoint = '/pi_images/p1_pibackup_img';
-   appname = 'PiBackup  v1.7.8';
+   appname = 'PiBackup  v1.7.10';
    ininame = '/etc/pibackup/pibackup.ini';
-
-
-
 
 var
   Form1: TForm1;
@@ -128,7 +128,8 @@ const
   parMOUNTPOINT = 3;
 
 var
-
+  disableSelection:boolean=false;
+  ComboboxOldIndex:integer;
   selecteddrive: string;
   devicePartitionInfo: Tdriveinfo;
   user: ansistring;
@@ -137,6 +138,20 @@ var
   device: string;
   basicthreads: integer;
   messageuserinfo: boolean;
+
+
+procedure Tform1.disablesel;
+begin
+  disableSelection:=true;
+  edit1.ReadOnly:=true;
+end;
+
+procedure Tform1.enablesel;
+begin
+   disableSelection:=false;
+  edit1.ReadOnly:=false;
+end;
+
 
 function CountThreads: integer;
 var
@@ -152,6 +167,7 @@ begin
     FindClose(SR);
   end;
 end;
+
 
 
 procedure TForm1.SetBaseThreadCount(Data: PtrInt);
@@ -272,6 +288,15 @@ var
 
 procedure Tform1.GridUpdate(Sender: TObject);
 begin
+
+  if DisableSelection then
+  begin
+    ComboBox1.ItemIndex := ComboboxOldIndex;
+    Exit;
+  end;
+
+  ComboboxOldIndex := ComboBox1.ItemIndex;
+
   if (Sender = edit1) or (Sender = radiobutton2) then
     if radiobutton2.Checked then
       if fileexists(edit1.Text) then
@@ -574,14 +599,17 @@ begin
   if not RunsAsRoot then
     raise Exception.Create('This application must be run as root. Please start with sudo.');
 
-  if ButtonCreateImage.Caption = 'cancel' then
+  if ButtonCreateImage.tag > 0  then
   begin
-
+    ButtonCreateImage.tag:=0;
     terminate_all := True;
     listbox1.items.add('Operation canceled by user.');
-    ButtonCreateImage.Enabled := False;
+    enableSel;
     exit;
   end;
+
+  disableSel;
+  ButtonCreateImage.tag:=1;
 
   terminate_all := False;
   ButtonCreateImage.Caption := 'cancel';
@@ -742,7 +770,10 @@ begin
   Listboxaddscroll(listbox1, starline('all done', 80));
   Listboxaddscroll(listbox1, '');
   ButtonCreateImage.Caption := 'create image';
-  ButtonCreateImage.Enabled := True;
+
+  enableSel;
+  ButtonCreateImage.tag:=0;
+
 end;
 
 
@@ -781,14 +812,18 @@ begin
   if not RunsAsRoot then
     raise Exception.Create('This application must be run as root. Please start with sudo.');
   try
-    if ButtonWriteImagetodevice.Caption = 'cancel' then
+    if ButtonWriteImagetodevice.tag > 0  then
     begin
+      ButtonWriteImagetodevice.tag:=0;
       terminate_all := True;
       ListBoxaddscroll(listbox1, 'Operation canceled by user.');
       ButtonWriteImagetodevice.Caption := 'write image to device';
-      ButtonWriteImagetodevice.Enabled := False;
+      enablesel;
       Exit;
     end;
+
+   ButtonWriteImagetodevice.tag:=1;
+   Disablesel;
 
     ButtonWriteImagetodevice.Caption := 'cancel';
     sleep(100);
@@ -900,21 +935,34 @@ begin
   end;
 
   ButtonWriteImagetodevice.Caption := 'write image to device';
-  ButtonWriteImagetodevice.Enabled := True;
+  ButtonWriteImagetodevice.tag:=0;
+  enablesel;
 end;
+
+procedure TForm1.ComboBox1CloseUp(Sender: TObject);
+begin
+   if DisableSelection then
+          ComboBox1.ItemIndex := ComboboxOldIndex;
+end;
+
 
 
 
 procedure TForm1.ComboBox1DropDown(Sender: TObject);
 begin
+  if disableSelection then exit;
   getdrives(combobox1.Items);
   combobox1.ItemIndex := 0;
 end;
 
 
 
+
+
 procedure TForm1.Edit1DblClick(Sender: TObject);
 begin
+  if DisableSelection then exit;
+
   if radiobutton1.Checked then
   begin
     if edit1.Text > '' then  SaveDialog1.InitialDir := extractfilepath(edit1.Text);

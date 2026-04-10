@@ -1674,16 +1674,6 @@ begin
 
     RunCommand('sync', s);
 
-
-    //except
-    //  on E: Exception do
-    //  begin
-    //    ListBoxaddscroll(listbox,'ERROR: ' + E.Message);
-    //          if FileExists(Filename) then DeleteFile(Filename);
-    //      raise;
-    //  end;
-    //end;
-
   finally
     if Assigned(SourceStream) then FreeAndNil(SourceStream);
     if Assigned(DestStream) then FreeAndNil(DestStream);
