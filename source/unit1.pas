@@ -34,6 +34,7 @@ type
     ButtonCreateImage: TButton;
     ButtonWriteImagetodevice: TButton;
     CheckBox1: TCheckBox;
+    ComboBox1: TComboBox;
     EDhost: TEdit;
     EDuserpassword: TEdit;
     edit_wlanssid: TEdit;
@@ -47,7 +48,6 @@ type
     CheckBox_RemoveDHCP: TCheckBox;
     CheckBox_DelPartition3: TCheckBox;
     CheckBox_DelPartition4: TCheckBox;
-    ComboBox1: TComboBox;
     Edit1: TEdit;
     Edit2: TEdit;
     Eddeviceid: TEdit;
@@ -83,6 +83,7 @@ type
     procedure EddeviceidKeyPress(Sender: TObject; var Key: char);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
+
     procedure RadioButton1Change(Sender: TObject);
     procedure RadioButton2Change(Sender: TObject);
     procedure ScrollBar1Change(Sender: TObject);
@@ -129,7 +130,6 @@ const
 
 var
   disableSelection:boolean=false;
-  ComboboxOldIndex:integer;
   selecteddrive: string;
   devicePartitionInfo: Tdriveinfo;
   user: ansistring;
@@ -173,7 +173,6 @@ end;
 procedure TForm1.SetBaseThreadCount(Data: PtrInt);
 begin
   Basicthreads := CountThreads;
-  // WriteLn('✅ Base threads after event loop start: ', BaseThreadCount);
 end;
 
 
@@ -288,15 +287,6 @@ var
 
 procedure Tform1.GridUpdate(Sender: TObject);
 begin
-
-  if DisableSelection then
-  begin
-    ComboBox1.ItemIndex := ComboboxOldIndex;
-    Exit;
-  end;
-
-  ComboboxOldIndex := ComboBox1.ItemIndex;
-
   if (Sender = edit1) or (Sender = radiobutton2) then
     if radiobutton2.Checked then
       if fileexists(edit1.Text) then
@@ -551,7 +541,6 @@ begin
 end;
 
 
-
 procedure TForm1.ModifyImage(mountpoint: string);
 var
   excludelist: Texcludelist;
@@ -634,13 +623,9 @@ begin
 
     if terminate_all then raise Exception.Create('Failed to create image from source drive');
 
-
-
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     MakeImageFirst2Partitions(sourcedrive, filename, listbox1);
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     mbrwork := Read_MBR(sourcedrive);
     FillChar(mbrwork.PartitionEntries[3], SizeOf(mbrwork.PartitionEntries[3]), 0);
@@ -665,9 +650,7 @@ begin
     ListBoxaddscroll(listbox1, 'Check the file system consistency of the image and correct it if necessary');
     ListBoxaddscroll(listbox1, '');
 
-
     // umount und test filesystem
-
 
     CloseMountTarget(p2mpoint);
     looppartition := CreateLoopPartition(FileName, 2);
@@ -677,12 +660,8 @@ begin
 
     RunCommand('sync', s);
 
-    //s := PrexeBash('/sbin/resize2fs -M -p ' + mountedpartition2.LoopDevice , listbox1);
-
     s := PrexeThreadedBash('/sbin/resize2fs -M -p ' + looppartition, listbox1, progressbar1, 1);
     progressbar1.Position := progressbar1.Max;
-
-
 
     NewBlockCount := GetValueAfterKeyword(s, 'is now');
     if NewBlockCount = 0 then
@@ -773,17 +752,13 @@ begin
 
   enableSel;
   ButtonCreateImage.tag:=0;
-
 end;
-
-
 
 
 procedure TForm1.BtSaveLogClick(Sender: TObject);
 begin
   if savedialog1.Execute then listbox1.Items.SaveToFile(savedialog1.FileName);
 end;
-
 
 
 procedure TForm1.Button3Click(Sender: TObject);
@@ -837,8 +812,6 @@ begin
       raise Exception.Create('Image file does not exist: ' + edit1.Text);
 
     selecteddrive := '/dev/' + stringgrid1.Cells[0, 1];
-
-
     Listboxaddscroll(listbox1, '');
 
     // delete partition1 and partition2
@@ -856,15 +829,11 @@ begin
 
     s := PrexeThreadedBash('partprobe ' + selecteddrive, listbox1);
 
-
     Listboxaddscroll(listbox1, '---------- write image to device: ' + selecteddrive + ' ----------');
     Listboxaddscroll(listbox1, '');
 
-
     ImageToDeviceImgAndZstd(edit1.Text, selecteddrive, CheckBox_DelPartition3.Checked, CheckBox_DelPartition4.Checked, listbox1);
     runcommand('sync', s);
-
-
 
     // Update MBR to resize partition 2
     workmbr := Read_MBR(selecteddrive);
@@ -883,21 +852,13 @@ begin
     s := PrexeThreadedBash('resize2fs ' + par2name, listbox1, progressbar1, 1);
     PrexeThreadedBash('e2fsck -fy ' + par2name, listbox1);
 
-
-    //  ListBoxaddscroll(listbox1, 'partprobe - reloading partition table');
     s := PrexeThreadedBash('partprobe ' + selecteddrive, listbox1);
     sleep(500);
 
     Application.ProcessMessages;
 
-
-    //testparameter
-    //   cbenablessh.Checked := True;
-
-
     if CheckBoxChangeDeviceID.Checked then
     begin
-      // ListBox1.Items.Add('Changing device signature');
       s := Trim(Eddeviceid.Text);
       sig := StrToInt('$' + s);
       sigtext := LowerCase(HexStr(sig, 8));
@@ -939,25 +900,23 @@ begin
   enablesel;
 end;
 
+
 procedure TForm1.ComboBox1CloseUp(Sender: TObject);
 begin
-   if DisableSelection then
-          ComboBox1.ItemIndex := ComboboxOldIndex;
+  if disableSelection then
+      combobox1.ItemIndex:=combobox1.tag
+  else
+  begin
+  combobox1.tag := combobox1.ItemIndex;
+  gridupdate(self);
+  end;
 end;
-
-
-
 
 procedure TForm1.ComboBox1DropDown(Sender: TObject);
 begin
-  if disableSelection then exit;
   getdrives(combobox1.Items);
   combobox1.ItemIndex := 0;
 end;
-
-
-
-
 
 procedure TForm1.Edit1DblClick(Sender: TObject);
 begin
@@ -998,7 +957,6 @@ begin
   Listboxaddscroll(listbox1, 'The program is shutting down. This may take a moment...');
 
   terminate_all := True;
-  //sleep(3000);
   WaitForAllThreads(basicthreads, 15000);
   PrexeThreadedBash('umount ' + device, listbox1);  // optional, wenn es gemountet war
   PrexeThreadedBash('losetup -d ' + device, listbox1);

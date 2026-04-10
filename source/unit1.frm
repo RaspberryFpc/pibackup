@@ -20,20 +20,6 @@ object Form1: TForm1
     OnChange = GridUpdate
     OnDblClick = Edit1DblClick
   end
-  object ComboBox1: TComboBox
-    Left = 114
-    Height = 23
-    Top = 52
-    Width = 608
-    Anchors = [akLeft]
-    ItemHeight = 23
-    ReadOnly = True
-    Style = csDropDownList
-    TabOrder = 1
-    OnChange = GridUpdate
-    OnCloseUp = ComboBox1CloseUp
-    OnDropDown = ComboBox1DropDown
-  end
   object Button4: TButton
     AnchorSideTop.Control = Edit1
     AnchorSideTop.Side = asrCenter
@@ -42,7 +28,7 @@ object Form1: TForm1
     Top = 78
     Width = 126
     Caption = 'select'
-    TabOrder = 2
+    TabOrder = 1
     OnClick = Edit1DblClick
   end
   object Label2: TLabel
@@ -87,7 +73,7 @@ object Form1: TForm1
     ItemHeight = 20
     ParentFont = False
     Style = lbOwnerDrawFixed
-    TabOrder = 3
+    TabOrder = 2
   end
   object StringGrid1: TStringGrid
     AnchorSideTop.Control = Edit1
@@ -103,7 +89,7 @@ object Form1: TForm1
     ParentFont = False
     RowCount = 6
     ScrollBars = ssNone
-    TabOrder = 4
+    TabOrder = 3
     ColWidths = (
       75
       124
@@ -126,7 +112,7 @@ object Form1: TForm1
     Checked = True
     Font.Style = [fsBold]
     ParentFont = False
-    TabOrder = 6
+    TabOrder = 5
     TabStop = True
     OnChange = RadioButton1Change
   end
@@ -142,7 +128,7 @@ object Form1: TForm1
     Caption = 'Restore Backup or other Image'
     Font.Style = [fsBold]
     ParentFont = False
-    TabOrder = 5
+    TabOrder = 4
     OnChange = RadioButton2Change
   end
   object Panel1: TPanel
@@ -160,7 +146,7 @@ object Form1: TForm1
     BevelInner = bvLowered
     ClientHeight = 100
     ClientWidth = 995
-    TabOrder = 7
+    TabOrder = 6
     object CheckBox_RemoveSSH: TCheckBox
       Left = 15
       Height = 21
@@ -294,7 +280,7 @@ object Form1: TForm1
     BevelInner = bvLowered
     ClientHeight = 100
     ClientWidth = 995
-    TabOrder = 8
+    TabOrder = 7
     Visible = False
     object ScrollBar1: TScrollBar
       AnchorSideRight.Control = Eddeviceid
@@ -511,7 +497,7 @@ object Form1: TForm1
     Width = 99
     Anchors = [akTop, akRight]
     Caption = 'Save Log'
-    TabOrder = 9
+    TabOrder = 8
     OnClick = BtSaveLogClick
   end
   object ProgressBar1: TProgressBar
@@ -531,8 +517,18 @@ object Form1: TForm1
     ParentFont = False
     Smooth = True
     Step = 1
-    TabOrder = 10
+    TabOrder = 9
     BarShowText = True
+  end
+  object ComboBox1: TComboBox
+    Left = 113
+    Height = 23
+    Top = 56
+    Width = 608
+    ItemHeight = 15
+    TabOrder = 10
+    OnCloseUp = ComboBox1CloseUp
+    OnDropDown = ComboBox1DropDown
   end
   object SaveDialog1: TSaveDialog
     DefaultExt = '.img'
