@@ -16,7 +16,7 @@ rm etc/systemd/system/multi-user.target.wants/ssh.service
 rm etc/ssh/ssh_host_*
 
 #Benutzer-SSH-Konfiguration bereinigen
-rm root/.ssh/config
-rm root/.ssh/known_hosts
-rm home/*/.ssh/config
-rm home/*/.ssh/known_hosts
+rm /root/.ssh/config
+rm /root/.ssh/known_hosts
+rm /home/*/.ssh/config
+rm /home/*/.ssh/known_hosts
