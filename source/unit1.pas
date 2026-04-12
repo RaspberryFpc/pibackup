@@ -81,6 +81,7 @@ type
     procedure Edit1DblClick(Sender: TObject);
     procedure EddeviceidChange(Sender: TObject);
     procedure EddeviceidKeyPress(Sender: TObject; var Key: char);
+    procedure FormClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
 
@@ -93,6 +94,7 @@ type
     procedure GridUpdate(Sender: TObject);
     procedure enablesel;
     procedure disablesel;
+    procedure FixHover(Data: PtrInt);
 
   private
     procedure SetBaseThreadCount(Data: PtrInt);
@@ -103,7 +105,7 @@ type
 const
   p2mpoint = '/pi_images/p2_pibackup_img';
   p1mpoint = '/pi_images/p1_pibackup_img';
-   appname = 'PiBackup  v1.7.10';
+   appname = 'PiBackup  v1.7.11';
    ininame = '/etc/pibackup/pibackup.ini';
 
 var
@@ -267,6 +269,11 @@ begin
   Key := UpCase(Key);
   if (not CheckBoxChangeDeviceID.Checked) or (not (Key in ['0'..'9', 'A'..'F'])) then
     Key := #0;  // ungültige Taste unterdrücken
+end;
+
+procedure TForm1.FormClick(Sender: TObject);
+begin
+
 end;
 
 
@@ -912,11 +919,17 @@ begin
   end;
 end;
 
+procedure TForm1.FixHover(Data: PtrInt);
+begin
+  Mouse.CursorPos := Mouse.CursorPos;
+end;
+
 procedure TForm1.ComboBox1DropDown(Sender: TObject);
 begin
   getdrives(combobox1.Items);
-  combobox1.ItemIndex := 0;
+  ReleaseCapture;
 end;
+
 
 procedure TForm1.Edit1DblClick(Sender: TObject);
 begin

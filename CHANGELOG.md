@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
+## [1.7.11] – 2026-04-12
+
+### 🐛 Bugfixes
+- Fixed a Qt5 ComboBox issue where mouse capture was not properly released after selecting an item. This caused broken hover effects and required two clicks to interact with other UI elements.
+
+### ✨ Improvements
+
+- Device lists (source and destination) now exclude loop and RAM devices, showing only real physical devices.
+
+
+
 ## [1.7.10] – 2026-04-11
 
 ### ✨ Improvements

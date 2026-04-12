@@ -995,28 +995,88 @@ end;
 
 procedure getDrives(sl: TStrings);
 var
-  s, dr: ansistring;
-  p: integer;
+  s, dr,exclude: ansistring;
+  p,n,x: integer;
+  stl:tstringlist;
 begin
-  sl.Clear;
+  stl:=tstringlist.create;
   runcommand('fdisk -l', s);
-  while pos('Disk /dev/ram', s) > 0 do
-    Delete(s, pos('Disk /dev/ram', s), 13);
-  repeat
-    p := 0;
-    p := pos('Disk /dev/', s);
-    if p > 0 then
-    begin
-      Delete(s, 1, p + 4);
-      p := pos(',', s);
-      dr := copy(s, 1, p);
-      Delete(s, 1, p);
-      p := pos(',', s);
-      dr := dr + copy(s, 1, p - 1);
-      if p > 0 then
-        sl.Add(dr);
-    end;
-  until p = 0;
+  stl.Text:=s;
+
+  // alle nicht disk entfernen
+  for x:= stl.count -1 downto 0 do
+     begin
+         if pos('Disk /dev/',stl[x]) <> 1 then  stl.Delete(x);
+     end;
+
+  //einkürzen
+
+   for x:= stl.count -1 downto 0 do
+     begin
+         p:=pos(':',stl[x]);
+         p:=pos(', ',stl[x],p);
+         stl[x]:=copy(stl[x],1,p-1);
+     end;
+
+
+  // alle ram entfernen
+
+  exclude:=('Disk /dev/ram');
+   for x:= stl.count -1 downto 0 do
+     begin
+        s:= stl[x];
+        n:=pos(':',s);
+        s:=copy(s,1,n-1);
+        p:=  pos(exclude,s);
+        if p = 1 then
+              begin
+                 delete(s,1,length(exclude));
+                 while (length(s)>0) and (s[1] in ['0'..'9']) do delete(s,1,1);
+              end;
+         if s = '' then
+                    stl.Delete(x);
+     end;
+
+
+   exclude:=('Disk /dev/zram');
+   for x:= stl.count -1 downto 0 do
+     begin
+        s:= stl[x];
+        n:=pos(':',s);
+        s:=copy(s,1,n-1);
+        p:=  pos(exclude,s);
+        if p = 1 then
+              begin
+                 delete(s,1,length(exclude));
+                 while (length(s)>0) and (s[1] in ['0'..'9']) do delete(s,1,1);
+              end;
+         if s = '' then
+                    stl.Delete(x);
+     end;
+
+
+     exclude:=('Disk /dev/loop');
+   for x:= stl.count -1 downto 0 do
+     begin
+        s:= stl[x];
+        n:=pos(':',s);
+        s:=copy(s,1,n-1);
+        p:=  pos(exclude,s);
+        if p = 1 then
+              begin
+                 delete(s,1,length(exclude));
+                 while (length(s)>0) and (s[1] in ['0'..'9']) do delete(s,1,1);
+              end;
+         if s = '' then
+                    stl.Delete(x);
+     end;
+
+
+  sl.Clear;
+  for x:= 0 to stl.count -1 do
+  sl.Add(copy(stl[x],6,maxint));
+  stl.Free;
+
 end;
 
 
