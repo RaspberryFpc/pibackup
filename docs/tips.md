@@ -53,14 +53,12 @@ Using **pibackup** for restoring is recommended.
 
    are applied during the restore process.
 
----
-
 ### Note
 
 Extracted passwords are displayed in encoded form.  
 If you want to change them, you can simply enter them in plain text.
 
-
+---
 
 
 # pibackup Exclude File Syntax
