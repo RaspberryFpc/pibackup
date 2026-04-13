@@ -1,3 +1,68 @@
+# Introduction
+
+## How the image is created
+
+1. A 1:1 copy is created from the beginning of the device up to the end of the second partition.  
+   The resulting `.img` file contains the MBR, `/boot`, and `/root`.  
+   In other words, the complete operating system is stored in this file.  
+   Any additional partitions are **not** included in the backup.
+
+2. The `/root` partition is mounted and becomes accessible like a normal filesystem.
+
+3. Unwanted files are removed.
+
+4. The partition is unmounted.
+
+5. The generated partition (image file) is then shrunk:  
+   - Unused sectors are overwritten with `0xFF`  
+   - This removes leftover data and improves compression efficiency  
+   - Both the filesystem size and the image file size are adjusted accordingly
+
+6. Optional compression can be applied.
+
+---
+
+## Restoring the image
+
+### Under Windows
+
+If the image and the target device contain **only `/boot` and `/root`**, the image can be written back using a standard imaging tool without issues.  
+The system will boot immediately, but the `/root` partition will be smaller and must be expanded after the first boot (e.g. using `raspi-config`).
+
+If the image was created from the same target device, it can be restored **without data loss on additional partitions**, provided that these partitions have not been moved or resized since the backup.
+
+⚠️ In this case, **do not use `raspi-config` to expand the filesystem**, as it will grow the `/root` partition to the end of the device and overwrite any additional partitions.
+
+Instead, use a partitioning tool that supports ext4 (e.g. DiskGenius or AOMEI Partition Assistant – untested).
+
+---
+
+### Under Linux
+
+Using **pibackup** for restoring is recommended.
+
+1. The MBR is taken from the image and merged with the partition table entries of any additional partitions on the target device.  
+   This ensures that existing partitions remain untouched, even if they were moved or resized after the backup was created.
+
+2. The corrected MBR and the image data are written to the target device.
+
+3. Selected options such as:
+   - size of the new `/root` partition  
+   - passwords  
+   - device ID  
+
+   are applied during the restore process.
+
+---
+
+### Note
+
+Extracted passwords are displayed in encoded form.  
+If you want to change them, you can simply enter them in plain text.
+
+
+
+
 # pibackup Exclude File Syntax
 
 Exclude files can be used to remove unnecessary files and directories from the backup image before compression.
