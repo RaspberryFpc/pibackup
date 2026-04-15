@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  line-height: 1.6;
+  background: #ffffff;
+  color: #111;
+}
+
+h1 {
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 5px;
+}
+
+h2 {
+  margin-top: 30px;
+  border-left: 4px solid #888;
+  padding-left: 8px;
+}
+
+h3 {
+  margin-top: 20px;
+}
+
+code, pre {
+  background: #f4f4f4;
+  padding: 6px;
+  display: block;
+  overflow-x: auto;
+  border-radius: 4px;
+}
+
+ul {
+  margin-left: 25px;
+}
+
+p {
+  margin: 10px 0;
+}
+
+.warning {
+  color: #b00000;
+  font-weight: bold;
+}
+
+.note {
+  background: #eef3ff;
+  border-left: 4px solid #4a6fdc;
+  padding: 10px;
+  margin: 10px 0;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>Introduction</h1>
+
+<h2>How the image is created</h2>
+
+<p>
+1. A 1:1 copy is created from the beginning of the device up to the end of the second partition.<br>
+The resulting <code>.img</code> file contains the MBR, <code>/boot</code>, and <code>/root</code>.<br>
+The complete operating system is stored in this file.<br>
+Additional partitions are <b>not included</b>.
+</p>
+
+<p>
+2. The <code>/root</code> partition is mounted and becomes accessible like a normal filesystem.
+</p>
+
+<p>
+3. Unwanted files are removed.
+</p>
+
+<p>
+4. The partition is unmounted.
+</p>
+
+<p>
+5. The image is then shrunk:
+</p>
+
+<p>
+&nbsp;&nbsp;• Unused sectors are overwritten with <code>0xFF</code><br>
+&nbsp;&nbsp;• Removes leftover data<br>
+&nbsp;&nbsp;• Improves compression efficiency<br>
+&nbsp;&nbsp;• Filesystem and image size are adjusted
+</p>
+
+<p>
+6. Optional compression can be applied.
+</p>
+
+<hr>
+
+<h2>Restoring the image</h2>
+
+<h3>Under Linux (recommended)</h3>
+
+<p><b>Use pibackup for restoring.</b></p>
+
+<p>
+1. MBR is taken from image and merged with partition table entries.<br>
+2. Corrected MBR + image data are written to target device.<br>
+3. Options applied:
+</p>
+
+<p>
+&nbsp;&nbsp;• /root partition size<br>
+&nbsp;&nbsp;• passwords<br>
+&nbsp;&nbsp;• device ID
+</p>
+
+<div class="note">
+Passwords are shown encoded.<br>
+You may enter new ones in plain text.
+</div>
+
+<hr>
+
+<h3>Under Windows</h3>
+
+<p>
+If only <code>/boot</code> and <code>/root</code> exist, the image can be restored using a standard imaging tool.
+</p>
+
+<p>
+The system will boot, but <code>/root</code> must be expanded afterwards.
+</p>
+
+<p class="warning">
+⚠ Do NOT use raspi-config if additional partitions exist.
+</p>
+
+<hr>
+
+<h2>Installing a New Operating System on an SSD</h2>
+
+<div class="warning">
+⚠ All data in <code>/boot</code> and <code>/root</code> will be lost.
+</div>
+
+<p>
+1. Create new system<br>
+2. Test system<br>
+3. Install pibackup<br>
+4. Create image<br>
+5. Select source + target<br>
+6. Start restore
+</p>
+
+<hr>
+
+<h3>fstab Notes</h3>
+
+<p>If partitions are not mounted via automount:</p>
+
+<pre>sudo nano /etc/fstab</pre>
+
+<p>All entries must use the same PARTUUID.</p>
+
+<hr>
+
+<h1>pibackup Exclude File Syntax</h1>
+
+<p>Removes unnecessary files before compression.</p>
+
+<pre>/etc/pibackup/raspberry.exclude</pre>
+
+<h2>Syntax</h2>
+
+<pre>command = /path</pre>
+
+<p><code>§user</code> is replaced with current username.</p>
+
+<hr>
+
+<h2>Commands</h2>
+
+<p><b>RF - Remove File</b><br>
+rf = /home/§user/.bash_history</p>
+
+<p><b>RD - Remove Directory</b><br>
+rd = /home/§user/emptyfolder</p>
+
+<p><b>RT - Remove Tree</b><br>
+rt = /var/lib/snapd</p>
+
+<p><b>RFID - Remove Files in Directory</b><br>
+rfid = /var/backups/*</p>
+
+<p><b>RAID - Remove All in Directory</b><br>
+raid = /home/§user/Downloads</p>
+
+<p><b>RAIT - Remove All in Tree</b><br>
+rait = /tmp</p>
+
+<hr>
+
+<h2>Example Entries</h2>
+
+<pre>
+rait = /tmp
+rait = /var/tmp
+rait = /var/cache/apt/archives
+rait = /var/log
+
+rait = /home/§user/.cache/mozilla
+rait = /home/§user/.cache/chromium
+
+raid = /home/§user/Downloads
+
+rt = /var/lib/snapd
+rt = /home/§user/snap
+</pre>
+
+<hr>
+
+<h1>Compression Guide</h1>
+
+<p>Uses Zstandard (zstd) with long mode enabled.</p>
+
+<h2>Levels</h2>
+
+<p><b>1–3:</b> Very fast, larger files</p>
+<p><b>4–6:</b> Best balance, recommended</p>
+<p><b>7–10:</b> Better compression, slower</p>
+<p><b>11–19:</b> Maximum compression, very slow</p>
+
+<h2>Long Mode</h2>
+
+<p>Improves compression by searching further back in data.</p>
+
+<h2>Recommended</h2>
+
+<p>
+• Pi 3: 3–5<br>
+• Pi 4: 4–7<br>
+• Pi 5: 5–10
+</p>
+
+</body>
+</html>

@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, Grids,
   Process, inifiles, fileutil, lazutf8, Unix, baseunix, LCLIntf, rkutils, zstd,
   LCLType, MaskEdit, ExtCtrls, ComCtrls, excludeParser, DateUtils, fpjson,
-  jsonparser, Types, exethread, usersetup, LMessages;
+  jsonparser, Types, exethread, usersetup, LMessages,unit2;
 
 type
   partitioninfo = record
@@ -29,6 +29,7 @@ type
   { TForm1 }
   TForm1 = class(TForm)
     BtSaveLog: TButton;
+    Button1: TButton;
     Button5: TButton;
     Button4: TButton;
     ButtonCreateImage: TButton;
@@ -72,6 +73,7 @@ type
     SpinEdit1: TSpinEdit;
     StringGrid1: TStringGrid;
     procedure BtSaveLogClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
     procedure ButtonCreateImageClick(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure Button5Click(Sender: TObject);
@@ -105,7 +107,7 @@ type
 const
   p2mpoint = '/pi_images/p2_pibackup_img';
   p1mpoint = '/pi_images/p1_pibackup_img';
-   appname = 'PiBackup  v1.7.11';
+   appname = 'PiBackup  v1.7.12';
    ininame = '/etc/pibackup/pibackup.ini';
 
 var
@@ -454,6 +456,7 @@ begin
     Label2.Caption := 'Target Device';
     panel2.Visible := True;
     panel2.BringToFront;
+    if not fileexists(edit1.Text) then Edit1.Text:='';
   end
   else
     panel2.Visible := False;
@@ -765,6 +768,11 @@ end;
 procedure TForm1.BtSaveLogClick(Sender: TObject);
 begin
   if savedialog1.Execute then listbox1.Items.SaveToFile(savedialog1.FileName);
+end;
+
+procedure TForm1.Button1Click(Sender: TObject);
+begin
+  form2.Show;
 end;
 
 

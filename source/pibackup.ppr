@@ -13,7 +13,7 @@ uses
   unit1,
   exethread,
   UserSetup,
-  uitheme;      // 🔥 Theme + Font
+  uitheme, Unit2;      // 🔥 Theme + Font
 
 {$R *.res}
 
@@ -42,5 +42,6 @@ begin
 
   // ===== Form erstellen =====
   Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TForm2, Form2);
   Application.Run;
 end.

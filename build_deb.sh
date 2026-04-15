@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PKG="pibackup_pkg"
-version="1.7.11"
+version="1.7.12"
 OUTDIR="/home/pi/git/pibackup/bin"
 
 SRC_BIN="/home/pi/git/pibackup/source/pibackup"
@@ -32,6 +32,7 @@ install -Dm755 "$SRC_BIN" \
     
 #install -Dm755 /usr/lib/aarch64-linux-gnu/libQt5Pas.so.1 \
 #    "$PKG/usr/lib/pibackup/libQt5Pas.so.1"
+
 #install -Dm755 /usr/lib/aarch64-linux-gnu/libQt5Pas.so.1.2.14 \
 #    "$PKG/usr/lib/pibackup/libQt5Pas.so.1.2.14"    
 
@@ -45,8 +46,8 @@ install -Dm644 /home/pi/git/pibackup/source/raspberry.exclude \
 install -Dm644 /home/pi/git/pibackup/source/ssh-cleanup.exclude \
     "$PKG/etc/pibackup/ssh-cleanup.exclude"
 
-install -Dm644 /home/pi/git/pibackup/docs/tips.md \
-    "$PKG/usr/share/doc/pibackup/tips.txt"
+install -Dm644 /home/pi/git/pibackup/docs/intro.html \
+    "$PKG/usr/share/doc/pibackup/intro.html"
 
 install -Dm644 /home/pi/git/pibackup/README.md \
     "$PKG/usr/share/doc/pibackup/README.md"
@@ -56,8 +57,6 @@ install -Dm644 /home/pi/git/pibackup/CHANGELOG.md \
 
 install -Dm644 /home/pi/git/pibackup/LICENSE \
     "$PKG/usr/share/doc/pibackup/LICENSE"
-
-
 
 
 cat > "$PKG/etc/pibackup/pibackup.ini" <<EOF

@@ -24,9 +24,9 @@ object Form1: TForm1
     AnchorSideTop.Control = Edit1
     AnchorSideTop.Side = asrCenter
     Left = 736
-    Height = 30
-    Top = 78
-    Width = 126
+    Height = 23
+    Top = 82
+    Width = 80
     Caption = 'select'
     TabOrder = 1
     OnClick = Edit1DblClick
@@ -34,14 +34,14 @@ object Form1: TForm1
   object Label2: TLabel
     Left = 24
     Height = 15
-    Top = 56
+    Top = 64
     Width = 86
     Caption = 'Source Device'
   end
   object Label3: TLabel
-    Left = 32
+    Left = 40
     Height = 15
-    Top = 84
+    Top = 88
     Width = 60
     Caption = 'image file'
   end
@@ -492,10 +492,10 @@ object Form1: TForm1
     AnchorSideRight.Control = StringGrid1
     AnchorSideRight.Side = asrBottom
     Left = 904
-    Height = 30
-    Top = 78
+    Height = 25
+    Top = 24
     Width = 99
-    Anchors = [akTop, akRight]
+    Anchors = [akRight]
     Caption = 'Save Log'
     TabOrder = 8
     OnClick = BtSaveLogClick
@@ -530,17 +530,31 @@ object Form1: TForm1
     OnCloseUp = ComboBox1CloseUp
     OnDropDown = ComboBox1DropDown
   end
+  object Button1: TButton
+    AnchorSideTop.Control = BtSaveLog
+    AnchorSideTop.Side = asrCenter
+    AnchorSideRight.Control = BtSaveLog
+    Left = 816
+    Height = 25
+    Top = 24
+    Width = 75
+    Anchors = [akTop, akRight]
+    BorderSpacing.Right = 13
+    Caption = 'Help'
+    TabOrder = 11
+    OnClick = Button1Click
+  end
   object SaveDialog1: TSaveDialog
     DefaultExt = '.img'
-    Left = 672
-    Top = 8
+    Left = 376
+    Top = 56
   end
   object OpenDialog1: TOpenDialog
-    Left = 768
-    Top = 8
+    Left = 464
+    Top = 56
   end
   object OpenDialog2: TOpenDialog
-    Left = 880
-    Top = 8
+    Left = 568
+    Top = 48
   end
 end

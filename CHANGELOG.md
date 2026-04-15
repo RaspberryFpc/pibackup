@@ -1,6 +1,18 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
+## [1.7.12] – 2026-04-14
+
+### 🐛 Bugfixes
+- When switching to restore mode, the source file is now checked for existence. If it does not exist, the field is cleared.
+
+### ✨ Improvements
+- Expanded tips.md with additional information and guidance.
+- Introduced integrated help system with offline documentation viewer
+
+
+
+
 ## [1.7.11] – 2026-04-12
 
 ### 🐛 Bugfixes
