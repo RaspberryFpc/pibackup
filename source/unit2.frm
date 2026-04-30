@@ -6,7 +6,7 @@ object Form2: TForm2
   ClientHeight = 622
   ClientWidth = 695
   LCLVersion = '8.8'
-  OnCreate = FormCreate
+  OnShow = FormShow
   object HtmlViewer1: THtmlViewer
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner

@@ -5,7 +5,7 @@ unit Unit2;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, HtmlView, HTMLUn2, HtmlGlobals;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, HtmlView, HtmlGlobals;
 
 type
 
@@ -13,7 +13,7 @@ type
 
   TForm2 = class(TForm)
     HtmlViewer1: THtmlViewer;
-    procedure FormCreate(Sender: TObject);
+  procedure FormShow(Sender: TObject);
 
   private
 
@@ -30,9 +30,9 @@ implementation
 
 { TForm2 }
 
-procedure TForm2.FormCreate(Sender: TObject);
+procedure TForm2.FormShow(Sender: TObject);
 begin
-   try
+ try
    HtmlViewer1.LoadFromFile('/usr/share/doc/pibackup/help/intro.html');
     finally
    end;

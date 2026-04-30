@@ -3,9 +3,9 @@ object Form1: TForm1
   Left = 171
   Height = 561
   Top = 115
-  Width = 1016
+  Width = 1146
   ClientHeight = 561
-  ClientWidth = 1016
+  ClientWidth = 1146
   Position = poDesktopCenter
   LCLVersion = '8.8'
   OnClose = FormClose
@@ -14,7 +14,7 @@ object Form1: TForm1
     Left = 113
     Height = 23
     Top = 82
-    Width = 608
+    Width = 583
     ParentFont = False
     TabOrder = 0
     OnChange = GridUpdate
@@ -23,7 +23,7 @@ object Form1: TForm1
   object Button4: TButton
     AnchorSideTop.Control = Edit1
     AnchorSideTop.Side = asrCenter
-    Left = 736
+    Left = 704
     Height = 23
     Top = 82
     Width = 80
@@ -56,7 +56,7 @@ object Form1: TForm1
     Left = 8
     Height = 181
     Top = 376
-    Width = 995
+    Width = 1088
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Top = 3
     BorderSpacing.Bottom = 4
@@ -80,7 +80,7 @@ object Form1: TForm1
     Left = 8
     Height = 129
     Top = 116
-    Width = 995
+    Width = 1088
     BorderSpacing.Top = 34
     ColCount = 6
     DefaultRowHeight = 18
@@ -140,12 +140,12 @@ object Form1: TForm1
     Left = 8
     Height = 100
     Top = 249
-    Width = 995
+    Width = 1088
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Top = 4
     BevelInner = bvLowered
     ClientHeight = 100
-    ClientWidth = 995
+    ClientWidth = 1088
     TabOrder = 6
     object CheckBox_RemoveSSH: TCheckBox
       Left = 15
@@ -174,7 +174,7 @@ object Form1: TForm1
       Left = 120
       Height = 23
       Top = 14
-      Width = 724
+      Width = 817
       Anchors = [akLeft, akRight]
       BorderSpacing.Left = 5
       BorderSpacing.Right = 8
@@ -187,7 +187,7 @@ object Form1: TForm1
       AnchorSideLeft.Control = ButtonCreateImage
       AnchorSideTop.Control = Edit2
       AnchorSideTop.Side = asrCenter
-      Left = 852
+      Left = 945
       Height = 30
       Top = 10
       Width = 126
@@ -228,7 +228,7 @@ object Form1: TForm1
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = Panel1
       AnchorSideRight.Side = asrBottom
-      Left = 852
+      Left = 945
       Height = 30
       Top = 49
       Width = 126
@@ -274,18 +274,18 @@ object Form1: TForm1
     Left = 8
     Height = 100
     Top = 249
-    Width = 995
+    Width = 1088
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Top = 4
     BevelInner = bvLowered
     ClientHeight = 100
-    ClientWidth = 995
+    ClientWidth = 1088
     TabOrder = 7
     Visible = False
     object ScrollBar1: TScrollBar
       AnchorSideRight.Control = Eddeviceid
       AnchorSideRight.Side = asrBottom
-      Left = 48
+      Left = 99
       Height = 14
       Top = 6
       Width = 560
@@ -298,7 +298,7 @@ object Form1: TForm1
       AnchorSideLeft.Side = asrCenter
       AnchorSideTop.Control = ScrollBar1
       AnchorSideTop.Side = asrCenter
-      Left = 616
+      Left = 672
       Height = 18
       Top = 4
       Width = 288
@@ -310,7 +310,7 @@ object Form1: TForm1
     object CheckBoxChangeDeviceID: TCheckBox
       AnchorSideTop.Control = Eddeviceid
       AnchorSideTop.Side = asrCenter
-      Left = 352
+      Left = 391
       Height = 21
       Top = 23
       Width = 128
@@ -322,7 +322,7 @@ object Form1: TForm1
     object Eddeviceid: TEdit
       AnchorSideTop.Control = CheckBox_DelPartition3
       AnchorSideTop.Side = asrCenter
-      Left = 488
+      Left = 539
       Height = 23
       Top = 22
       Width = 120
@@ -335,7 +335,7 @@ object Form1: TForm1
     object CheckBox_DelPartition4: TCheckBox
       AnchorSideTop.Control = Eddeviceid
       AnchorSideTop.Side = asrCenter
-      Left = 192
+      Left = 216
       Height = 21
       Top = 23
       Width = 129
@@ -347,7 +347,7 @@ object Form1: TForm1
     object CheckBox_DelPartition3: TCheckBox
       AnchorSideTop.Control = Eddeviceid
       AnchorSideTop.Side = asrCenter
-      Left = 48
+      Left = 59
       Height = 21
       Top = 23
       Width = 137
@@ -364,9 +364,9 @@ object Form1: TForm1
       AnchorSideRight.Control = Panel2
       AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Control = edit_wlanpassword
-      Left = 784
+      Left = 877
       Height = 30
-      Top = 35
+      Top = 34
       Width = 164
       Anchors = [akRight, akBottom]
       BorderSpacing.Right = 45
@@ -378,9 +378,9 @@ object Form1: TForm1
     object CBEnableSSH: TCheckBox
       AnchorSideTop.Control = EDhost
       AnchorSideTop.Side = asrCenter
-      Left = 48
+      Left = 57
       Height = 21
-      Top = 75
+      Top = 74
       Width = 94
       Anchors = [akTop]
       Caption = 'Enable SSH'
@@ -390,9 +390,9 @@ object Form1: TForm1
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = EDhost
       AnchorSideTop.Side = asrCenter
-      Left = 416
+      Left = 464
       Height = 23
-      Top = 74
+      Top = 73
       Width = 192
       Anchors = [akTop]
       TabOrder = 7
@@ -402,9 +402,9 @@ object Form1: TForm1
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = EDhost
       AnchorSideTop.Side = asrCenter
-      Left = 732
+      Left = 812
       Height = 23
-      Top = 74
+      Top = 73
       Width = 256
       Anchors = [akTop]
       TabOrder = 8
@@ -423,7 +423,7 @@ object Form1: TForm1
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = EDusername
       AnchorSideTop.Side = asrCenter
-      Left = 328
+      Left = 372
       Height = 23
       Top = 48
       Width = 280
@@ -431,18 +431,18 @@ object Form1: TForm1
       TabOrder = 10
     end
     object EDhost: TEdit
-      Left = 192
+      Left = 208
       Height = 23
-      Top = 74
+      Top = 73
       Width = 180
       TabOrder = 11
     end
     object Label1: TLabel
       AnchorSideTop.Control = EDhost
       AnchorSideTop.Side = asrCenter
-      Left = 157
+      Left = 173
       Height = 15
-      Top = 78
+      Top = 77
       Width = 28
       Anchors = [akTop]
       Caption = 'Host'
@@ -450,9 +450,9 @@ object Form1: TForm1
     object Label4: TLabel
       AnchorSideTop.Control = EDhost
       AnchorSideTop.Side = asrCenter
-      Left = 384
+      Left = 421
       Height = 15
-      Top = 78
+      Top = 77
       Width = 28
       Anchors = [akTop]
       Caption = 'SSID'
@@ -460,9 +460,9 @@ object Form1: TForm1
     object Label5: TLabel
       AnchorSideTop.Control = EDhost
       AnchorSideTop.Side = asrCenter
-      Left = 624
+      Left = 687
       Height = 15
-      Top = 78
+      Top = 77
       Width = 104
       Anchors = [akTop]
       Caption = 'Passphrase (PSK)'
@@ -491,9 +491,9 @@ object Form1: TForm1
     AnchorSideTop.Side = asrCenter
     AnchorSideRight.Control = StringGrid1
     AnchorSideRight.Side = asrBottom
-    Left = 904
+    Left = 997
     Height = 25
-    Top = 24
+    Top = 16
     Width = 99
     Anchors = [akRight]
     Caption = 'Save Log'
@@ -509,7 +509,7 @@ object Form1: TForm1
     Left = 9
     Height = 20
     Top = 353
-    Width = 994
+    Width = 1087
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 1
     BorderSpacing.Top = 108
@@ -524,7 +524,7 @@ object Form1: TForm1
     Left = 113
     Height = 23
     Top = 56
-    Width = 608
+    Width = 672
     ItemHeight = 15
     TabOrder = 10
     OnCloseUp = ComboBox1CloseUp
@@ -534,15 +534,37 @@ object Form1: TForm1
     AnchorSideTop.Control = BtSaveLog
     AnchorSideTop.Side = asrCenter
     AnchorSideRight.Control = BtSaveLog
-    Left = 816
+    Left = 910
     Height = 25
-    Top = 24
+    Top = 16
     Width = 75
     Anchors = [akTop, akRight]
-    BorderSpacing.Right = 13
+    BorderSpacing.Right = 12
     Caption = 'Help'
     TabOrder = 11
     OnClick = Button1Click
+  end
+  object Button6: TButton
+    AnchorSideRight.Control = Button1
+    Left = 818
+    Height = 25
+    Top = 16
+    Width = 80
+    Anchors = [akTop, akRight]
+    BorderSpacing.Right = 12
+    Caption = 'close'
+    TabOrder = 12
+  end
+  object BTEditExclude: TButton
+    AnchorSideLeft.Control = Button1
+    AnchorSideLeft.Side = asrCenter
+    Left = 886
+    Height = 25
+    Top = 48
+    Width = 122
+    Caption = 'Edit exclude files'
+    TabOrder = 13
+    OnClick = BTEditExcludeClick
   end
   object SaveDialog1: TSaveDialog
     DefaultExt = '.img'

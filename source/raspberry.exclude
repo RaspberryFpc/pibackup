@@ -10,7 +10,7 @@
 # §USER = is replaced with the actual user
 
 
-# Allgemeine temporäre/veränderliche Daten
+# General temporary and variable data
 rait = /var/cache/apt/archives
 rait = /var/tmp
 rait = /tmp
@@ -46,7 +46,7 @@ rf = /home/§user/.local/share/recently-used.xbel
 rait = /home/§user/.thumbnails
 rait = /home/§user/.gvfs
 
-# Wayland/X11 spezifisch
+# Wayland/X11
 rait = /home/§user/.local/share/wayland-sessions
 rait = /home/§user/.local/share/xorg
 
@@ -56,7 +56,7 @@ rait = /home/§user/.mozilla
 rait = /home/§user/.cache/chromium
 rait = /home/§user/.config/chromium
 
-# Desktop-Umgebungen
+# Desktop
 rait = /home/§user/.local/share/gvfs-metadata
 rait = /home/§user/.local/share/zeitgeist
 
@@ -67,20 +67,16 @@ rt = /home/§user/snap
 rt = /var/tmp/flatpak-cache
 rt = /home/§user/.var/app
 
-# Optional: große Software-Reste (nur wenn deinstalliert)
+# Optional: large Software leftovers (only when deinstalled)
 #rt = /opt/Wolfram
 #rt = /usr/lib/libreoffice
 
-# Optional: Hintergrundbilder & Themes
+# Optional: background pictures and themes
 #rt = /usr/share/PIXEL-wallpaper
 
-# Optional: Doku, Manpages, Beispiele
+# Optional: doku, manpages, examples
 #rt = /usr/share/doc
 #rt = /usr/share/man
 #rt = /usr/share/info
 #rt = /usr/share/examples
 #rt = /usr/lib/python*/test
-
-# Optional: Nur Englisch/Deutsch behalten
-#find /usr/share/locale -mindepth 1 -maxdepth 1 ! -name "de" ! -name "en" -exec rm -rf {} +
-

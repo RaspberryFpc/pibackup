@@ -123,16 +123,16 @@ function starLine(s: ansistring; len: integer): ansistring;
 function getValueAfterKeyword(s, keyword: ansistring): int64;
 procedure Listboxaddscroll(listbox: tlistbox; item: string);
 procedure Listboxupdate(listbox: tlistbox; item: string);
-procedure getDrives(sl: TStrings);
+procedure getDrives(sl: TStrings;excludesys:boolean);
 procedure ReplacePartuuidinmbr(device: string; NewSignature: dword);
 function ReplacePartUUIDInCmdline(Device: string; NewID: string): string;
-function ReplacePartUUIDInFstab(device: string; newsignatur: string): string;
+function ReplacePartUUIDInFstab(device: string; oldsignature:string;newsignature: string): string;
 procedure ChangeHost(device: string; newHostName: string);
 procedure enableSsh(device: string);
 procedure PrepareWLAN(const Device, SSID, PSK: string);
 procedure Write_mbr(const mbr: TMbr; const Filename: string);
 procedure MakeImagefirst2partitions(Sourcedrive, Filename: ansistring; listbox: tlistbox);
-procedure ImageToDeviceImgAndZstd(Source, Destination: string; delpar3, delpar4: boolean; box: TListBox);
+procedure ImageToDeviceImgAndZstd(Source, Destination: string; box: TListBox);
 procedure ClearEmptyBlocks(listbox: tlistbox; Mountpoint: string);
 procedure DeletePartition(const Device: string; Partition: integer);
 function PartitionName(device: string; partitionNumber: integer): string;
@@ -195,8 +195,6 @@ begin
   b.time[b.position] := time;
   b.position := (b.position + 1) mod b.size;
 end;
-
-
 
 
 function PartitionName(device: string; partitionNumber: integer): string;
@@ -642,6 +640,9 @@ begin
 end;
 
 procedure EnsureEnoughSpace(const FilePath: string; NewSize: int64);
+const
+  mib=1024*1024;
+
 var
   vfs: TStatVFS;
   DirPath, ExistingPath: string;
@@ -675,7 +676,8 @@ begin
   // Prüfen ob genug Platz da ist
   if NewSize > OldSize then
     if (NewSize - OldSize) > FreeBytes then
-      raise Exception.Create(Format('Not enough disk space: required %d bytes, available %d bytes', [NewSize, FreeBytes + OldSize]));
+      raise Exception.Create(Format('Not enough disk space: required %d MiB, available %d MiB_', [(NewSize + mib -1) div 1024 div 1024,
+                                                  (FreeBytes + OldSize + mib -1) div 1024 div 1024]));
 
   // Erst jetzt die Verzeichnisse erstellen
   if not DirectoryExists(DirPath) then
@@ -990,94 +992,128 @@ begin
 end;
 
 
-/////////////////////////// disk utils ///////////////////////////////7
+////////////////////////// disk utils ///////////////////////////////7
 
 
-procedure getDrives(sl: TStrings);
+procedure getDrives(sl: TStrings; ExcludeSys: boolean);
 var
-  s, dr,exclude: ansistring;
-  p,n,x: integer;
-  stl:tstringlist;
-begin
-  stl:=tstringlist.create;
-  runcommand('fdisk -l', s);
-  stl.Text:=s;
+  s, dr, exclude: ansistring;
+  p, n, x: integer;
+  stl: TStringList;
+  v: string;
+  systemdrive,par:string;
 
-  // alle nicht disk entfernen
-  for x:= stl.count -1 downto 0 do
-     begin
-         if pos('Disk /dev/',stl[x]) <> 1 then  stl.Delete(x);
-     end;
+ begin
+  RunCommand( 'df --output=source /',par);
+  p:=pos(#10,par);
+  delete(par,1,p);
+  delete(par,length(par),1);
+  RunCommand('lsblk -no PKNAME ' + par, systemdrive);
+  delete(systemdrive,length(systemdrive),1);
+   systemdrive:='/dev/'+systemdrive;
 
-  //einkürzen
+  stl := TStringList.Create;
 
-   for x:= stl.count -1 downto 0 do
-     begin
-         p:=pos(':',stl[x]);
-         p:=pos(', ',stl[x],p);
-         stl[x]:=copy(stl[x],1,p-1);
-     end;
+  RunCommand('fdisk -l', s);
+  stl.Text := s;
 
+  // =========================================================
+  // nur "Disk /dev/..." Zeilen behalten
+  // =========================================================
+  for x := stl.Count - 1 downto 0 do
+  begin
+    if Pos('Disk /dev/', stl[x]) <> 1 then
+      stl.Delete(x);
+  end;
 
-  // alle ram entfernen
+  // =========================================================
+  // einkürzen
+  // =========================================================
+  for x := stl.Count - 1 downto 0 do
+  begin
+    p := Pos(':', stl[x]);
+    p := Pos(', ', stl[x], p);
+    stl[x] := Copy(stl[x], 1, p - 1);
+  end;
 
-  exclude:=('Disk /dev/ram');
-   for x:= stl.count -1 downto 0 do
-     begin
-        s:= stl[x];
-        n:=pos(':',s);
-        s:=copy(s,1,n-1);
-        p:=  pos(exclude,s);
-        if p = 1 then
-              begin
-                 delete(s,1,length(exclude));
-                 while (length(s)>0) and (s[1] in ['0'..'9']) do delete(s,1,1);
-              end;
-         if s = '' then
-                    stl.Delete(x);
-     end;
+  // =========================================================
+  // RAM entfernen
+  // =========================================================
+  exclude := 'Disk /dev/ram';
+  for x := stl.Count - 1 downto 0 do
+  begin
+    s := stl[x];
+    n := Pos(':', s);
+    s := Copy(s, 1, n - 1);
+    p := Pos(exclude, s);
+    if p = 1 then
+    begin
+      Delete(s, 1, Length(exclude));
+      while (Length(s) > 0) and (s[1] in ['0'..'9']) do
+        Delete(s, 1, 1);
+    end;
+    if s = '' then
+      stl.Delete(x);
+  end;
 
+  // =========================================================
+  // ZRAM entfernen
+  // =========================================================
+  exclude := 'Disk /dev/zram';
+  for x := stl.Count - 1 downto 0 do
+  begin
+    s := stl[x];
+    n := Pos(':', s);
+    s := Copy(s, 1, n - 1);
+    p := Pos(exclude, s);
+    if p = 1 then
+    begin
+      Delete(s, 1, Length(exclude));
+      while (Length(s) > 0) and (s[1] in ['0'..'9']) do
+        Delete(s, 1, 1);
+    end;
+    if s = '' then
+      stl.Delete(x);
+  end;
 
-   exclude:=('Disk /dev/zram');
-   for x:= stl.count -1 downto 0 do
-     begin
-        s:= stl[x];
-        n:=pos(':',s);
-        s:=copy(s,1,n-1);
-        p:=  pos(exclude,s);
-        if p = 1 then
-              begin
-                 delete(s,1,length(exclude));
-                 while (length(s)>0) and (s[1] in ['0'..'9']) do delete(s,1,1);
-              end;
-         if s = '' then
-                    stl.Delete(x);
-     end;
+  // =========================================================
+  // LOOP entfernen
+  // =========================================================
+  exclude := 'Disk /dev/loop';
+  for x := stl.Count - 1 downto 0 do
+  begin
+    s := stl[x];
+    n := Pos(':', s);
+    s := Copy(s, 1, n - 1);
+    p := Pos(exclude, s);
+    if p = 1 then
+    begin
+      Delete(s, 1, Length(exclude));
+      while (Length(s) > 0) and (s[1] in ['0'..'9']) do
+        Delete(s, 1, 1);
+    end;
+    if s = '' then
+      stl.Delete(x);
+  end;
 
-
-     exclude:=('Disk /dev/loop');
-   for x:= stl.count -1 downto 0 do
-     begin
-        s:= stl[x];
-        n:=pos(':',s);
-        s:=copy(s,1,n-1);
-        p:=  pos(exclude,s);
-        if p = 1 then
-              begin
-                 delete(s,1,length(exclude));
-                 while (length(s)>0) and (s[1] in ['0'..'9']) do delete(s,1,1);
-              end;
-         if s = '' then
-                    stl.Delete(x);
-     end;
-
-
+  // =========================================================
+  // Ergebnisliste
+  // =========================================================
   sl.Clear;
-  for x:= 0 to stl.count -1 do
-  sl.Add(copy(stl[x],6,maxint));
-  stl.Free;
 
+  for x := 0 to stl.Count - 1 do
+  begin
+
+    dr := Copy(stl[x], 6, MaxInt); // → sda, sdb, ...
+    p:=pos(':',dr);
+    v:= copy(dr,1,p-1);
+    if ExcludeSys and (v=systemdrive) then Continue;  //exclude system;
+    sl.Add(dr);
+  end;
+
+  stl.Free;
 end;
+
 
 
 
@@ -1405,10 +1441,12 @@ begin
 end;
 
 
-function ReplacePartUUIDInFstab(device: string; newsignatur: string): string;
+
+
+function ReplacePartUUIDInFstab(device: string; oldsignature:string;newsignature: string): string;
 var
   sl: TStringList;
-  p, x: integer;
+  x: integer;
   s: ansistring;
   PartitionDevice: ansistring;
   uMountPoint: ansistring;
@@ -1450,31 +1488,24 @@ begin
     sl := TStringList.Create;
     try
       sl.LoadFromFile(uMountPoint + '/etc/fstab');
-
       for x := 0 to sl.Count - 1 do
-      begin
-        s := sl[x];
+         begin
+          s:= Trim(sl[x]);
+             if pos('PARTUUID=',s)=1 then
+             begin
+               delete(s,1,9+8);
+               s:=trim(s);
+               if (pos('/ ',s)=1) or (pos('/boot/firmware ',s)=1) or (pos('/boot ',s)=1)   then
+                             begin
+                               s:='PARTUUID='+newsignature+' ';
+                               sl[x]:= s;
+                             end;
+              end;
 
-        if (Pos(' /boot/firmware ', s) > 0) or (Pos(' /boot ', s) > 0) then
-        begin
-          // erstes "Wort" (UUID) entfernen
-          p := Pos(' ', s);
-          if p > 0 then
-          begin
-            Delete(s, 1, p - 1);
-            sl[x] := 'PARTUUID=' + newsignatur + '-01' + s;
+
+
+
           end;
-        end
-        else if (Pos(' / ', s) > 0) then
-        begin
-          p := Pos(' ', s);
-          if p > 0 then
-          begin
-            Delete(s, 1, p - 1);
-            sl[x] := 'PARTUUID=' + newsignatur + '-02' + s;
-          end;
-        end;
-      end;
 
       sl.SaveToFile(uMountPoint + '/etc/fstab');
     finally
@@ -1495,6 +1526,8 @@ begin
     end;
   end;
 end;
+
+
 
 
 procedure ChangeHost(device: string; newHostName: string);
@@ -1783,27 +1816,11 @@ begin
 end;
 
 
-procedure FinalizeMBRUpdate(Source, Destination: string; delpar3, delpar4: boolean);
-var
-  mbr_image, mbr_old: TMBR;
-begin
-  mbr_image := Read_MBR(Source);
-  mbr_old := Read_MBR(Destination);
-  if not delpar3 then
-    mbr_image.PartitionEntries[3] := mbr_old.PartitionEntries[3]
-  else
-    FillChar(mbr_image.PartitionEntries[3], SizeOf(mbr_image.PartitionEntries[3]), 0);
-  if not delpar4 then
-    mbr_image.PartitionEntries[4] := mbr_old.PartitionEntries[4]
-  else
-    FillChar(mbr_image.PartitionEntries[4], SizeOf(mbr_image.PartitionEntries[4]), 0);
-
-  Write_MBR(mbr_image, Destination);
-end;
 
 
 
-procedure ImageToDeviceStandard(Source, Destination: string; delpar3, delpar4: boolean; box: TListBox);
+
+procedure ImageToDeviceStandard(Source, Destination:string; box: TListBox);
 const
   BufferSize = 16 * 1024 * 1024;
 var
@@ -1817,7 +1834,7 @@ var
   //  lastline: integer;
   ReadCount, WrittenCount: int64;
   etaStr, status, st: string;
-  nowTick, starttick: uint64;
+  nowTick: uint64;   //, starttick
   ringbuffer: rngbuffer;
 begin
   form1.ProgressBar1.Max := 1000;
@@ -1847,7 +1864,7 @@ begin
     lastUpdate := nowTick;
 
     box.Items.Add('');
-    starttick := nowTick;
+  //  starttick := nowTick;
 
     repeat
       ReadCount := fsource.Read(ibuffer, BufferSize);
@@ -1888,8 +1905,6 @@ begin
     if terminate_all then
       raise Exception.Create('Writing to device: process terminated.');
 
-    FinalizeMBRUpdate(Source, Destination, delpar3, delpar4);
-
   finally
     FreeAndNil(fsource);
     FreeAndNil(fdest);
@@ -1900,7 +1915,7 @@ end;
 
 
 
-function ImageToDeviceZstd(Source, Destination: string; delpar3, delpar4: boolean; box: TListBox): string;
+function ImageToDeviceZstd(Source, Destination: string; box: TListBox): string;
 const
   BufferSize = 32 * 1024 * 1024;
 var
@@ -1917,8 +1932,8 @@ var
   lastline, res: integer;
   speedZMBs, speeddonembs: double;
   etaStr, status: string;
-  percent: integer;
-  tocopy, nowtick, starttick: int64;
+ // percent: integer;
+  tocopy, nowtick: int64;     // , starttick
   skipBytes: integer = 512;
   sumread: int64;
   ringdonebuffer, ringZbuffer: rngbuffer;
@@ -1952,7 +1967,7 @@ begin
     listboxaddscroll(box, '');
     lastline := box.Count - 1;
     lastUpdate := gettickcount64;
-    starttick := gettickcount64;
+ //   starttick := gettickcount64;
 
     initringbuffer(Ringdonebuffer, 48, starttime, 0);
     initringbuffer(ringZbuffer, 48, starttime, 0);
@@ -2031,7 +2046,7 @@ begin
 
     // Abschluss-Update nach erfolgreicher Dekompression
     speedZMBs := 0;
-    percent := 100;
+//    percent := 100;
     etaStr := '00:00:00';
 
     if fin.Size > 0 then
@@ -2043,9 +2058,6 @@ begin
     Application.ProcessMessages;
 
 
-    // Nachbearbeitung (z. B. MBR anpassen)
-    FinalizeMBRUpdate(Source, Destination, delpar3, delpar4);
-
   finally
     ZSTD_freeDCtx(dctx);
     fin.Free;
@@ -2056,18 +2068,18 @@ end;
 
 
 
-procedure ImageToDeviceImgAndZstd(Source, Destination: string; delpar3, delpar4: boolean; box: TListBox);
+procedure ImageToDeviceImgAndZstd(Source, Destination: string; box: TListBox);
 begin
   PreCheckImageWrite(Source, Destination);
 
   if LowerCase(ExtractFileExt(Source)) = '.zst' then
-    ImageToDeviceZstd(Source, Destination, delpar3, delpar4, box)
+    ImageToDeviceZstd(Source, Destination, box)
 
   else
   begin
     if FileSize(Source) mod 512 <> 0 then
       raise Exception.Create('Image size is not a multiple of 512 bytes (sector size).');
-    ImageToDeviceStandard(Source, Destination, delpar3, delpar4, box);
+    ImageToDeviceStandard(Source, Destination, box);
   end;
 end;
 

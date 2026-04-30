@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PKG="pibackup_pkg"
-version="1.7.12"
+version="1.8.0"
 OUTDIR="/home/pi/git/pibackup/bin"
 
 SRC_BIN="/home/pi/git/pibackup/source/pibackup"
@@ -25,6 +25,7 @@ mkdir -p "$PKG/usr/lib/pibackup"
 mkdir -p "$PKG/usr/share/applications"
 mkdir -p "$PKG/usr/share/icons/hicolor/256x256/apps"
 mkdir -p "$PKG/usr/share/doc/pibackup"
+mkdir -p "$PKG/usr/share/doc/pibackup/help"
 
 # Binary
 install -Dm755 "$SRC_BIN" \
@@ -47,7 +48,7 @@ install -Dm644 /home/pi/git/pibackup/source/ssh-cleanup.exclude \
     "$PKG/etc/pibackup/ssh-cleanup.exclude"
 
 install -Dm644 /home/pi/git/pibackup/docs/intro.html \
-    "$PKG/usr/share/doc/pibackup/intro.html"
+    "$PKG/usr/share/doc/pibackup/help/intro.html"
 
 install -Dm644 /home/pi/git/pibackup/README.md \
     "$PKG/usr/share/doc/pibackup/README.md"

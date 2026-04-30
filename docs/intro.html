@@ -115,7 +115,8 @@ Additional partitions are <b>not included</b>.
 <p>
 &nbsp;&nbsp;• /root partition size<br>
 &nbsp;&nbsp;• passwords<br>
-&nbsp;&nbsp;• device ID
+&nbsp;&nbsp;• device ID<br>
+&nbsp;&nbsp;• fstab is automatically rebuilt and adjusted
 </p>
 
 <div class="note">
@@ -164,7 +165,20 @@ The system will boot, but <code>/root</code> must be expanded afterwards.
 
 <pre>sudo nano /etc/fstab</pre>
 
-<p>All entries must use the same PARTUUID.</p>
+<p>All entries must use correct PARTUUID references matching the target device.</p>
+
+<div class="note">
+pibackup automatically rebuilds <code>/etc/fstab</code> during restore:
+
+<ul>
+  <li><b>System partitions (p1 /boot, p2 /)</b> are always taken from the image</li>
+  <li><b>Additional partitions (p3 and above)</b> are preserved from the target device if available</li>
+  <li>Missing entries are restored from the image as fallback</li>
+  <li>PARTUUID values are updated consistently</li>
+</ul>
+
+This ensures that systems with additional data partitions remain intact after restore.
+</div>
 
 <hr>
 

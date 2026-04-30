@@ -1,4 +1,4 @@
-unit ExcludeParser;
+                                                unit ExcludeParser;
 
 {$mode objfpc}{$H+}
 
@@ -94,14 +94,30 @@ begin
         Continue;
 
       p := Pos('=', line);
-      if p = 0 then Continue;
+      if p = 0 then
+             raise exception.create( ' missing "=" in line ' + inttostr(i)+' '+line); //Continue;
 
       key := Trim(Copy(line, 1, p - 1));
       val := Trim(Copy(line, p + 1, Length(line)));
       entry.Command := ParseCommand(key);
-      entry.Path := FullPath(ReplacePlaceholders(val));
+      if entry.Command = ecunknown then
+                   raise exception.create( ' unknown command in line ' + inttostr(i)+' '+line); //Continue;
 
-      if entry.Command <> ecUnknown then
+      entry.Path := FullPath(ReplacePlaceholders(val));
+      p:= pos('#',entry.Path);
+      if p>0 then delete(entry.path,p,maxint);
+
+
+      if pos('..', entry.Path)>0 then
+                   raise exception.create( 'illegal string ".." in command in line ' + inttostr(i)+' '+line); //Continue;
+
+      if pos(';', entry.Path)>0 then
+                   raise exception.create( 'illegal characters ";" in command in line ' + inttostr(i)+' '+line); //Continue;
+
+
+
+
+   //   if entry.Command <> ecUnknown then
       begin
         SetLength(FList, Length(FList) + 1);
         FList[High(FList)] := entry;

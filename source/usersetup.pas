@@ -238,7 +238,7 @@ begin
   ui.PasswordHash := '';
   ui.WLANKey := '';
 
-
+  if lowercase(extractfileext(filename)) = '.zst' then exit;
 
   // Root-Partition mounten
   MountPartition(Filename, 2, p2mpoint);

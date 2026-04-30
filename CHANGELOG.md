@@ -1,6 +1,46 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
+## [1.8.0] – 2026-04-29
+
+### 🚀 Highlights
+- Improved reliability and consistency of MBR and fstab handling  
+- Safer restore process with deterministic behavior  
+- New exclude file editor with built-in syntax validation  
+
+---
+
+### ✨ Improvements
+- Checkboxes `deletepartition3` and `deletepartition4` are now only displayed if the corresponding partitions exist  
+- The cancel function for `Create Image` and `Write Image` now prompts for confirmation  
+- Introduced an internal editor for exclude files  
+
+---
+
+### 🛠 Validation & Processing
+- Added syntax validation when processing exclude files  
+
+---
+
+### 💽 Improved MBR and fstab handling
+
+**Reworked fstab generation logic:**
+- System partitions (p1/p2) are always taken from the image  
+- Additional partitions (p3+) are preserved from the target device when available  
+- Automatic fallback to image entries if device entries are missing, only if the fallback is mountable  
+- Introduced consistent PARTUUID handling  
+- Unified mapping between MBR, fstab, and cmdline  
+
+**Improved MBR processing:**
+- Clear separation between image-defined structure and device-specific data  
+- Avoids unintended disk signature changes  
+- Ensures deterministic restore behavior  
+
+**Increased robustness:**
+- Better handling of incomplete or broken existing fstab files  
+- More reliable restore process on systems with additional partitions  
+
+
 ## [1.7.12] – 2026-04-14
 
 ### 🐛 Bugfixes
