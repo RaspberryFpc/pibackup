@@ -1,7 +1,123 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
-## [1.8.0] – 2026-04-29
+## [2.0.0] – 2026-05-02
+
+### 🚀 Major Release – Unified Command System
+
+- Introduced a unified delete command system with clear semantic commands:
+  - `file`
+  - `fileintree`
+  - `allintree`
+  - `dir`
+
+- Clear separation between:
+  - file operations
+  - directory operations
+  - recursive tree operations
+
+- Improved readability and maintainability of exclude files  
+- Deterministic and simplified command behavior  
+- Strict command-based execution model without external dependencies  
+
+---
+
+### 🔒 Security Critical Change
+
+- ❗ **Removed all shell command execution from exclude system**
+
+- The system no longer supports:
+  - shell calls
+  - external command execution
+  - `system()` / `exec()` usage
+  - shell expansion or chaining
+
+- All operations are now:
+  - internally parsed
+  - executed via filesystem API only
+  - strictly sandboxed within the MountPoint
+
+- Eliminated attack vectors:
+  - command injection
+  - shell expansion exploits
+  - environment variable injection
+  - argument injection via exclude file
+
+---
+
+### 🔄 Syntax Changes
+
+- Standardized exclude file format:
+
+- No shell parsing  
+- No escaping or chaining  
+- Wildcards supported internally: `*`, `?`
+
+---
+
+### ✨ Improvements
+
+- Clear semantic behavior of commands:
+- `file` → single file or wildcard match  
+- `fileintree` → recursive file pattern deletion  
+- `allintree` → deletes contents of a directory (keeps directory)  
+- `dir` → deletes directory including all contents  
+
+- Reduced ambiguity in destructive operations  
+- Consistent and predictable execution behavior  
+- Improved path handling relative to MountPoint  
+
+---
+
+### 🛠 Engine Improvements
+
+- Refactored delete engine into direct filesystem dispatcher  
+- Removed dependency on external tools and shell  
+- Optimized directory traversal logic  
+- Consolidated duplicate traversal implementations  
+- Improved recursive deletion reliability  
+- Simplified internal logic for maintainability  
+
+---
+
+### 🧪 Editor Improvements
+
+- ✅ **Added syntax validation in Exclude Editor before saving**
+- Prevents invalid or unsafe entries at edit time  
+- Detects:
+- invalid commands  
+- malformed syntax (`COMMAND = PATH`)  
+- illegal or ambiguous paths  
+- Improves user feedback and reduces runtime errors  
+
+---
+
+### 🔒 Safety Enhancements
+
+- Strong MountPoint boundary enforcement  
+- Guaranteed prevention of path escaping outside image root  
+- All exclude entries treated strictly as data (never executable)  
+- Improved validation of parsed entries  
+
+---
+
+### ⚠️ Breaking Changes
+
+- Removed all legacy and shell-based command support  
+- Old exclude files are no longer compatible  
+- Migration to new syntax required  
+
+---
+
+### 🔒 Safety & Stability
+
+- Improved handling of non-existent targets  
+- More predictable behavior during deletion operations  
+- Clear distinction between destructive and non-destructive actions  
+
+---
+
+[1.8.0] – 2026-04-29
 
 ### 🚀 Highlights
 - Improved reliability and consistency of MBR and fstab handling  

@@ -122,11 +122,6 @@
         <UnitName Value="Unit1"/>
       </Unit>
       <Unit>
-        <Filename Value="excludeparser.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="ExcludeParser"/>
-      </Unit>
-      <Unit>
         <Filename Value="rkutils.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
@@ -146,17 +141,15 @@
       </Unit>
       <Unit>
         <Filename Value="qtfix.pas"/>
-        <FRMtype Value="0"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="uitheme.pas"/>
-        <FRMtype Value="0"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="unit2.pas"/>
-        <FRMtype Value="0"/>
+        <FRMtype Value="200"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form2"/>
         <HasResources Value="True"/>
@@ -164,13 +157,18 @@
         <UnitName Value="Unit2"/>
       </Unit>
       <Unit>
-        <Filename Value="unit4.pas"/>
-        <FRMtype Value="0"/>
+        <Filename Value="editor.pas"/>
+        <FRMtype Value="200"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form3"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="Unit4"/>
+        <UnitName Value="Editor"/>
+      </Unit>
+      <Unit>
+        <Filename Value="excludeprocessor.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ExcludeProcessor"/>
       </Unit>
     </Units>
   </ProjectOptions>

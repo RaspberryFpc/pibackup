@@ -13,7 +13,9 @@ uses
   unit1,
   exethread,
   UserSetup,
-  uitheme, Unit2, Unit4;      // 🔥 Theme + Font
+  uitheme,
+  Unit2,
+  Editor, ExcludeProcessor;      // 🔥 Theme + Font
 
 {$R *.res}
 

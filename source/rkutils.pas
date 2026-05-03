@@ -1197,6 +1197,7 @@ var
   Rmbr: tmbr;
 begin
   FillChar(RMbr, 512, 0);
+  result:=Rmbr;
 
   if not FileExists(filename) then
     raise Exception.Create('reading mbr from: ' + filename + ' not found');

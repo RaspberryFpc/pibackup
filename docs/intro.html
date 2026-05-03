@@ -76,7 +76,7 @@ Additional partitions are <b>not included</b>.
 </p>
 
 <p>
-3. Unwanted files are removed.
+3. Unwanted files are removed using the exclude processor.
 </p>
 
 <p>
@@ -100,88 +100,6 @@ Additional partitions are <b>not included</b>.
 
 <hr>
 
-<h2>Restoring the image</h2>
-
-<h3>Under Linux (recommended)</h3>
-
-<p><b>Use pibackup for restoring.</b></p>
-
-<p>
-1. MBR is taken from image and merged with partition table entries.<br>
-2. Corrected MBR + image data are written to target device.<br>
-3. Options applied:
-</p>
-
-<p>
-&nbsp;&nbsp;• /root partition size<br>
-&nbsp;&nbsp;• passwords<br>
-&nbsp;&nbsp;• device ID<br>
-&nbsp;&nbsp;• fstab is automatically rebuilt and adjusted
-</p>
-
-<div class="note">
-Passwords are shown encoded.<br>
-You may enter new ones in plain text.
-</div>
-
-<hr>
-
-<h3>Under Windows</h3>
-
-<p>
-If only <code>/boot</code> and <code>/root</code> exist, the image can be restored using a standard imaging tool.
-</p>
-
-<p>
-The system will boot, but <code>/root</code> must be expanded afterwards.
-</p>
-
-<p class="warning">
-⚠ Do NOT use raspi-config if additional partitions exist.
-</p>
-
-<hr>
-
-<h2>Installing a New Operating System on an SSD</h2>
-
-<div class="warning">
-⚠ All data in <code>/boot</code> and <code>/root</code> will be lost.
-</div>
-
-<p>
-1. Create new system<br>
-2. Test system<br>
-3. Install pibackup<br>
-4. Create image<br>
-5. Select source + target<br>
-6. Start restore
-</p>
-
-<hr>
-
-<h3>fstab Notes</h3>
-
-<p>If partitions are not mounted via automount:</p>
-
-<pre>sudo nano /etc/fstab</pre>
-
-<p>All entries must use correct PARTUUID references matching the target device.</p>
-
-<div class="note">
-pibackup automatically rebuilds <code>/etc/fstab</code> during restore:
-
-<ul>
-  <li><b>System partitions (p1 /boot, p2 /)</b> are always taken from the image</li>
-  <li><b>Additional partitions (p3 and above)</b> are preserved from the target device if available</li>
-  <li>Missing entries are restored from the image as fallback</li>
-  <li>PARTUUID values are updated consistently</li>
-</ul>
-
-This ensures that systems with additional data partitions remain intact after restore.
-</div>
-
-<hr>
-
 <h1>pibackup Exclude File Syntax</h1>
 
 <p>Removes unnecessary files before compression.</p>
@@ -190,50 +108,136 @@ This ensures that systems with additional data partitions remain intact after re
 
 <h2>Syntax</h2>
 
-<pre>command = /path</pre>
+<pre>COMMAND = /path</pre>
 
-<p><code>§user</code> is replaced with current username.</p>
+<p>
+<code>§user</code> is automatically replaced with the current user (SUDO_USER or USER).
+</p>
+
+<div class="note">
+All paths are internally converted to absolute paths based on the mountpoint.<br>
+Escaping outside the mountpoint is blocked for security reasons.
+</div>
 
 <hr>
 
 <h2>Commands</h2>
 
-<p><b>RF - Remove File</b><br>
-rf = /home/§user/.bash_history</p>
+<h3>file – Delete file(s) (supports wildcards)</h3>
 
-<p><b>RD - Remove Directory</b><br>
-rd = /home/§user/emptyfolder</p>
+<p>
+Deletes files using filename or wildcard pattern.<br>
+Internally uses FindFirst, so <code>*</code> and <code>?</code> are supported.
+</p>
 
-<p><b>RT - Remove Tree</b><br>
-rt = /var/lib/snapd</p>
+<pre>
+file = /home/§user/.bash_history
+file = /home/§user/Downloads/*.zip
+file = /var/log/*.log
+file = /tmp/*
+</pre>
 
-<p><b>RFID - Remove Files in Directory</b><br>
-rfid = /var/backups/*</p>
-
-<p><b>RAID - Remove All in Directory</b><br>
-raid = /home/§user/Downloads</p>
-
-<p><b>RAIT - Remove All in Tree</b><br>
-rait = /tmp</p>
+<div class="note">
+Wildcard matches are limited to the current directory (non-recursive).
+</div>
 
 <hr>
 
-<h2>Example Entries</h2>
+<h3>fileintree – Delete matching files (recursive directory traversal)</h3>
+
+<p>
+Deletes files matching a filename pattern while recursively traversing directories.
+The pattern is applied per directory level during traversal (not a global recursive glob search).
+</p>
 
 <pre>
-rait = /tmp
-rait = /var/tmp
-rait = /var/cache/apt/archives
-rait = /var/log
-
-rait = /home/§user/.cache/mozilla
-rait = /home/§user/.cache/chromium
-
-raid = /home/§user/Downloads
-
-rt = /var/lib/snapd
-rt = /home/§user/snap
+fileintree = /var/backups/*.bak
+fileintree = /etc/ssh/ssh_host_*
+fileintree = /home/*/.ssh/known_hosts
+fileintree = /home/*/.ssh/config
+fileintree = /home/*/.ssh/id_*
 </pre>
+
+<div class="note">
+Pattern matching is evaluated per directory during recursion.
+It is not a full filesystem-wide glob expansion.
+</div>
+
+<hr>
+
+<h3>allintree – Delete all contents inside a directory (keep directory)</h3>
+
+<p>
+Deletes all contents inside a directory recursively, while preserving the directory itself.
+</p>
+
+<pre>
+allintree = /var/log
+allintree = /tmp
+allintree = /var/cache/apt/archives
+allintree = /home/§user/.cache
+</pre>
+
+<div class="note">
+This replaces the old DELTREE (when only content removal is intended).
+</div>
+
+<hr>
+
+<h3>dir – Delete directory completely</h3>
+
+<p>
+Deletes a directory including all content and subdirectories.
+</p>
+
+<pre>
+dir = /home/§user/emptyfolder
+dir = /var/tmp/unused
+dir = /home/§user/.mozilla
+</pre>
+
+<div class="warning">
+⚠ This operation is recursive and irreversible.
+</div>
+
+<hr>
+
+<h2>Typical Cleanup Example</h2>
+
+<pre>
+# temp folders
+allintree = /tmp
+allintree = /var/tmp
+
+# package cache
+allintree = /var/cache/apt/archives
+
+# logs
+allintree = /var/log
+
+# browser cache
+allintree = /home/§user/.cache/mozilla
+allintree = /home/§user/.cache/chromium
+
+# downloads cleanup
+file = /home/§user/Downloads/*.zip
+file = /home/§user/Downloads/*.img
+
+# SSH cleanup
+file = /home/§user/.bash_history
+fileintree = /home/*/.ssh/*
+</pre>
+
+<hr>
+
+<h2>Important Behavior</h2>
+
+<ul>
+  <li>Paths are automatically prefixed with mountpoint</li>
+  <li>Invalid or unsafe paths are rejected</li>
+  <li>All deletions are logged (path + file)</li>
+  <li>Wildcard support is limited (no full recursive globbing)</li>
+</ul>
 
 <hr>
 
@@ -243,14 +247,14 @@ rt = /home/§user/snap
 
 <h2>Levels</h2>
 
-<p><b>1–3:</b> Very fast, larger files</p>
-<p><b>4–6:</b> Best balance, recommended</p>
-<p><b>7–10:</b> Better compression, slower</p>
-<p><b>11–19:</b> Maximum compression, very slow</p>
+<p><b>1–3:</b> Very fast</p>
+<p><b>4–6:</b> Recommended balance</p>
+<p><b>7–10:</b> High compression</p>
+<p><b>11–19:</b> Maximum compression</p>
 
 <h2>Long Mode</h2>
 
-<p>Improves compression by searching further back in data.</p>
+<p>Improves compression by increasing search window.</p>
 
 <h2>Recommended</h2>
 
@@ -261,4 +265,4 @@ rt = /home/§user/snap
 </p>
 
 </body>
-</html>
+</html> 

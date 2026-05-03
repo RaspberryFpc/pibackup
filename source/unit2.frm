@@ -3,6 +3,7 @@ object Form2: TForm2
   Height = 622
   Top = 43
   Width = 695
+  BorderStyle = bsSingle
   ClientHeight = 622
   ClientWidth = 695
   LCLVersion = '8.8'

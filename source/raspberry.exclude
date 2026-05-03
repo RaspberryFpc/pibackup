@@ -1,82 +1,136 @@
-# Raspberry Pi Image Cleanup Exclude File
+# Raspberry Pi Image Cleanup Exclude File (v2)
 
-# Usage
-# RF    = remove file
-# RD    = remove directory
-# RT    = remove tree (removes directory and everything in it)
-# RFID  = remove all files in directory
-# RAIT  = remove all in tree (removes all in the directory and subdirectories but keeps the tree)
-# RAID  = remove all in directory (removes everything in the directory)
-# §USER = is replaced with the actual user
+#
+# ------------------------------------------------------------
+# COMMANDS (aktuelles System)
+# ------------------------------------------------------------
+# file           = löscht eine einzelne Datei
+# fileintree  = löscht Dateien rekursiv im Verzeichnisbaum
+# allintree   = löscht ALLE Inhalte unter einem Pfad (Startordner bleibt)
+# dir            = löscht ein Verzeichnis (nur wenn leer bzw. erlaubt)
+#
+# Regeln:
+# - Wildcards (*) sind nur in file/fileintree im Dateinamen erlaubt
+# - Pfade dürfen keine ".." enthalten
+# - Schutz gegen Root-/Mount-Escape aktiv
+# ------------------------------------------------------------
+
+# ------------------------------------------------------------
+# General temporary and system data
+# ------------------------------------------------------------
+
+allintree = /var/cache/apt/archives
+allintree = /var/cache/man
+allintree = /var/tmp
+allintree = /tmp
+
+# SYSTEM (niemals löschen, nur leeren!)
+allintree = /proc
+allintree = /sys
+allintree = /run
+
+dir = /lost+found
+
+allintree = /var/spool
+allintree = /var/lock
+allintree = /var/lib/apt/lists
+allintree = /var/lib/apt/lists/partial
+
+file = /var/lib/systemd/random-seed
+allintree = /var/lib/systemd/coredump
+allintree = /var/lib/systemd/tmpfiles
+
+file = /var/swap
 
 
-# General temporary and variable data
-rait = /var/cache/apt/archives
-rait = /var/tmp
-rait = /tmp
-rait = /proc
-rait = /sys
-rait = /run
-rait = /lost+found
-rait = /var/spool
-rait = /var/lock
-rait = /var/lib/apt/lists
-rait = /var/lib/systemd/random-seed
-rait = /var/lib/systemd/coredump
-rf   = /var/swap
+# ------------------------------------------------------------
+# Logs & diagnostics
+# ------------------------------------------------------------
 
-# Protokolle & Backups
-rait = /var/log
-rfid = /var/backups/*
+allintree = /var/log
+allintree = /var/log/journal
+allintree = /var/crash
 
-# SSH & System-IDs
-#rf = /etc/ssh/ssh_host_*
-#rf = /etc/machine-id
-#rf = /var/lib/dbus/machine-id
+fileintree = /var/backups/*
 
-# Benutzer: temporäre und sensible Dateien
-rait = /home/§user/.cache
-rait = /home/§user/.local/share/Trash
-raid = /home/§user/Downloads
-rf = /home/§user/.bash_history
-rf = /home/§user/.xsession-errors
-rf = /home/§user/.xsession-errors.old
-rf = /home/§user/.recently-used
-rf = /home/§user/.local/share/recently-used.xbel
-rait = /home/§user/.thumbnails
-rait = /home/§user/.gvfs
 
-# Wayland/X11
-rait = /home/§user/.local/share/wayland-sessions
-rait = /home/§user/.local/share/xorg
+# ------------------------------------------------------------
+# User temporary & cache data
+# ------------------------------------------------------------
 
-# Browser-Caches
-rait = /home/§user/.cache/mozilla
-rait = /home/§user/.mozilla
-rait = /home/§user/.cache/chromium
-rait = /home/§user/.config/chromium
+allintree = /home/§USER/.cache
+allintree = /home/§USER/.local/share/Trash
+allintree = /home/§USER/.thumbnails
 
-# Desktop
-rait = /home/§user/.local/share/gvfs-metadata
-rait = /home/§user/.local/share/zeitgeist
+# gvfs kann problematisch sein → besser nur Inhalt löschen
+allintree = /home/§USER/.gvfs
 
-# Snap / Flatpak
-rt = /var/lib/snapd
-rt = /snap
-rt = /home/§user/snap
-rt = /var/tmp/flatpak-cache
-rt = /home/§user/.var/app
+allintree = /home/§USER/.local/share/wayland-sessions
+allintree = /home/§USER/.local/share/xorg
 
-# Optional: large Software leftovers (only when deinstalled)
-#rt = /opt/Wolfram
-#rt = /usr/lib/libreoffice
+allintree = /home/§USER/.local/share/gvfs-metadata
+allintree = /home/§USER/.local/share/zeitgeist
 
-# Optional: background pictures and themes
-#rt = /usr/share/PIXEL-wallpaper
+allintree = /home/§USER/Downloads
 
-# Optional: doku, manpages, examples
-#rt = /usr/share/doc
-#rt = /usr/share/man
-#rt = /usr/share/info
-#rt = /usr/share/examples
-#rt = /usr/lib/python*/test
+
+# ------------------------------------------------------------
+# User history & traces
+# ------------------------------------------------------------
+
+file = /home/§USER/.bash_history
+file = /home/§USER/.xsession-errors
+file = /home/§USER/.xsession-errors.old
+file = /home/§USER/.recently-used
+file = /home/§USER/.local/share/recently-used.xbel
+
+fileintree = /home/§USER/.*.swp
+fileintree = /home/§USER/*~
+fileintree = /home/§USER/wget-log*
+
+
+# ------------------------------------------------------------
+# Browsers (komplett entfernen)
+# ------------------------------------------------------------
+
+dir = /home/§USER/.mozilla
+dir = /home/§USER/.config/chromium
+
+
+# ------------------------------------------------------------
+# Snap / Flatpak / sandbox systems
+# ------------------------------------------------------------
+
+dir = /var/lib/snapd
+dir = /snap
+dir = /home/§USER/snap
+
+allintree = /var/tmp/flatpak-cache
+dir = /home/§USER/.var/app
+
+
+# ------------------------------------------------------------
+# dpkg / package leftovers
+# ------------------------------------------------------------
+
+fileintree = /var/lib/dpkg/*.old
+fileintree = /var/lib/dpkg/*.bak
+
+
+# ------------------------------------------------------------
+# Optional: large software leftovers
+# ------------------------------------------------------------
+
+#dir = /opt/Wolfram
+#dir = /usr/lib/libreoffice
+
+
+# ------------------------------------------------------------
+# Optional: documentation / extras
+# ------------------------------------------------------------
+
+#allintree = /usr/share/doc
+#allintree = /usr/share/man
+#allintree = /usr/share/info
+#allintree = /usr/share/examples
+#allintree = /usr/lib/python*/test

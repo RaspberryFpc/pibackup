@@ -1,21 +1,56 @@
 # dhcp-cleanup.exclude
-# Entfernt temporäre DHCP-Dateien und alle gespeicherten Netzwerkverbindungen
+# Bereinigt DHCP, Netzwerk-Cache und System-Netzwerkkonfigurationen
+#
+# ------------------------------------------------------------
+# COMMANDS (aktuelles System)
+# ------------------------------------------------------------
+# file           = löscht eine einzelne Datei
+# fileintree  = löscht Dateien rekursiv im Verzeichnisbaum
+# allintree   = löscht ALLE Inhalte unter einem Pfad (Startordner bleibt)
+# dir            = löscht ein Verzeichnis (nur wenn leer bzw. erlaubt)
+#
+# Regeln:
+# - Wildcards (*) sind nur in file/fileintree im Dateinamen erlaubt
+# - Pfade dürfen keine ".." enthalten
+# - Schutz gegen Root-/Mount-Escape aktiv
+# ------------------------------------------------------------
 
-rfid = /var/lib/dhcp
-rfid = /var/lib/dhcpcd5
-rfid = /var/lib/NetworkManager
 
-rf = /etc/resolv.conf
+# ------------------------------------------------------------
+# DHCP / Netzwerk-Cache
+# ------------------------------------------------------------
 
-rfid = /run/dhcp-client
-rfid = /run/dhcpcd
+fileintree = /var/lib/dhcp/*
+fileintree = /var/lib/dhcpcd5/*
+fileintree = /var/lib/NetworkManager/*
 
-# Entfernt gespeicherte NetworkManager-Verbindungen
-rfid = /etc/NetworkManager/system-connections
+fileintree = /run/dhcp/*
+fileintree = /run/dhcpcd/*
 
-# Entfernt alte Netzwerkschnittstellen-Konfiguration (falls vorhanden)
-rf = /etc/network/interfaces
 
-# Entfernt eventuelle netplan-Konfigurationen (falls vorhanden)
-rfid = /etc/netplan
+# ------------------------------------------------------------
+# System Resolver
+# ------------------------------------------------------------
 
+file = /etc/resolv.conf
+
+
+# ------------------------------------------------------------
+# NetworkManager Verbindungen
+# ------------------------------------------------------------
+
+fileintree = /etc/NetworkManager/system-connections/*
+
+
+# ------------------------------------------------------------
+# klassische Netzwerk-Konfiguration
+# ------------------------------------------------------------
+
+file = /etc/network/interfaces
+
+
+# ------------------------------------------------------------
+# Netplan Konfiguration
+# ------------------------------------------------------------
+
+fileintree = /etc/netplan/*             
