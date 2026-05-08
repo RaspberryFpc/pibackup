@@ -1,6 +1,60 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
+## [2.0.1] – 2026-05-08
+
+### 🔧 Internal Architecture Changes
+
+- Reworked partition restore handling architecture  
+- `StringGrid` no longer stores internal restore variables or partition state  
+- Introduced dedicated internal restore record structure for:
+  - partition metadata
+  - restore parameters
+
+- `StringGrid` is now used strictly as:
+  - display layer only
+  - read-only visualization component
+  - separation of UI and restore logic for improved reliability
+
+- Reduced risk of:
+  - UI-state desynchronization
+  - accidental data corruption
+  - invalid restore state caused by grid modifications
+
+---
+
+### 🛠 Restore & Boot Configuration Improvements
+
+- Improved automatic adjustment of:
+  - MBR
+  - `cmdline.txt`
+  - `fstab`
+
+- More reliable handling of:
+  - PARTUUID replacement
+  - boot device migration
+  - restored system consistency
+
+- Improved detection and replacement logic during image restore process
+
+---
+
+### ⚠️ Safety Improvements
+
+- Added confirmation dialog before writing images to target devices  
+- Prevents accidental overwrite of disks or partitions  
+- Additional safeguard before destructive write operations are executed  
+
+---
+
+### 🔒 Stability Improvements
+
+- Improved internal consistency between restore engine and UI  
+- Cleaner separation between runtime data and presentation layer  
+- Reduced hidden side effects caused by UI component state usage  
+
+---
+
 ## [2.0.0] – 2026-05-02
 
 ### 🚀 Major Release – Unified Command System

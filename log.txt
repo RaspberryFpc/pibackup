@@ -1,0 +1,335 @@
+
+Create image
+
+------------------------ /dev/sda -> ras2026-05-05.img -------------------------
+47731 MB  speed: 171.5 MB/sec  ETA: 0 seconds
+47731179520 of 47731179520 bytes copied in 0:05:21
+e2fsck 1.47.2 (1-Jan-2025)
+rootfs: recovering journal
+Clearing orphaned inode 655452 (uid=1000, gid=1000, mode=0100600, size=64)
+Clearing orphaned inode 655453 (uid=1000, gid=1000, mode=0100664, size=32768)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+Free blocks count wrong (6071410, counted=6043681).
+Fix? yes
+
+Free inodes count wrong (2519100, counted=2519097).
+Fix? yes
+
+
+
+processing exclude: /etc/pibackup/raspberry.exclude
+allintree = /var/cache/apt/archives
+deleted file: var/cache/apt/archives/libpackagekit-glib2-18_1.3.1-1+deb13u1_arm64.deb
+deleted file: var/cache/apt/archives/rpi-loop-utils_1.2.2_all.deb
+deleted file: var/cache/apt/archives/libgdk-pixbuf2.0-common_2.42.12+dfsg-4+deb13u1_all.deb
+deleted file: var/cache/apt/archives/rpd-plym-splash_0.47_arm64.deb
+deleted file: var/cache/apt/archives/libgdk-pixbuf-2.0-0_2.42.12+dfsg-4+deb13u1_arm64.deb
+deleted file: var/cache/apt/archives/firefox_150.0-1+rpt1_arm64.deb
+deleted file: var/cache/apt/archives/brave-browser_1.89.143_arm64.deb
+deleted file: var/cache/apt/archives/packagekit_1.3.1-1+deb13u1_arm64.deb
+deleted file: var/cache/apt/archives/python3-pil_11.1.0-5+deb13u2_arm64.deb
+deleted file: var/cache/apt/archives/python3-sense-hat_2.6.1-1_all.deb
+deleted file: var/cache/apt/archives/openssl_3.5.5-1~deb13u2+rpt1_arm64.deb
+deleted file: var/cache/apt/archives/lock
+deleted file: var/cache/apt/archives/gstreamer1.0-plugins-bad_1.26.2-3+rpt3+deb13u1_arm64.deb
+deleted file: var/cache/apt/archives/libssl-dev_3.5.5-1~deb13u2+rpt1_arm64.deb
+deleted file: var/cache/apt/archives/libssl3t64_3.5.5-1~deb13u2+rpt1_arm64.deb
+deleted file: var/cache/apt/archives/raspi-firmware_1%3a1.20260408-1_all.deb
+deleted file: var/cache/apt/archives/rpi-connect_2.11.0_arm64.deb
+deleted file: var/cache/apt/archives/rpi-swap_1.2.2_all.deb
+deleted file: var/cache/apt/archives/libgstreamer-plugins-bad1.0-0_1.26.2-3+rpt3+deb13u1_arm64.deb
+deleted file: var/cache/apt/archives/openssl-provider-legacy_3.5.5-1~deb13u2+rpt1_arm64.deb
+deleted file: var/cache/apt/archives/libngtcp2-crypto-gnutls8_1.11.0-1+deb13u1_arm64.deb
+deleted file: var/cache/apt/archives/gir1.2-gdkpixbuf-2.0_2.42.12+dfsg-4+deb13u1_arm64.deb
+deleted file: var/cache/apt/archives/chromium-l10n_1%3a147.0.7727.101-1~deb13u1+rpt1_all.deb
+deleted file: var/cache/apt/archives/chromium-common_1%3a147.0.7727.101-1~deb13u1+rpt1_arm64.deb
+deleted file: var/cache/apt/archives/libngtcp2-16_1.11.0-1+deb13u1_arm64.deb
+deleted dir: var/cache/apt/archives/partial
+deleted file: var/cache/apt/archives/libgdk-pixbuf2.0-bin_2.42.12+dfsg-4+deb13u1_arm64.deb
+deleted file: var/cache/apt/archives/chromium_1%3a147.0.7727.101-1~deb13u1+rpt1_arm64.deb
+deleted file: var/cache/apt/archives/rpi-eeprom_28.15-1_all.deb
+deleted file: var/cache/apt/archives/chromium-sandbox_1%3a147.0.7727.101-1~deb13u1+rpt1_arm64.deb
+deleted file: var/cache/apt/archives/ntfs-3g_1%3a2022.10.3-5+deb13u1_arm64.deb
+deleted file: var/cache/apt/archives/userconf-pi_0.18_all.deb
+deleted file: var/cache/apt/archives/libntfs-3g89t64_1%3a2022.10.3-5+deb13u1_arm64.deb
+deleted file: var/cache/apt/archives/libgdk-pixbuf-2.0-dev_2.42.12+dfsg-4+deb13u1_arm64.deb
+allintree = /var/cache/man
+deleted dir: var/cache/man/it
+deleted dir: var/cache/man/pl
+deleted file: var/cache/man/index.db
+deleted dir: var/cache/man/hr
+deleted dir: var/cache/man/sr
+deleted dir: var/cache/man/cs
+deleted dir: var/cache/man/da
+deleted dir: var/cache/man/tr
+deleted dir: var/cache/man/nb
+deleted dir: var/cache/man/fr.ISO8859-1
+deleted dir: var/cache/man/zh_TW
+deleted dir: var/cache/man/ja
+deleted dir: var/cache/man/pt
+deleted dir: var/cache/man/nl
+deleted dir: var/cache/man/fr.UTF-8
+deleted dir: var/cache/man/de
+deleted dir: var/cache/man/be
+deleted dir: var/cache/man/zh_CN
+deleted dir: var/cache/man/bg
+deleted dir: var/cache/man/uk
+deleted dir: var/cache/man/ru
+deleted dir: var/cache/man/fr
+deleted dir: var/cache/man/ko
+deleted dir: var/cache/man/hu
+deleted dir: var/cache/man/ca
+deleted dir: var/cache/man/vi
+deleted dir: var/cache/man/ro
+deleted dir: var/cache/man/pt_BR
+deleted dir: var/cache/man/id
+deleted dir: var/cache/man/sv
+deleted dir: var/cache/man/es
+deleted dir: var/cache/man/sl
+deleted dir: var/cache/man/fi
+deleted file: var/cache/man/CACHEDIR.TAG
+allintree = /var/tmp
+deleted dir: var/tmp/systemd-private-03cc841fd0c9437d9734287eb128051e-ModemManager.service-BRWegm
+deleted file: var/tmp/dispsetup.sh
+deleted dir: var/tmp/systemd-private-03cc841fd0c9437d9734287eb128051e-systemd-logind.service-BLTtDg
+deleted dir: var/tmp/systemd-private-03cc841fd0c9437d9734287eb128051e-bluetooth.service-pjLRHy
+deleted dir: var/tmp/systemd-private-03cc841fd0c9437d9734287eb128051e-colord.service-8RCP83
+deleted dir: var/tmp/systemd-private-03cc841fd0c9437d9734287eb128051e-polkit.service-l4LZ4Q
+deleted dir: var/tmp/systemd-private-03cc841fd0c9437d9734287eb128051e-lm-sensors.service-w8i02X
+allintree = /tmp
+allintree = /proc
+allintree = /sys
+allintree = /run
+dir = /lost+found
+allintree = /var/spool
+deleted dir: var/spool/cron
+deleted dir: var/spool/cups
+allintree = /var/lock
+deleted file: var/lock/card3.lock
+deleted file: var/lock/card2.lock
+deleted dir: var/lock/subsys
+deleted file: var/lock/card1.lock
+deleted file: var/lock/card0.lock
+deleted file: var/lock/asound.state.lock
+allintree = /var/lib/apt/lists
+deleted file: var/lib/apt/lists/downloads.typora.io_linux_._InRelease
+deleted file: var/lib/apt/lists/deb.debian.org_debian_dists_trixie_non-free-firmware_i18n_Translation-en
+deleted file: var/lib/apt/lists/deb.debian.org_debian_dists_trixie_contrib_i18n_Translation-en
+deleted file: var/lib/apt/lists/deb.debian.org_debian_dists_trixie-updates_InRelease
+deleted file: var/lib/apt/lists/deb.debian.org_debian_dists_trixie_main_dep11_Components-arm64.yml.gz
+deleted file: var/lib/apt/lists/deb.debian.org_debian-security_dists_trixie-security_main_i18n_Translation-en
+deleted file: var/lib/apt/lists/brave-browser-apt-release.s3.brave.com_dists_stable_InRelease
+deleted file: var/lib/apt/lists/deb.debian.org_debian_dists_trixie_non-free-firmware_binary-arm64_Packages
+deleted file: var/lib/apt/lists/deb.debian.org_debian-security_dists_trixie-security_main_binary-arm64_Packages
+deleted file: var/lib/apt/lists/deb.debian.org_debian_dists_trixie_InRelease
+deleted file: var/lib/apt/lists/deb.debian.org_debian_dists_trixie_contrib_binary-armhf_Packages
+deleted file: var/lib/apt/lists/deb.debian.org_debian_dists_trixie_main_i18n_Translation-de
+deleted file: var/lib/apt/lists/deb.debian.org_debian_dists_trixie_non-free-firmware_dep11_Components-arm64.yml.gz
+deleted file: var/lib/apt/lists/lock
+deleted file: var/lib/apt/lists/deb.debian.org_debian_dists_trixie_contrib_dep11_Components-arm64.yml.gz
+deleted file: var/lib/apt/lists/deb.debian.org_debian-security_dists_trixie-security_main_binary-armhf_Packages
+deleted file: var/lib/apt/lists/deb.debian.org_debian_dists_trixie_contrib_binary-arm64_Packages
+deleted file: var/lib/apt/lists/deb.debian.org_debian_dists_trixie_non-free_binary-armhf_Packages
+deleted dir: var/lib/apt/lists/auxfiles
+deleted file: var/lib/apt/lists/deb.debian.org_debian_dists_trixie-updates_main_binary-armhf_Packages
+deleted file: var/lib/apt/lists/deb.debian.org_debian_dists_trixie_non-free_i18n_Translation-en
+deleted file: var/lib/apt/lists/deb.debian.org_debian_dists_trixie_non-free_dep11_Components-arm64.yml.gz
+deleted file: var/lib/apt/lists/deb.debian.org_debian_dists_trixie-updates_main_i18n_Translation-en
+deleted file: var/lib/apt/lists/deb.debian.org_debian_dists_trixie_main_binary-arm64_Packages
+deleted file: var/lib/apt/lists/deb.debian.org_debian_dists_trixie_non-free_binary-arm64_Packages
+deleted file: var/lib/apt/lists/archive.raspberrypi.com_debian_dists_trixie_main_binary-armhf_Packages
+deleted file: var/lib/apt/lists/archive.raspberrypi.com_debian_dists_trixie_main_binary-arm64_Packages
+deleted file: var/lib/apt/lists/deb.debian.org_debian-security_dists_trixie-security_InRelease
+deleted dir: var/lib/apt/lists/partial
+deleted file: var/lib/apt/lists/deb.debian.org_debian_dists_trixie_main_i18n_Translation-de%5fDE
+deleted file: var/lib/apt/lists/deb.debian.org_debian_dists_trixie_non-free-firmware_binary-armhf_Packages
+deleted file: var/lib/apt/lists/downloads.typora.io_linux_._Packages
+deleted file: var/lib/apt/lists/deb.debian.org_debian_dists_trixie-updates_main_binary-arm64_Packages
+deleted file: var/lib/apt/lists/deb.debian.org_debian_dists_trixie_main_i18n_Translation-en
+deleted file: var/lib/apt/lists/deb.debian.org_debian-security_dists_trixie-security_non-free-firmware_i18n_Translation-en
+deleted file: var/lib/apt/lists/brave-browser-apt-release.s3.brave.com_dists_stable_main_binary-arm64_Packages
+deleted file: var/lib/apt/lists/deb.debian.org_debian_dists_trixie_main_binary-armhf_Packages
+deleted file: var/lib/apt/lists/archive.raspberrypi.com_debian_dists_trixie_InRelease
+allintree = /var/lib/apt/lists/partial
+file = /var/lib/systemd/random-seed
+deleted file: var/lib/systemd/random-seed
+allintree = /var/lib/systemd/coredump
+allintree = /var/lib/systemd/tmpfiles
+file = /var/swap
+deleted file: var/swap
+allintree = /var/log
+deleted file: var/log/boot.log.4
+deleted file: var/log/alternatives.log.1
+deleted file: var/log/alternatives.log
+deleted file: var/log/boot.log.6
+deleted file: var/log/boot.log.7
+deleted file: var/log/boot.log.5
+deleted file: var/log/boot.log.3
+deleted file: var/log/dpkg.log
+deleted file: var/log/vncserver-x11.log
+deleted file: var/log/dpkg.log.1
+deleted dir: var/log/lightdm
+deleted dir: var/log/cups
+deleted file: var/log/vncserver-x11.log.bak
+deleted dir: var/log/apt
+deleted file: var/log/boot.log.2
+deleted file: var/log/Xorg.0.log
+deleted dir: var/log/timeshift
+deleted dir: var/log/private
+deleted file: var/log/cloud-init.log
+deleted file: var/log/README
+deleted file: var/log/boot.log.1
+deleted file: var/log/cloud-init.log.2.gz
+deleted file: var/log/cloud-init-output.log
+deleted file: var/log/cloud-init.log.1.gz
+deleted file: var/log/Xorg.0.log.old
+deleted file: var/log/boot.log
+allintree = /var/log/journal
+allintree = /var/crash
+fileintree = /var/backups/*
+deleted file: var/backups/dpkg.arch.6.gz
+deleted file: var/backups/dpkg.arch.0
+deleted file: var/backups/apt.extended_states.0
+deleted file: var/backups/dpkg.status.2.gz
+deleted file: var/backups/dpkg.arch.5.gz
+deleted file: var/backups/apt.extended_states.4.gz
+deleted file: var/backups/dpkg.diversions.0
+deleted file: var/backups/dpkg.arch.1.gz
+deleted file: var/backups/dpkg.status.1.gz
+deleted file: var/backups/alternatives.tar.0
+deleted file: var/backups/dpkg.arch.3.gz
+deleted file: var/backups/dpkg.status.3.gz
+deleted file: var/backups/dpkg.statoverride.6.gz
+deleted file: var/backups/dpkg.arch.2.gz
+deleted file: var/backups/alternatives.tar.4.gz
+deleted file: var/backups/apt.extended_states.6.gz
+deleted file: var/backups/dpkg.statoverride.3.gz
+deleted file: var/backups/apt.extended_states.5.gz
+deleted file: var/backups/dpkg.diversions.6.gz
+deleted file: var/backups/dpkg.diversions.3.gz
+deleted file: var/backups/dpkg.status.4.gz
+deleted file: var/backups/alternatives.tar.6.gz
+deleted file: var/backups/dpkg.status.0
+deleted file: var/backups/apt.extended_states.3.gz
+deleted file: var/backups/alternatives.tar.1.gz
+deleted file: var/backups/dpkg.status.6.gz
+deleted file: var/backups/dpkg.statoverride.4.gz
+deleted file: var/backups/apt.extended_states.1.gz
+deleted file: var/backups/dpkg.diversions.4.gz
+deleted file: var/backups/dpkg.statoverride.1.gz
+deleted file: var/backups/dpkg.diversions.2.gz
+deleted file: var/backups/alternatives.tar.5.gz
+deleted file: var/backups/dpkg.statoverride.2.gz
+deleted file: var/backups/dpkg.diversions.5.gz
+deleted file: var/backups/alternatives.tar.3.gz
+deleted file: var/backups/apt.extended_states.2.gz
+deleted file: var/backups/alternatives.tar.2.gz
+deleted file: var/backups/dpkg.status.5.gz
+deleted file: var/backups/dpkg.statoverride.5.gz
+deleted file: var/backups/dpkg.arch.4.gz
+deleted file: var/backups/dpkg.diversions.1.gz
+deleted file: var/backups/dpkg.statoverride.0
+allintree = /home/pi/.cache
+deleted dir: home/pi/.cache/fontconfig
+deleted dir: home/pi/.cache/openbox
+deleted dir: home/pi/.cache/menus
+deleted file: home/pi/.cache/event-sound-cache.tdb.f3a688c3a1fc4e168f4b4facd85abdc8.aarch64-unknown-linux-gnu
+deleted dir: home/pi/.cache/obexd
+deleted dir: home/pi/.cache/mozilla
+deleted dir: home/pi/.cache/lxsession
+deleted dir: home/pi/.cache/mesa_shader_cache
+deleted dir: home/pi/.cache/mesa_shader_cache_db
+deleted dir: home/pi/.cache/thumbnails
+allintree = /home/pi/.local/share/Trash
+deleted dir: home/pi/.local/share/Trash/files
+deleted dir: home/pi/.local/share/Trash/info
+deleted dir: home/pi/.local/share/Trash/expunged
+allintree = /home/pi/.thumbnails
+allintree = /home/pi/.gvfs
+allintree = /home/pi/.local/share/wayland-sessions
+allintree = /home/pi/.local/share/xorg
+allintree = /home/pi/.local/share/gvfs-metadata
+deleted file: home/pi/.local/share/gvfs-metadata/home
+deleted file: home/pi/.local/share/gvfs-metadata/home-54a3956b.log
+allintree = /home/pi/.local/share/zeitgeist
+allintree = /home/pi/Downloads
+file = /home/pi/.bash_history
+deleted file: home/pi/.bash_history
+file = /home/pi/.xsession-errors
+deleted file: home/pi/.xsession-errors
+file = /home/pi/.xsession-errors.old
+deleted file: home/pi/.xsession-errors.old
+file = /home/pi/.recently-used
+file = /home/pi/.local/share/recently-used.xbel
+deleted file: home/pi/.local/share/recently-used.xbel
+fileintree = /home/pi/.*.swp
+fileintree = /home/pi/*~
+fileintree = /home/pi/wget-log*
+dir = /home/pi/.mozilla
+dir = /home/pi/.config/chromium
+dir = /var/lib/snapd
+dir = /snap
+dir = /home/pi/snap
+allintree = /var/tmp/flatpak-cache
+dir = /home/pi/.var/app
+fileintree = /var/lib/dpkg/*.old
+fileintree = /var/lib/dpkg/*.bak
+Removed unnecessary files from the image
+
+Check the file system consistency of the image and correct it if necessary
+
+e2fsck 1.47.2 (1-Jan-2025)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+rootfs: 351804/2872320 files (0.4% non-contiguous), 4834868/11520000 blocks
+
+resize2fs 1.47.2 (1-Jan-2025)
+Resizing the filesystem on /dev/loop1 to 4910387 (4k) blocks.
+Begin pass 2 (max = 421175)
+Relocating blocks             XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Begin pass 3 (max = 352)
+Scanning inode table          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Begin pass 4 (max = 33193)
+Updating inode references     XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+The filesystem on /dev/loop1 is now 4910387 (4k) blocks long.
+
+
+e2fsck 1.47.2 (1-Jan-2025)
+Pass 1: Checking inodes, blocks, and sizes
+Inode 16329 extent tree (at level 2) could be narrower.  Optimize? yes
+
+Inode 16468 extent tree (at level 1) could be narrower.  Optimize? yes
+
+Inode 19846 extent tree (at level 1) could be narrower.  Optimize? yes
+
+Pass 1E: Optimizing extent trees
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+
+image-size - root only: 20112945152 bytes
+image-size - all: 20658204672 bytes
+Clean empty blocks in root-image
+Written: 685.13 MiB
+Fillfile deleted and system sync complete.
+Clean empty blocks in boot-image
+Written: 432.23 MiB
+Fillfile deleted and system sync complete.
+
+compressing with zstd
+ZSTD_versionNumber: 10507
+
+Speed: 70.29 MB/s  ETA: 00:00  Ratio: 2.90:1
+
+compressed file size is now: 6741 MiB
+
+----------------------------------- all done -----------------------------------
+

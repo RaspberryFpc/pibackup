@@ -98,6 +98,7 @@ object Form1: TForm1
     RowCount = 6
     ScrollBars = ssNone
     TabOrder = 3
+    OnEditingDone = StringGrid1EditingDone
     ColWidths = (
       75
       124
@@ -572,6 +573,7 @@ object Form1: TForm1
     Width = 710
     ItemHeight = 15
     TabOrder = 10
+    OnChange = ComboBox1Change
     OnCloseUp = ComboBox1CloseUp
     OnDropDown = ComboBox1DropDown
   end
@@ -601,6 +603,7 @@ object Form1: TForm1
     BorderSpacing.Right = 12
     Caption = 'close'
     TabOrder = 12
+    OnClick = btn_closeClick
   end
   object btn_EditExclude: TButton
     AnchorSideLeft.Control = btn_help

@@ -261,7 +261,7 @@ begin
 
       if entry.Path = '' then Continue;
 
-      listboxaddscroll(form1.listbox1,'Command: '+s);
+//      listboxaddscroll(form1.listbox1,'Command: '+s);
 
       if not entry.Path.StartsWith(MP) then
         raise Exception.Create('SECURITY: escape attempt');

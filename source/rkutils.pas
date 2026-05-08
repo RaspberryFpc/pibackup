@@ -124,9 +124,9 @@ function getValueAfterKeyword(s, keyword: ansistring): int64;
 procedure Listboxaddscroll(listbox: tlistbox; item: string);
 procedure Listboxupdate(listbox: tlistbox; item: string);
 procedure getDrives(sl: TStrings;excludesys:boolean);
-procedure ReplacePartuuidinmbr(device: string; NewSignature: dword);
-function ReplacePartUUIDInCmdline(Device: string; NewID: string): string;
-function ReplacePartUUIDInFstab(device: string; oldsignature:string;newsignature: string): string;
+procedure setPartuuidinmbr(device: string; NewSignature: dword);
+function setPartUUIDInCmdline(Device: string; partition:integer; NewID: string):boolean;
+function ReplacePartUUIDInFstab(device: string;partition:integer; oldID, newID: string): string;
 procedure ChangeHost(device: string; newHostName: string);
 procedure enableSsh(device: string);
 procedure PrepareWLAN(const Device, SSID, PSK: string);
@@ -143,7 +143,6 @@ function readlosetup: string;
 function TryUnmount(const Mp: string): boolean;
 function IsMountedExact(const Mp: string): boolean;
 procedure ParseMountLine(const L: string; out Device, Mp: string);
-
 
 var
   terminate_all: boolean;
@@ -1354,175 +1353,143 @@ begin
   end;
 end;
 
-
-
-
-function ReplacePartUUIDInCmdline(Device: string; NewID: string): string;
+function setPartUUIDInCmdline(Device: string; partition: integer;
+  newid: string): boolean;
 var
-  PartitionDevice, MountPoint, CommandFile, uline, s: ansistring;
-  ft: TextFile;
-  i: integer;
+  PartitionDevice, MountPoint, CommandFile: string;
+  s, uline: string;
+  i,p1,p2: integer;
   sl: TStringList;
 begin
-  Result := ''; // leer = kein Fehler
+  Result := False;
+
+  MountPoint := '/tmp/tmp_mount';
+  PartitionDevice := PartitionName(Device, partition);
+  CommandFile := MountPoint + '/cmdline.txt';
+
   try
-    PartitionDevice := PartitionName(Device, 1); // z.B. /dev/sdX1
-    MountPoint := '/images/tmp_mount';
-    CommandFile := MountPoint + '/cmdline.txt';
-    RunCommand('sync', s);
-    RunCommand('umount', [MountPoint], s);
-    RunCommand('umount', ['-l', PartitionDevice], s);
-    RunCommand('umount', ['-f', PartitionDevice], s);
-    Sleep(1000);
-
-    if not DirectoryExists(MountPoint) then
-      if not ForceDirectories(MountPoint) then
-        raise Exception.Create('Failed to create mount directory: ' + MountPoint);
-    Sleep(500);
-
-    if not RunCommand('mount', ['-t', 'vfat', '-o', 'rw,uid=0,gid=0,umask=000', PartitionDevice, MountPoint], s) then
-      raise Exception.Create('Failed to mount partition ' + PartitionDevice);
-
-    if not FileExists(CommandFile) then
+    // altes Mount aufräumen
+    if DirectoryExists(MountPoint) then
     begin
       RunCommand('sync', s);
       RunCommand('umount', [MountPoint], s);
-      RemoveDir(MountPoint);
-      raise Exception.Create('cmdline.txt not found on partition');
+      Sleep(500);
+      DeleteDirectory(MountPoint, False);
     end;
 
-    AssignFile(ft, CommandFile);
-    Reset(ft);
-    try
-      ReadLn(ft, uline);
-    finally
-      CloseFile(ft);
-    end;
+    ForceDirectories(MountPoint);
 
+    // mounten
+    if not RunCommand('mount',
+      ['-t', 'vfat', '-o', 'rw', PartitionDevice, MountPoint], s) then
+      raise Exception.Create('Failed to mount partition ' + PartitionDevice);
+
+    if not FileExists(CommandFile) then
+      raise Exception.Create('cmdline.txt not found');
+
+    // cmdline lesen
     sl := TStringList.Create;
     try
-      sl.StrictDelimiter := True;
-      sl.Delimiter := ' ';
-      sl.DelimitedText := uline;
+      sl.LoadFromFile(CommandFile);
 
-      for i := 0 to sl.Count - 1 do
-        if Copy(sl[i], 1, 5) = 'root=' then
-        begin
-          sl[i] := 'root=PARTUUID=' + NewID;
-          Break;
-        end;
+      if sl.Count = 0 then
+        raise Exception.Create('cmdline.txt is empty');
 
-      uline := sl.DelimitedText;
+      s:=sl.Text;
+      p1:=pos('root=PARTUUID=',s);
+      p2:=pos('-',s,p1);
+      delete(s,p1,p2-p1);
+      insert('root=PARTUUID='+ newid,s,p1);
+      sl.Text:=s;
+      sl.SaveToFile(CommandFile);
 
-      AssignFile(ft, CommandFile);
-      Rewrite(ft);
-      try
-        Write(ft, uline);
-      finally
-        CloseFile(ft);
-      end;
     finally
       sl.Free;
     end;
+
     RunCommand('sync', s);
     RunCommand('umount', [MountPoint], s);
-    RemoveDir(MountPoint);
+    DeleteDirectory(MountPoint, False);
+
+    Result := True;
 
   except
     on E: Exception do
     begin
-      // versuche Aufräumen auch bei Fehlern
       RunCommand('sync', s);
       RunCommand('umount', [MountPoint], s);
-      RemoveDir(MountPoint);
 
-      Result := E.Message; // Fehlertext als Result
+      if DirectoryExists(MountPoint) then
+        RemoveDir(MountPoint);
+
+      Result := False;
     end;
   end;
 end;
 
 
-
-
-function ReplacePartUUIDInFstab(device: string; oldsignature:string;newsignature: string): string;
+function ReplacePartUUIDInFstab(device: string;partition:integer; oldID, newID: string): string;
 var
   sl: TStringList;
-  x: integer;
-  s: ansistring;
-  PartitionDevice: ansistring;
-  uMountPoint: ansistring;
+  i: integer;
+  s: string;
+  PartitionDevice, uMountPoint: string;
 begin
   Result := '';
   uMountPoint := '/images/tmp_mount';
 
   try
-    // Partition Device 2 ermitteln
-    PartitionDevice := partitionname(device, 2);
+    PartitionDevice := partitionname(device, partition);
 
-    // Sicher unmounten (unbedingt prüfen ob benötigt)
     RunCommand('sync', s);
     RunCommand('umount', [uMountPoint], s);
-    RunCommand('umount', ['-l', PartitionDevice], s);
-    RunCommand('umount', ['-f', PartitionDevice], s);
-    Sleep(3000);
+    Sleep(500);
 
-    // Mountpoint vorbereiten
     if not DirectoryExists(uMountPoint) then
-      if not ForceDirectories(uMountPoint) then
-        raise Exception.Create('Failed to create mount directory: ' + uMountPoint);
+      ForceDirectories(uMountPoint);
+
     fpchmod(uMountPoint, &777);
-    Sleep(1000);
 
-    // Partition mounten, prüfen ob erfolgreich
     if not RunCommand('mount', [PartitionDevice, uMountPoint], s) then
-      raise Exception.Create('Failed to mount partition ' + PartitionDevice);
+      raise Exception.Create('Mount failed');
 
-    // Prüfen ob fstab existiert
     if not FileExists(uMountPoint + '/etc/fstab') then
-    begin
-      RunCommand('sync', s);
-      RunCommand('umount', [uMountPoint], s);
-      RemoveDir(uMountPoint);
-      raise Exception.Create('/etc/fstab not found on partition');
-    end;
+      raise Exception.Create('fstab not found');
 
     sl := TStringList.Create;
     try
       sl.LoadFromFile(uMountPoint + '/etc/fstab');
-      for x := 0 to sl.Count - 1 do
-         begin
-          s:= Trim(sl[x]);
-             if pos('PARTUUID=',s)=1 then
-             begin
-               delete(s,1,9+8);
-               s:=trim(s);
-               if (pos('/ ',s)=1) or (pos('/boot/firmware ',s)=1) or (pos('/boot ',s)=1)   then
-                             begin
-                               s:='PARTUUID='+newsignature+' ';
-                               sl[x]:= s;
-                             end;
-              end;
 
+      for i := 0 to sl.Count - 1 do
+      begin
+        s := sl[i];
 
+        // -----------------------------------------
+        // 🔥 nur Disk-ID im PARTUUID ersetzen
+        // -----------------------------------------
+        s := StringReplace(
+          s,
+          oldID,
+          newID,
+          [rfReplaceAll]
+        );
 
-
-          end;
+        sl[i] := s;
+      end;
 
       sl.SaveToFile(uMountPoint + '/etc/fstab');
+
     finally
       sl.Free;
     end;
+
     RunCommand('sync', s);
     RunCommand('umount', [uMountPoint], s);
-    RemoveDir(uMountPoint);
 
   except
     on E: Exception do
     begin
-      // Aufräumen bei Fehler
-      RunCommand('sync', s);
       RunCommand('umount', [uMountPoint], s);
-      RemoveDir(uMountPoint);
       Result := E.Message;
     end;
   end;
@@ -1615,7 +1582,7 @@ end;
 
 
 
-procedure replacePartuuidinmbr(device: string; NewSignature: dword);
+procedure setPartuuidinmbr(device: string; NewSignature: dword);
 var
   uMBR: TMbr;
 begin
@@ -1838,6 +1805,7 @@ var
   nowTick: uint64;   //, starttick
   ringbuffer: rngbuffer;
 begin
+
   form1.ProgressBar1.Max := 1000;
   form1.ProgressBar1.Position := 0;
   ;
@@ -1856,6 +1824,11 @@ begin
     fdest.Position := 512;
     done := 512;
 
+    // schreiben das ganze image und korrigieren später  - ziel könnte leer sein
+    //fsource.Position := 0;
+    //fdest.Position := 0;
+    //done := 0;
+
     tocopy := fsource.Size;
 
     // Ringpuffer initialisieren
@@ -1864,8 +1837,7 @@ begin
     InitRingBuffer(ringbuffer, 48, nowTick, 0);
     lastUpdate := nowTick;
 
-    box.Items.Add('');
-  //  starttick := nowTick;
+    listboxaddscroll(box,'');
 
     repeat
       ReadCount := fsource.Read(ibuffer, BufferSize);
