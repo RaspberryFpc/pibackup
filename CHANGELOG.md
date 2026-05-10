@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
+## [2.0.2] – 2026-05-08
+
+- Updated the confirmation window
+- Added a new message when no target device is selected
+
 ## [2.0.1] – 2026-05-08
 
 ### 🔧 Internal Architecture Changes

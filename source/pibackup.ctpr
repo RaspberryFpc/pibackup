@@ -170,6 +170,14 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="ExcludeProcessor"/>
       </Unit>
+      <Unit>
+        <Filename Value="msg_dlg.pas"/>
+        <FRMtype Value="0"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form4"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

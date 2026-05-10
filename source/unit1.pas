@@ -7,7 +7,8 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, Grids,
   Process, inifiles, fileutil, lazutf8, Unix, baseunix, LCLIntf, rkutils, zstd, ExcludeProcessor,
-  LCLType, MaskEdit, ExtCtrls, ComCtrls, DateUtils, fpjson, jsonparser, Types, exethread, usersetup, unit2, Editor;
+  LCLType, MaskEdit, ExtCtrls, ComCtrls, DateUtils, fpjson, jsonparser, Types, exethread, usersetup,
+  msg_dlg,unit2, Editor;
 
 type
   partitioninfo = record
@@ -130,7 +131,7 @@ type
 const
   p2mpoint = '/pi_images/p2_pibackup_img';
   p1mpoint = '/pi_images/p1_pibackup_img';
-  appname = 'PiBackup  v2.0.1';
+  appname = 'PiBackup  v2.0.2';
   ininame = '/etc/pibackup/pibackup.ini';
 
   stringGrid1ColWidths: array of integer = (100, 160, 135, 355, 85, 150);
@@ -1526,9 +1527,11 @@ begin
   if not RunsAsRoot then
     raise Exception.Create('This application must be run as root. Please start with sudo.');
 
-  if ButtonWriteImagetodevice.tag = 0 then
-    if MessageDlg('Warning', 'Writing this image to:'#13#10#13#10 + '    ' + uppercase(combobox1.Text) + #13#10#13#10 + 'will overwrite the first two partitions on the device.'#13#10#13#10 +
-      'Continue?', mtWarning, [mbYes, mbNo], 0, mbNo) <> mrYes then exit;
+
+
+ //  if MessageDlg('Warning', 'Writing this image to:'#13#10#13#10 + '    ' + uppercase(combobox1.Text) + #13#10#13#10 + 'will overwrite the first two partitions on the device.'#13#10#13#10 +
+ //    'Continue?', mtWarning, [mbYes, mbNo], 0, mbNo) <> mrYes then exit;
+
   try
     if ButtonWriteImagetodevice.tag > 0 then
     begin
@@ -1548,6 +1551,18 @@ begin
       end;
     end;
 
+
+
+
+   if combobox1.text='' then
+        begin
+          showmessage('No target device selected');
+          exit;
+        end;
+
+
+     Form4.Label2.Caption:=combobox1.Text;
+     if form4.ShowModal <> mryes then exit;
 
     ButtonWriteImagetodevice.tag := 1;
     Disablesel;
