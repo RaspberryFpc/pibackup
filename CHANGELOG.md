@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
-## [2.0.2] – 2026-05-08
+## [2.0.2] – 2026-05-10
 
 - Updated the confirmation window
 - Added a new message when no target device is selected
