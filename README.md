@@ -87,7 +87,7 @@ MIT License -- see LICENSE
 
 ## ⚠️ Disclaimer:
 
-This tool works directly on storage devices.\  
+This tool works directly on storage devices.  
 Incorrect usage may result in data loss.
 
 ---
@@ -97,11 +97,12 @@ RaspberryFpc
 ---
 ## 🛟 Emergency Recovery
 
-💡 Create a rescue SD card with Linux + pibackup.\
-In case of system failure:\
-Boot rescue system\
-Restore your backup image\
-Get your system back instantly\
+💡 Create a rescue SD card with Linux + pibackup.
+
+In case of system failure:
+Boot rescue system
+Restore your backup image
+Get your system back instantly
 
 ---
 ## 🔗 Other Projects
