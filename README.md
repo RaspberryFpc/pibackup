@@ -28,7 +28,7 @@ Backups are safe, flexible, and can be restored directly from .img or
 📏 Adjustable partition size\
 👀 Live partition preview\
 🧱 Optional partition deletion\
-📐 Filesystem auto-resize\
+📐 Filesystem auto-resize
 
 ## ⚙️ Headless Setup Options
 
