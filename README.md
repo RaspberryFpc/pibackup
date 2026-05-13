@@ -61,8 +61,18 @@ Utility → PiBackup
 ``` bash
 sudo dpkg -i pibackup.deb
 sudo apt -f install
+
 ```
-## 🧰 Requirements  
+
+or
+
+``` bash
+sudo apt install pibackup.de
+
+```
+
+
+# 🧰 Requirements  
 
 Linux (ARM64)  
 No manual dependency installation required  
