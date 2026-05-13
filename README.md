@@ -33,9 +33,9 @@ Backups are safe, flexible, and can be restored directly from .img or
 ## ⚙️ Headless Setup Options
 
  For fresh Raspberry Pi setups:
-- enable SSH on first boot\
-- Set username & password\
-- Configure WiFi (SSID + PSK)\
+- enable SSH on first boot
+- Set username & password
+- Configure WiFi (SSID + PSK)
 ---
 ## 📦 Download and Installation
 📥 Install (Recommended)
