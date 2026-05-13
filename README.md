@@ -19,7 +19,7 @@ Backups are safe, flexible, and can be restored directly from .img or
 📉 Automatic image shrinking\
 🗜️ Compression with Zstandard (.zst)\
 💽 Supports SD, SSD, HDD and other block devices\
-🧠 Empty sectors filled with 0xFF (better compression)
+🧠 Unused sectors are overwritten with 0xFF to improve compression efficiency and remove unwanted residual data.
 
 ## 🔄 Restore Features
 
