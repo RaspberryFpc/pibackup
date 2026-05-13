@@ -71,12 +71,12 @@ All dependencies are handled via .deb
 ---
 ## 🛠️ Build Information  
 
-Developed with CodeTyphon\
-Gui:Qt5\
-Target: 64-bit ARM (arm64)\ 
-Tested on:\  
-Raspberry Pi 4\  
-Raspberry Pi 5\  
+Developed with CodeTyphon
+Gui:Qt5
+Target: 64-bit ARM (arm64) 
+Tested on: 
+Raspberry Pi 4  
+Raspberry Pi 5  
 Debian Bookworm / Trixie (X11) 
 
 ---
