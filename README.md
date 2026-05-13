@@ -100,9 +100,10 @@ RaspberryFpc
 💡 Create a rescue SD card with Linux + pibackup.
 
 In case of system failure:
-Boot rescue system
-Restore your backup image
-Get your system back instantly
+
+- Boot rescue system
+- Restore your backup image
+- Get your system back instantly
 
 ---
 ## 🔗 Other Projects
