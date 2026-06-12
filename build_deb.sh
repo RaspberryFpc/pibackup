@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PKG="pibackup_pkg"
-version="2.0.2"
+version="2.0.3"
 OUTDIR="/home/pi/git/pibackup/bin"
 
 SRC_BIN="/home/pi/git/pibackup/source/pibackup"

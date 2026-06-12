@@ -5,7 +5,7 @@ unit Editor;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Menus, LCLType,LMessages, Interfaces;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Menus, LCLType, Interfaces;
 
 type
 

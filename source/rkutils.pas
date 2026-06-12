@@ -125,8 +125,8 @@ procedure Listboxaddscroll(listbox: tlistbox; item: string);
 procedure Listboxupdate(listbox: tlistbox; item: string);
 procedure getDrives(sl: TStrings;excludesys:boolean);
 procedure setPartuuidinmbr(device: string; NewSignature: dword);
-function setPartUUIDInCmdline(Device: string; partition:integer; NewID: string):boolean;
-function ReplacePartUUIDInFstab(device: string;partition:integer; oldID, newID: string): string;
+function setPartUUIDInCmdline(Device: string; partition:integer; sig: dword):boolean;
+function  ReplacePartUUIDInFstab(device: string; sig:dword): string;
 procedure ChangeHost(device: string; newHostName: string);
 procedure enableSsh(device: string);
 procedure PrepareWLAN(const Device, SSID, PSK: string);
@@ -675,7 +675,7 @@ begin
   // Prüfen ob genug Platz da ist
   if NewSize > OldSize then
     if (NewSize - OldSize) > FreeBytes then
-      raise Exception.Create(Format('Not enough disk space: required %d MiB, available %d MiB_', [(NewSize + mib -1) div 1024 div 1024,
+      raise Exception.Create(Format('Not enough disk space: required %d MiB, available %d MiB', [(NewSize + mib -1) div 1024 div 1024,
                                                   (FreeBytes + OldSize + mib -1) div 1024 div 1024]));
 
   // Erst jetzt die Verzeichnisse erstellen
@@ -1353,14 +1353,33 @@ begin
   end;
 end;
 
-function setPartUUIDInCmdline(Device: string; partition: integer;
-  newid: string): boolean;
+
+function IsMBRPartUUID(const S: string): Boolean;
 var
+  p: Integer;
+begin
+  Result := (Length(S) = 10) and
+            (S[1] = '=') and
+            (S[10] = '-') and
+            TryStrToInt('$' + Copy(S, 2, 8), p);
+end;
+
+
+
+
+
+function setPartUUIDInCmdline(Device: string; partition: integer;
+  sig:Dword): boolean;
+var
+  newid:string;
   PartitionDevice, MountPoint, CommandFile: string;
-  s, uline: string;
-  i,p1,p2: integer;
+  s: string;
+  p1,p2: integer;
   sl: TStringList;
 begin
+
+  newid:=inttohex(sig,8);
+
   Result := False;
 
   MountPoint := '/tmp/tmp_mount';
@@ -1428,18 +1447,26 @@ begin
 end;
 
 
-function ReplacePartUUIDInFstab(device: string;partition:integer; oldID, newID: string): string;
+
+
+
+function  ReplacePartUUIDInFstab(device: string; sig:dword): string;
 var
   sl: TStringList;
-  i: integer;
+  i,p: integer;
   s: string;
   PartitionDevice, uMountPoint: string;
+  oldid:string;
+  newid:string;
+
 begin
   Result := '';
   uMountPoint := '/images/tmp_mount';
 
+  newid:=inttohex(sig,8);
+
   try
-    PartitionDevice := partitionname(device, partition);
+    PartitionDevice := partitionname(device, 2);
 
     RunCommand('sync', s);
     RunCommand('umount', [uMountPoint], s);
@@ -1456,10 +1483,35 @@ begin
     if not FileExists(uMountPoint + '/etc/fstab') then
       raise Exception.Create('fstab not found');
 
+
+
+
+
     sl := TStringList.Create;
     try
       sl.LoadFromFile(uMountPoint + '/etc/fstab');
 
+   // alte id finden
+
+    for i := 0 to sl.Count - 1 do
+      begin
+        s := sl[i];
+        if pos(' / ',s) > 0 then
+           begin
+             p:=pos('=',s);
+             delete(s,1,p-1);
+             p:=pos('-',s);
+             delete(s,p+1,maxint);
+             if length(s)=10 then break;
+          end;
+       end;
+
+
+   if not IsMBRPartUUID(s) then
+  raise Exception.Create('No valid PARTUUID found in root entry');
+
+      oldid:=s;
+      newid:='='+newid+'-';
       for i := 0 to sl.Count - 1 do
       begin
         s := sl[i];
@@ -1467,14 +1519,8 @@ begin
         // -----------------------------------------
         // 🔥 nur Disk-ID im PARTUUID ersetzen
         // -----------------------------------------
-        s := StringReplace(
-          s,
-          oldID,
-          newID,
-          [rfReplaceAll]
-        );
-
-        sl[i] := s;
+        s := StringReplace( s, oldID, newID, [rfReplaceAll] );
+           sl[i] := s;
       end;
 
       sl.SaveToFile(uMountPoint + '/etc/fstab');

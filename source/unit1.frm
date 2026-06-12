@@ -1,15 +1,15 @@
 object Form1: TForm1
   AnchorSideRight.Side = asrBottom
-  Left = 171
+  Left = 172
   Height = 561
-  Top = 115
+  Top = 114
   Width = 1146
   Anchors = []
   BorderStyle = bsSingle
   ClientHeight = 561
   ClientWidth = 1146
   Position = poDesktopCenter
-  LCLVersion = '8.8'
+  LCLVersion = '8.9'
   OnClose = FormClose
   OnCreate = FormCreate
   object Edit1: TEdit
@@ -329,7 +329,7 @@ object Form1: TForm1
       Anchors = [akTop, akRight]
       Caption = 'change device id'
       TabOrder = 1
-      OnChange = GridUpdate
+      OnChange = CheckBoxChangeDeviceIDChange
     end
     object Eddeviceid: TEdit
       AnchorSideTop.Control = CheckBox_DelPartition3

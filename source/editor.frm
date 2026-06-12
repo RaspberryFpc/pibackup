@@ -8,7 +8,7 @@ object Form3: TForm3
   ClientHeight = 441
   ClientWidth = 792
   Position = poMainFormCenter
-  LCLVersion = '8.8'
+  LCLVersion = '8.9'
   OnCreate = FormCreate
   object Memo1: TMemo
     Left = 8

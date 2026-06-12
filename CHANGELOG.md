@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
+## [2.0.3] – 2026-06-12
+
+- Fixed a rare issue where restored devices could become unbootable after changing the device UUID. The update includes improved handling and synchronization of cmdline.txt, MBR, and fstab.
+- Reworked device UUID update logic to improve reliability during restore operations.
+- The device selection combobox now displays "None" when no device is selected.
+
 ## [2.0.2] – 2026-05-10
 
 - Updated the confirmation window
