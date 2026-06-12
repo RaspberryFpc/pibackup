@@ -594,7 +594,7 @@ begin
       if drive = '' then
       begin
           gridclean;
-          ComboBox1.Text:='none';
+          ComboBox1.Text:='None';
       exit;
       end;
 
@@ -640,7 +640,7 @@ begin
      if drive='' then
      begin
         gridclean;
-        ComboBox1.Text:='none';
+        ComboBox1.Text:='None';
         exit;
      end;
 
@@ -686,7 +686,7 @@ begin
     drive := Copy(ComboBox1.Text, 1, p - 1);
     if drive = '' then
       begin
-          ComboBox1.Text:='none';
+          ComboBox1.Text:='None';
            exit;
       end;
 
@@ -985,7 +985,7 @@ begin
     combobox1.ItemIndex := 0;
     if combobox1.Items.Count > 0 then combobox1.Text := combobox1.Items[0]
     else
-      combobox1.Text := 'none';
+      combobox1.Text := 'None';
     if not fileexists(edit1.Text) then Edit1.Text := '';
     GridUpdate(Sender);
   end
