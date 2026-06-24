@@ -59,6 +59,7 @@ end;
 procedure CheckForUpdates(Box: TListBox);
 var
   RemoteVersion,s: String;
+  sl:tstringlist;
 begin
   RemoteVersion := GetRemoteVersion;
 
@@ -105,9 +106,12 @@ begin
     Exit;
   end;
 
-  s:= PrexeThreadedBash('apt install -y ' + NEWDEB,             // sudo
-    Box
-  );
+  s:= PrexeThreadedBash('bash -c "sudo env DEBIAN_FRONTEND=noninteractive  apt install -y ' + NEWDEB +'"',form1.ListBox1);
+
+  //sl:=tstringlist.Create;
+  //sl.Text:=s;
+  //sl.SaveToFile('log.txt');
+  //sl.Free;
 
   CommitUpdate;
 
