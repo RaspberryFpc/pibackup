@@ -15,7 +15,7 @@ uses
   UserSetup,
   uitheme,
   Unit2,
-  Editor, ExcludeProcessor, msg_dlg;
+  Editor, ExcludeProcessor, msg_dlg, pibackup_updater;
 
 {$R *.res}
 

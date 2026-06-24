@@ -174,7 +174,7 @@ begin
     while True do
     begin
       if terminate_all then
-        raise Exception.Create('Vorgang abgebrochen.');
+        raise Exception.Create('Operation cancelt.');
 
       readBytes := fIn.Read(InBuf, BuSize);
       if readBytes = 0 then

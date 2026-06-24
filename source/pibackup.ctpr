@@ -178,6 +178,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
+      <Unit>
+        <Filename Value="pibackup_updater.pas"/>
+        <FRMtype Value="0"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

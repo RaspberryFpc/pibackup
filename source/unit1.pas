@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, Grids,
   Process, inifiles, fileutil, lazutf8, Unix, baseunix, LCLIntf, rkutils, zstd, ExcludeProcessor,
-  LCLType, MaskEdit, ExtCtrls, ComCtrls, DateUtils, fpjson, jsonparser, Types, exethread, usersetup,
+  LCLType, MaskEdit, ExtCtrls, ComCtrls, DateUtils, fpjson, jsonparser, Types, exethread, usersetup, pibackup_updater,
   msg_dlg,unit2, Editor;
 
 type
@@ -106,6 +106,7 @@ type
     procedure Edit1DblClick(Sender: TObject);
     procedure EddeviceidChange(Sender: TObject);
     procedure EddeviceidKeyPress(Sender: TObject; var Key: char);
+    procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure lbl_userpasswordClick(Sender: TObject);
@@ -130,10 +131,11 @@ type
   end;
 
 const
+  Version =  'v2.0.4';
   p2mpoint = '/pi_images/p2_pibackup_img';
   p1mpoint = '/pi_images/p1_pibackup_img';
-  appname = 'PiBackup  v2.0.3';
-  ininame = '/etc/pibackup/pibackup.ini';
+  appname =  'PiBackup '+version;
+  ininame =  '/etc/pibackup/pibackup.ini';
 
   stringGrid1ColWidths: array of integer = (100, 160, 135, 355, 85, 150);
 
@@ -149,6 +151,7 @@ implementation
 { TForm1 }
 
 var
+  updatecheckdone:boolean=false;
   disableSelection: boolean = False;
   selecteddrive: string;
   DrivePartitionInfo: Tdriveinfo;
@@ -176,7 +179,6 @@ begin
           StringGrid1.Cells[3, 0] := 'MOUNTPOINT';
           StringGrid1.Cells[4, 0] := 'STARTSECTOR';
           StringGrid1.Cells[5, 0] := '   SECTORS / MiB';
-
           end;
 end;
 
@@ -249,6 +251,15 @@ begin
   Key := UpCase(Key);
   if (not CheckBoxChangeDeviceID.Checked) or (not (Key in ['0'..'9', 'A'..'F'])) then
     Key := #0;  // ungültige Taste unterdrücken
+end;
+
+procedure TForm1.FormActivate(Sender: TObject);
+begin
+  if not updatecheckdone  then
+    begin
+   CheckForUpdates(ListBox1);
+    updatecheckdone:=true;
+    end;
 end;
 
 
@@ -1082,7 +1093,10 @@ begin
 
   CloseMountTarget(p1mpoint);
   CloseMountTarget(p2mpoint);
+
 end;
+
+
 
 procedure TForm1.lbl_userpasswordClick(Sender: TObject);
 begin
@@ -1415,11 +1429,6 @@ begin
   if not RunsAsRoot then
     raise Exception.Create('This application must be run as root. Please start with sudo.');
 
-
-
- //  if MessageDlg('Warning', 'Writing this image to:'#13#10#13#10 + '    ' + uppercase(combobox1.Text) + #13#10#13#10 + 'will overwrite the first two partitions on the device.'#13#10#13#10 +
- //    'Continue?', mtWarning, [mbYes, mbNo], 0, mbNo) <> mrYes then exit;
-
   try
     if ButtonWriteImagetodevice.tag > 0 then
     begin
@@ -1474,7 +1483,9 @@ begin
     par2name := PartitionName(selecteddrive, 2);
     par1name := PartitionName(selecteddrive, 1);
     CloseMountTarget(par2name);
+    sleep(1000);
     CloseMountTarget(par1name);
+    sleep(1000);
 
     runcommand('sync', s);
 
@@ -1482,11 +1493,6 @@ begin
 
     Listboxaddscroll(listbox1, '---------- write image to device: ' + selecteddrive + ' ----------');
     Listboxaddscroll(listbox1, '');
-
-
-
-
-
 
 
     ImageToDeviceImgAndZstd(edit1.Text, selecteddrive, listbox1);     // keinen mbr schreiben

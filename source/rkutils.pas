@@ -7,58 +7,6 @@ interface
 uses
   Classes, SysUtils, process, baseunix, unix, LazUTF8, fileutil, dateutils, StdCtrls, Forms, Dialogs, UnixType, ExtCtrls;
 
-//type
-//  TExt4Superblock = packed record
-//    s_inodes_count: uint32;
-//    s_blocks_count: uint32;
-//    s_r_blocks_count: uint32;
-//    s_free_blocks_count: uint32;
-//    s_free_inodes_count: uint32;
-//    s_first_data_block: uint32;
-//    s_log_block_size: uint32;
-//    s_log_frag_size: int32;
-//    s_blocks_per_group: uint32;
-//    s_frags_per_group: uint32;
-//    s_inodes_per_group: uint32;
-//    s_mtime: uint32;
-//    s_wtime: uint32;
-//    s_mnt_count: uint16;
-//    s_max_mnt_count: int16;
-//    s_magic: uint16;
-//    s_state: uint16;
-//    s_errors: uint16;
-//    s_minor_rev_level: uint16;
-//    s_lastcheck: uint32;
-//    s_checkinterval: uint32;
-//    s_creator_os: uint32;
-//    s_rev_level: uint32;
-//    s_def_resuid: uint16;
-//    s_def_resgid: uint16;
-//    s_first_ino: uint32;
-//    s_inode_size: uint16;
-//    s_block_group_nr: uint16;
-//    s_feature_compat: uint32;
-//    s_feature_incompat: uint32;
-//    s_feature_ro_compat: uint32;
-//    s_uuid: array[0..15] of byte;
-//    s_volume_name: array[0..15] of ansichar;
-//    s_last_mounted: array[0..63] of ansichar;
-//    s_algorithm_usage_bitmap: uint32;
-//    // ... weitere Felder ausgelassen
-//  end;
-//
-//  TExt4BlockGroupDescriptor = packed record
-//    bg_block_bitmap: uint32;
-//    bg_inode_bitmap: uint32;
-//    bg_inode_table: uint32;
-//    bg_free_blocks_count: uint16;
-//    bg_free_inodes_count: uint16;
-//    bg_used_dirs_count: uint16;
-//    bg_pad: uint16;
-//    bg_reserved: array[0..2] of uint32;
-//  end;
-//
-
 
 type
   TMBRPartition = packed record
@@ -1857,18 +1805,13 @@ begin
   fdest := TFileStream.Create(Destination, fmOpenWrite or fmShareDenyNone);
   try
     if fsource.Size <= 512 then
-      raise Exception.Create('Image-Datei zu klein oder beschädigt.');
+      raise Exception.Create('Imagefile too small or damaged.');
 
     setlength(ibuffer, BufferSize);
 
     fsource.Position := 512;
     fdest.Position := 512;
     done := 512;
-
-    // schreiben das ganze image und korrigieren später  - ziel könnte leer sein
-    //fsource.Position := 0;
-    //fdest.Position := 0;
-    //done := 0;
 
     tocopy := fsource.Size;
 
