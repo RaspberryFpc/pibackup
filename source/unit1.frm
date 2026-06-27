@@ -9,45 +9,17 @@ object Form1: TForm1
   ClientHeight = 561
   ClientWidth = 1146
   Position = poDesktopCenter
-  LCLVersion = '8.8'
+  LCLVersion = '8.9'
   OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
-  object Edit1: TEdit
-    AnchorSideLeft.Control = ComboBox1
-    AnchorSideRight.Control = btn_select
-    Left = 160
-    Height = 25
-    Top = 79
-    Width = 620
-    Anchors = [akLeft, akRight]
-    BorderSpacing.Right = 10
-    ParentFont = False
-    TabOrder = 0
-    OnChange = GridUpdate
-    OnDblClick = Edit1DblClick
-  end
-  object btn_select: TButton
-    AnchorSideTop.Control = Edit1
-    AnchorSideTop.Side = asrCenter
-    AnchorSideRight.Control = ComboBox1
-    AnchorSideRight.Side = asrBottom
-    Left = 790
-    Height = 23
-    Top = 80
-    Width = 80
-    Anchors = [akRight]
-    Caption = 'select'
-    TabOrder = 1
-    OnClick = Edit1DblClick
-  end
   object Label2: TLabel
     AnchorSideTop.Control = ComboBox1
     AnchorSideTop.Side = asrCenter
     AnchorSideRight.Control = ComboBox1
-    Left = 70
+    Left = 86
     Height = 17
-    Top = 60
+    Top = 52
     Width = 79
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 11
@@ -81,10 +53,9 @@ object Form1: TForm1
     ItemHeight = 20
     ParentFont = False
     Style = lbOwnerDrawFixed
-    TabOrder = 2
+    TabOrder = 0
   end
   object StringGrid1: TStringGrid
-    AnchorSideTop.Control = Edit1
     Left = 8
     Height = 129
     Top = 113
@@ -98,7 +69,7 @@ object Form1: TForm1
     ParentFont = False
     RowCount = 6
     ScrollBars = ssNone
-    TabOrder = 3
+    TabOrder = 1
     OnEditingDone = StringGrid1EditingDone
     ColWidths = (
       75
@@ -122,7 +93,7 @@ object Form1: TForm1
     Checked = True
     Font.Style = [fsBold]
     ParentFont = False
-    TabOrder = 5
+    TabOrder = 3
     TabStop = True
   end
   object RadioButton2: TRadioButton
@@ -137,7 +108,7 @@ object Form1: TForm1
     Caption = 'Restore Backup or other Image'
     Font.Style = [fsBold]
     ParentFont = False
-    TabOrder = 4
+    TabOrder = 2
     OnChange = RadioButton2Change
   end
   object Panel1: TPanel
@@ -155,7 +126,7 @@ object Form1: TForm1
     BevelInner = bvLowered
     ClientHeight = 100
     ClientWidth = 1088
-    TabOrder = 6
+    TabOrder = 4
     object CheckBox_RemoveSSH: TCheckBox
       Left = 15
       Height = 23
@@ -289,7 +260,7 @@ object Form1: TForm1
     BevelInner = bvLowered
     ClientHeight = 100
     ClientWidth = 1088
-    TabOrder = 7
+    TabOrder = 5
     Visible = False
     object ScrollBar1: TScrollBar
       AnchorSideRight.Control = Eddeviceid
@@ -544,7 +515,7 @@ object Form1: TForm1
     Width = 103
     Anchors = [akTop, akRight]
     Caption = 'Save Log'
-    TabOrder = 8
+    TabOrder = 6
     OnClick = Btn_SaveLogClick
   end
   object ProgressBar1: TProgressBar
@@ -564,16 +535,16 @@ object Form1: TForm1
     ParentFont = False
     Smooth = True
     Step = 1
-    TabOrder = 9
+    TabOrder = 7
     BarShowText = True
   end
   object ComboBox1: TComboBox
-    Left = 160
+    Left = 176
     Height = 25
-    Top = 56
+    Top = 48
     Width = 710
     ItemHeight = 17
-    TabOrder = 10
+    TabOrder = 8
     OnChange = ComboBox1Change
     OnCloseUp = ComboBox1CloseUp
     OnDropDown = ComboBox1DropDown
@@ -588,7 +559,7 @@ object Form1: TForm1
     Width = 78
     Anchors = [akTop, akRight]
     Caption = 'Help'
-    TabOrder = 11
+    TabOrder = 9
     OnClick = btn_helpClick
   end
   object btn_close: TButton
@@ -603,7 +574,7 @@ object Form1: TForm1
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 12
     Caption = 'close'
-    TabOrder = 12
+    TabOrder = 10
     OnClick = btn_closeClick
   end
   object btn_EditExclude: TButton
@@ -618,20 +589,72 @@ object Form1: TForm1
     Width = 126
     Anchors = [akTop, akRight]
     Caption = 'Edit exclude files'
-    TabOrder = 13
+    TabOrder = 11
     OnClick = btn_EditExcludeClick
   end
   object Label3: TLabel
-    AnchorSideTop.Control = Edit1
+    AnchorSideTop.Control = Panel3
     AnchorSideTop.Side = asrCenter
     AnchorSideRight.Control = Label2
     AnchorSideRight.Side = asrBottom
-    Left = 93
+    Left = 109
     Height = 17
-    Top = 83
+    Top = 77
     Width = 56
     Anchors = [akTop, akRight]
     Caption = 'image file'
+  end
+  object Panel3: TPanel
+    AnchorSideLeft.Control = ComboBox1
+    AnchorSideTop.Control = ComboBox1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = ComboBox1
+    AnchorSideRight.Side = asrBottom
+    Left = 176
+    Height = 25
+    Top = 73
+    Width = 710
+    Alignment = taLeftJustify
+    Anchors = [akTop, akLeft, akRight]
+    BevelOuter = bvNone
+    Caption = 'Panel3'
+    ClientHeight = 25
+    ClientWidth = 710
+    TabOrder = 12
+    OnClick = Panel3Click
+    object Edit1: TEdit
+      AnchorSideLeft.Control = Panel3
+      AnchorSideTop.Control = Panel3
+      AnchorSideRight.Control = Panel3
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = Panel3
+      AnchorSideBottom.Side = asrBottom
+      Left = 0
+      Height = 25
+      Top = 0
+      Width = 690
+      Anchors = [akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Right = 20
+      ParentFont = False
+      TabOrder = 0
+      OnChange = GridUpdate
+      OnDblClick = Edit1DblClick
+    end
+    object SpeedButton1: TSpeedButton
+      AnchorSideTop.Control = Panel3
+      AnchorSideRight.Control = Panel3
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = Panel3
+      AnchorSideBottom.Side = asrBottom
+      Left = 689
+      Height = 25
+      Top = 0
+      Width = 21
+      Anchors = [akTop, akRight, akBottom]
+      OnClick = SpeedButton1Click
+      OnPaint = SpeedButton1Paint
+    end
   end
   object SaveDialog1: TSaveDialog
     DefaultExt = '.img'

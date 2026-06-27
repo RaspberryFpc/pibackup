@@ -6,9 +6,10 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, Grids,
-  Process, inifiles, fileutil, lazutf8, Unix, baseunix, LCLIntf, rkutils, zstd, ExcludeProcessor,
-  LCLType, MaskEdit, ExtCtrls, ComCtrls, DateUtils, fpjson, jsonparser, Types, exethread, usersetup, pibackup_updater,
-  msg_dlg,unit2, Editor;
+  Process, inifiles, fileutil, lazutf8, Unix, baseunix, LCLIntf, rkutils, zstd,
+  ExcludeProcessor, LCLType, MaskEdit, ExtCtrls, ComCtrls, Buttons, DateUtils,
+  fpjson, jsonparser, Types, exethread, usersetup, pibackup_updater, msg_dlg,
+  unit2, Editor, themes;
 
 type
   partitioninfo = record
@@ -48,13 +49,13 @@ type
     btn_help: TButton;
     btn_EditExclude: TButton;
     Button5: TButton;
-    btn_select: TButton;
     btn_close: TButton;
     ButtonCreateImage: TButton;
     ButtonWriteImagetodevice: TButton;
     CheckBox1: TCheckBox;
     ComboBox1: TComboBox;
     EDhost: TEdit;
+    Edit1: TEdit;
     EDuserpassword: TEdit;
     edit_wlanssid: TEdit;
     edit_wlanpassword: TEdit;
@@ -67,7 +68,6 @@ type
     CheckBox_RemoveDHCP: TCheckBox;
     CheckBox_DelPartition3: TCheckBox;
     CheckBox_DelPartition4: TCheckBox;
-    Edit1: TEdit;
     Edit2: TEdit;
     Eddeviceid: TEdit;
     Label3: TLabel;
@@ -83,11 +83,13 @@ type
     OpenDialog2: TOpenDialog;
     Panel1: TPanel;
     Panel2: TPanel;
+    Panel3: TPanel;
     ProgressBar1: TProgressBar;
     RadioButton1: TRadioButton;
     RadioButton2: TRadioButton;
     SaveDialog1: TSaveDialog;
     ScrollBar1: TScrollBar;
+    SpeedButton1: TSpeedButton;
     SpinEdit1: TSpinEdit;
     StringGrid1: TStringGrid;
     procedure btn_closeClick(Sender: TObject);
@@ -110,9 +112,12 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure lbl_userpasswordClick(Sender: TObject);
+    procedure Panel3Click(Sender: TObject);
     procedure RadioButton2Change(Sender: TObject);
     procedure ScrollBar1Change(Sender: TObject);
     procedure ModifyImage(mountpoint: string);
+    procedure SpeedButton1Click(Sender: TObject);
+    procedure SpeedButton1Paint(Sender: TObject);
     procedure StringGrid1BeforeSelection(Sender: TObject; aCol, aRow: integer);
     procedure StringGrid1EditingDone(Sender: TObject);
     procedure write_ini;
@@ -131,10 +136,10 @@ type
   end;
 
 const
-  Version =  'v2.0.4';
+  Version =  'v2.0.5';
   p2mpoint = '/pi_images/p2_pibackup_img';
   p1mpoint = '/pi_images/p1_pibackup_img';
-  appname =  'PiBackup '+version;
+  appname =  'PiBackup '+ version;
   ininame =  '/etc/pibackup/pibackup.ini';
 
   stringGrid1ColWidths: array of integer = (100, 160, 135, 355, 85, 150);
@@ -166,6 +171,23 @@ var
   lastcombotext: string = '';
   lastedittexr: string = '';
   Deviceid:integer;
+
+
+
+ procedure DrawComboButton(C: TCanvas; const R: TRect);
+var
+  Details: TThemedElementDetails;
+begin
+  if ThemeServices.ThemesEnabled then
+  begin
+    Details := ThemeServices.GetElementDetails(tcDropDownButtonNormal);
+    ThemeServices.DrawElement(C.Handle, Details, R);
+  end
+  else
+    DrawFrameControl(C.Handle, R, DFC_SCROLL, DFCS_SCROLLCOMBOBOX);
+end;
+
+
 
 
 procedure Gridclean;
@@ -1103,6 +1125,11 @@ begin
 
 end;
 
+procedure TForm1.Panel3Click(Sender: TObject);
+begin
+
+end;
+
 
 
 procedure TForm1.ModifyImage(mountpoint: string);
@@ -1125,6 +1152,18 @@ begin
   end;
 
 end;
+
+procedure TForm1.SpeedButton1Click(Sender: TObject);
+begin
+ edit1DblClick(self);
+end;
+
+procedure TForm1.SpeedButton1Paint(Sender: TObject);
+begin
+    DrawComboButton(SpeedButton1.Canvas, SpeedButton1.ClientRect);
+end;
+
+
 
 procedure TForm1.StringGrid1BeforeSelection(Sender: TObject; aCol, aRow: integer);
 begin

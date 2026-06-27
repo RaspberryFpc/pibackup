@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
+## [2.0.5] – 2026-06-27
+
+### Changed
+- Test release for updater system
+- Minor UI design adjustment
+
+## [2.0.4]
+ 
+ - added updater
+
 ## [2.0.3] – 2026-06-12
 
 - Fixed a rare issue where restored devices could become unbootable after changing the device UUID. The update includes improved handling and synchronization of cmdline.txt, MBR, and fstab.
