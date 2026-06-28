@@ -4,12 +4,16 @@ unit Unit1;
 
 interface
 
+
+
+
+
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin, Grids,
   Process, inifiles, fileutil, lazutf8, Unix, baseunix, LCLIntf, rkutils, zstd,
   ExcludeProcessor, LCLType, MaskEdit, ExtCtrls, ComCtrls, Buttons, DateUtils,
   fpjson, jsonparser, Types, exethread, usersetup, pibackup_updater, msg_dlg,
-  unit2, Editor, themes;
+  unit2, Editor, Themes;
 
 type
   partitioninfo = record
@@ -92,6 +96,7 @@ type
     SpeedButton1: TSpeedButton;
     SpinEdit1: TSpinEdit;
     StringGrid1: TStringGrid;
+    Timer1: TTimer;
     procedure btn_closeClick(Sender: TObject);
     procedure btn_EditExcludeClick(Sender: TObject);
     procedure Btn_SaveLogClick(Sender: TObject);
@@ -120,6 +125,7 @@ type
     procedure SpeedButton1Paint(Sender: TObject);
     procedure StringGrid1BeforeSelection(Sender: TObject; aCol, aRow: integer);
     procedure StringGrid1EditingDone(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
     procedure write_ini;
     procedure readDeviceInfo(drive: string; var deviceinfo: Tdriveinfo);
     procedure GridUpdate(Sender: TObject);
@@ -136,11 +142,11 @@ type
   end;
 
 const
-  Version =  'v2.0.5';
+  Version = 'v2.0.5';
   p2mpoint = '/pi_images/p2_pibackup_img';
   p1mpoint = '/pi_images/p1_pibackup_img';
-  appname =  'PiBackup '+ version;
-  ininame =  '/etc/pibackup/pibackup.ini';
+  appname = 'PiBackup ' + version;
+  ininame = '/etc/pibackup/pibackup.ini';
 
   stringGrid1ColWidths: array of integer = (100, 160, 135, 355, 85, 150);
 
@@ -156,7 +162,7 @@ implementation
 { TForm1 }
 
 var
-  updatecheckdone:boolean=false;
+  updatecheckdone: boolean = False;
   disableSelection: boolean = False;
   selecteddrive: string;
   DrivePartitionInfo: Tdriveinfo;
@@ -170,11 +176,11 @@ var
   drivembr: tmbr;
   lastcombotext: string = '';
   lastedittexr: string = '';
-  Deviceid:integer;
+  Deviceid: integer;
 
 
 
- procedure DrawComboButton(C: TCanvas; const R: TRect);
+procedure DrawComboButton(C: TCanvas; const R: TRect);
 var
   Details: TThemedElementDetails;
 begin
@@ -193,15 +199,15 @@ end;
 procedure Gridclean;
 begin
   with form1 do
-          begin
-          StringGrid1.Clean;
-          StringGrid1.Cells[0, 0] := 'NAME';
-          StringGrid1.Cells[1, 0] := 'LABEL';
-          StringGrid1.Cells[2, 0] := 'FSTYPE';
-          StringGrid1.Cells[3, 0] := 'MOUNTPOINT';
-          StringGrid1.Cells[4, 0] := 'STARTSECTOR';
-          StringGrid1.Cells[5, 0] := '   SECTORS / MiB';
-          end;
+  begin
+    StringGrid1.Clean;
+    StringGrid1.Cells[0, 0] := 'NAME';
+    StringGrid1.Cells[1, 0] := 'LABEL';
+    StringGrid1.Cells[2, 0] := 'FSTYPE';
+    StringGrid1.Cells[3, 0] := 'MOUNTPOINT';
+    StringGrid1.Cells[4, 0] := 'STARTSECTOR';
+    StringGrid1.Cells[5, 0] := '   SECTORS / MiB';
+  end;
 end;
 
 function SecStringToMiB(const s: string): string;
@@ -277,11 +283,7 @@ end;
 
 procedure TForm1.FormActivate(Sender: TObject);
 begin
-  if not updatecheckdone  then
-    begin
-   CheckForUpdates(ListBox1);
-    updatecheckdone:=true;
-    end;
+
 end;
 
 
@@ -325,7 +327,7 @@ procedure Tform1.showgrid;
 var
   x: integer;
 begin
- gridclean;
+  gridclean;
 
   stringgrid1.Cells[0, 1] := grid.part[0].Name;
   StringGrid1.Cells[5, 1] := FormatSecMiB(grid.part[0].Size);
@@ -347,7 +349,7 @@ var
   startpar2: int64;
   startpar3: int64;
   startpar4: int64;
-  sizepar2:int64;
+  sizepar2: int64;
   first_used_sector: int64;
   free_sectors: int64;
   par2gridsize: int64;
@@ -460,7 +462,7 @@ begin
 
         deviceinfo.partinfo[i + 1].mountpoint :=
           SafeGet(child, 'mountpoint');
-       end;
+      end;
     end;
     json.Free;
   end;
@@ -469,23 +471,22 @@ end;
 
 
 
-
 function Tform1.BuildFinalMBR: TMBR;
 var
-  x:integer;
+  x: integer;
 begin
-  result:=imagembr;
-  for x:=1 to 4 do
+  Result := imagembr;
+  for x := 1 to 4 do
   begin
-    result.PartitionEntries[x].PartitionType:=grid.part[x].FSType;
-    result.PartitionEntries[x].PartitionSize:=grid.part[x].Size;
-    result.PartitionEntries[x].FirstLBA:=grid.part[x].Startsector;
-    result.PartitionEntries[x].EndCylinder:=0;
-    result.PartitionEntries[x].EndSectorCylinder:=0;
-    result.PartitionEntries[x].StartHead:=0;
-    result.PartitionEntries[x].EndHead:=0;
-    result.PartitionEntries[x].StartCylinder:=0;
-    result.PartitionEntries[x].StartSectorCylinder:=0;
+    Result.PartitionEntries[x].PartitionType := grid.part[x].FSType;
+    Result.PartitionEntries[x].PartitionSize := grid.part[x].Size;
+    Result.PartitionEntries[x].FirstLBA := grid.part[x].Startsector;
+    Result.PartitionEntries[x].EndCylinder := 0;
+    Result.PartitionEntries[x].EndSectorCylinder := 0;
+    Result.PartitionEntries[x].StartHead := 0;
+    Result.PartitionEntries[x].EndHead := 0;
+    Result.PartitionEntries[x].StartCylinder := 0;
+    Result.PartitionEntries[x].StartSectorCylinder := 0;
   end;
 end;
 
@@ -612,7 +613,7 @@ var
   sizepar2, scrollbar_min: System.DWord;
   na: string;
 begin
- if RadioButton1.Checked then
+  if RadioButton1.Checked then
   begin
     if combobox1.Text <> lastcombotext then
     begin
@@ -626,12 +627,10 @@ begin
 
       if drive = '' then
       begin
-          gridclean;
-          ComboBox1.Text:='None';
-      exit;
+        gridclean;
+        ComboBox1.Text := 'None';
+        exit;
       end;
-
-
 
 
 
@@ -657,25 +656,21 @@ begin
   end
   else
 
-
-
-
-
   begin
     // =========================================================
     // IMAGE MODE
     // =========================================================
-     drive := '';
-     p := Pos(':', ComboBox1.Text);
-     drive := Copy(ComboBox1.Text, 1, p - 1);
+    drive := '';
+    p := Pos(':', ComboBox1.Text);
+    drive := Copy(ComboBox1.Text, 1, p - 1);
 
 
-     if drive='' then
-     begin
-        gridclean;
-        ComboBox1.Text:='None';
-        exit;
-     end;
+    if drive = '' then
+    begin
+      gridclean;
+      ComboBox1.Text := 'None';
+      exit;
+    end;
 
 
     if lowercase(extractfileext(edit1.Text)) = '.zst' then
@@ -695,7 +690,7 @@ begin
     begin
       imagembr := Read_MBR(Edit1.Text);
       Eddeviceid.Text := hexstr(imagembr.DiskSignature, 8);
-      Deviceid:= imagembr.DiskSignature;
+      Deviceid := imagembr.DiskSignature;
 
 
       // -------------------------
@@ -718,10 +713,10 @@ begin
     p := Pos(':', ComboBox1.Text);
     drive := Copy(ComboBox1.Text, 1, p - 1);
     if drive = '' then
-      begin
-          ComboBox1.Text:='None';
-           exit;
-      end;
+    begin
+      ComboBox1.Text := 'None';
+      exit;
+    end;
 
 
     fillchar(drivembr, sizeof(drivembr), 0);
@@ -733,221 +728,212 @@ begin
     grid.part[0].Name := drive;
     grid.part[0].Size := devSec;
 
-// =========================================================
-// DEVICE PARTITIONEN P3 / P4
-// DEVICE HAT IMMER PRIORITÄT
-// =========================================================
+    // =========================================================
+    // DEVICE PARTITIONEN P3 / P4
+    // DEVICE HAT IMMER PRIORITÄT
+    // =========================================================
 
-for y := 3 to 4 do
-begin
+    for y := 3 to 4 do
+    begin
 
-  // -------------------------------------------------------
-  // zuerst alles löschen
-  // -------------------------------------------------------
-  cleangridrow(y);
-
-  // -------------------------------------------------------
-  // DEVICE übernehmen
-  // -------------------------------------------------------
-  if drivembr.PartitionEntries[y].PartitionType <> 0 then
-  begin
-    grid.part[y].Name :=
-      DrivePartitionInfo.partinfo[y].Name + ' (TARGET)';
-
-    grid.part[y].Lbl :=
-      DrivePartitionInfo.partinfo[y].partlabel;
-
-    grid.part[y].FSType :=
-      drivembr.PartitionEntries[y].PartitionType;
-
-    grid.part[y].Mountpoint :=
-      DrivePartitionInfo.partinfo[y].mountpoint;
-
-    grid.part[y].Startsector :=
-      drivembr.PartitionEntries[y].FirstLBA;
-
-    grid.part[y].Size :=
-      drivembr.PartitionEntries[y].PartitionSize;
-
-    // ----------------------------------------------------
-    // passt nicht aufs device -> ungültig
-    // ----------------------------------------------------
-    if not FitsOnDevice(
-             grid.part[y].Startsector,
-             grid.part[y].Size,
-             devSec) then
+      // -------------------------------------------------------
+      // zuerst alles löschen
+      // -------------------------------------------------------
       cleangridrow(y);
 
-    // ----------------------------------------------------
-    // partition nicht mountbar/runnable
-    // ----------------------------------------------------
-    if grid.part[y].Name <> '' then
-    begin
-      na := grid.part[y].Name;
-
-      p := pos(' ', na);
-      if p > 0 then
-        Delete(na, p, MaxInt);
-
-      if not IsPartitionRunnable('/dev/' + na) then
-        cleangridrow(y);
-    end;
-  end;
-
-  // ======================================================
-  // FALLBACK AUF IMAGE
-  // ======================================================
-  if grid.part[y].Name = '' then
-  begin
-
-    // imagepartition vorhanden ?
-    if imagembr.PartitionEntries[y].PartitionType <> 0 then
-    begin
-
-      // passt die imagepartition aufs ziel ?
-      if TestDeviceWithImageMBR(
-           grid.part[0].Name,
-           imagembr.PartitionEntries[y].FirstLBA,
-           imagembr.PartitionEntries[y].PartitionSize) then
+      // -------------------------------------------------------
+      // DEVICE übernehmen
+      // -------------------------------------------------------
+      if drivembr.PartitionEntries[y].PartitionType <> 0 then
       begin
-
         grid.part[y].Name :=
-          'File_P' + IntToStr(y) + ' (IMAGE)';
+          DrivePartitionInfo.partinfo[y].Name + ' (TARGET)';
 
-        grid.part[y].Lbl := '';
+        grid.part[y].Lbl :=
+          DrivePartitionInfo.partinfo[y].partlabel;
 
         grid.part[y].FSType :=
-          imagembr.PartitionEntries[y].PartitionType;
+          drivembr.PartitionEntries[y].PartitionType;
 
-        grid.part[y].Mountpoint := '';
+        grid.part[y].Mountpoint :=
+          DrivePartitionInfo.partinfo[y].mountpoint;
 
         grid.part[y].Startsector :=
-          imagembr.PartitionEntries[y].FirstLBA;
+          drivembr.PartitionEntries[y].FirstLBA;
 
         grid.part[y].Size :=
-          imagembr.PartitionEntries[y].PartitionSize;
+          drivembr.PartitionEntries[y].PartitionSize;
+
+        // ----------------------------------------------------
+        // passt nicht aufs device -> ungültig
+        // ----------------------------------------------------
+        if not FitsOnDevice(grid.part[y].Startsector, grid.part[y].Size, devSec) then
+          cleangridrow(y);
+
+        // ----------------------------------------------------
+        // partition nicht mountbar/runnable
+        // ----------------------------------------------------
+        if grid.part[y].Name <> '' then
+        begin
+          na := grid.part[y].Name;
+
+          p := pos(' ', na);
+          if p > 0 then
+            Delete(na, p, MaxInt);
+
+          if not IsPartitionRunnable('/dev/' + na) then
+            cleangridrow(y);
+        end;
+      end;
+
+      // ======================================================
+      // FALLBACK AUF IMAGE
+      // ======================================================
+      if grid.part[y].Name = '' then
+      begin
+
+        // imagepartition vorhanden ?
+        if imagembr.PartitionEntries[y].PartitionType <> 0 then
+        begin
+
+          // passt die imagepartition aufs ziel ?
+          if TestDeviceWithImageMBR(grid.part[0].Name, imagembr.PartitionEntries[y].FirstLBA, imagembr.PartitionEntries[y].PartitionSize) then
+          begin
+
+            grid.part[y].Name :=
+              'File_P' + IntToStr(y) + ' (IMAGE)';
+
+            grid.part[y].Lbl := '';
+
+            grid.part[y].FSType :=
+              imagembr.PartitionEntries[y].PartitionType;
+
+            grid.part[y].Mountpoint := '';
+
+            grid.part[y].Startsector :=
+              imagembr.PartitionEntries[y].FirstLBA;
+
+            grid.part[y].Size :=
+              imagembr.PartitionEntries[y].PartitionSize;
+          end;
+        end;
+      end;
+
+      // ======================================================
+      // EXTENDED PARTITION markieren
+      // ======================================================
+      if grid.part[y].FSType in [$05, $0F, $85] then
+      begin
+        if pos('(EXTENDED)', grid.part[y].Name) = 0 then
+          grid.part[y].Name :=
+            grid.part[y].Name + ' (EXTENDED)';
       end;
     end;
+
+
+
+    // =========================================================
+    // DELETE CHECKBOXEN
+    // =========================================================
+
+    if CheckBox_DelPartition3.Checked then
+      cleangridrow(3);
+
+    if CheckBox_DelPartition4.Checked then
+      cleangridrow(4);
+
+
+
+    // =========================================================
+    // FREIER PLATZ + P2 SIZE LOGIK
+    // =========================================================
+
+    if not FileExists(Edit1.Text) then
+      Exit;
+
+    startpar2 := imagembr.PartitionEntries[2].FirstLBA;
+    sizepar2 := imagembr.PartitionEntries[2].PartitionSize;
+
+    startpar3 := grid.part[3].Startsector;
+    startpar4 := grid.part[4].Startsector;
+
+    first_used_sector := devSec;
+
+    if (startpar4 > 0) and (startpar4 < first_used_sector) then
+      first_used_sector := startpar4;
+
+    if (startpar3 > 0) and (startpar3 < first_used_sector) then
+      first_used_sector := startpar3;
+
+    free_sectors := first_used_sector - startpar2;
+
+    Label_ManSelected.Caption := '';
+
+    if free_sectors < sizepar2 then
+    begin
+      ScrollBar1.Min := 0;
+      ScrollBar1.Max := 0;
+      ScrollBar1.Position := 0;
+
+      Label_ManSelected.Caption :=
+        'not enough free space';
+
+      Exit;
+    end;
+    scrollbar_max :=
+      (free_sectors + 2047) div 2048;
+
+    scrollbar_min :=
+      (sizepar2 + 2047) div 2048;
+
+    ScrollBar1.Min := 0;
+    ScrollBar1.Position := 0;
+    ScrollBar1.Max := scrollbar_max;
+    ScrollBar1.Min := scrollbar_min;
+    ScrollBar1.Position := scrollbar_max;
+
+
+
+
+    // ---------------------------------------------------------
+    // neue p2 größe
+    // ---------------------------------------------------------
+    par2gridsize :=
+      ScrollBar1.Position * 2048;
+
+    if par2gridsize > free_sectors then
+      par2gridsize := free_sectors;
+
+    Grid.part[2].Size := par2gridsize;
+
+
+
+    // =========================================================
+    // DEVICE ID
+    // =========================================================
+
+    if not CheckBoxChangeDeviceID.Checked then
+      Eddeviceid.Text :=
+        IntToHex(imagembr.DiskSignature, 8);
+
+
+
+    // =========================================================
+    // UI
+    // =========================================================
+
+    Label_ManSelected.Caption :=
+      IntToStr(ScrollBar1.Position) + 'MiB';
+
+    checkbox_delpartition3.Visible :=
+      grid.part[3].Name <> '';
+
+    checkbox_delpartition4.Visible :=
+      grid.part[4].Name <> '';
+
   end;
 
-  // ======================================================
-  // EXTENDED PARTITION markieren
-  // ======================================================
-  if grid.part[y].FSType in [$05, $0F, $85] then
-  begin
-    if pos('(EXTENDED)', grid.part[y].Name) = 0 then
-      grid.part[y].Name :=
-        grid.part[y].Name + ' (EXTENDED)';
-  end;
-end;
-
-
-
-// =========================================================
-// DELETE CHECKBOXEN
-// =========================================================
-
-if CheckBox_DelPartition3.Checked then
-  cleangridrow(3);
-
-if CheckBox_DelPartition4.Checked then
-  cleangridrow(4);
-
-
-
-// =========================================================
-// FREIER PLATZ + P2 SIZE LOGIK
-// =========================================================
-
-if not FileExists(Edit1.Text) then
-  Exit;
-
-startpar2 := imagembr.PartitionEntries[2].FirstLBA;
-sizepar2 := imagembr.PartitionEntries[2].PartitionSize;
-
-startpar3 := grid.part[3].Startsector;
-startpar4 := grid.part[4].Startsector;
-
-first_used_sector := devSec;
-
-if (startpar4 > 0) and
-   (startpar4 < first_used_sector) then
-  first_used_sector := startpar4;
-
-if (startpar3 > 0) and
-   (startpar3 < first_used_sector) then
-  first_used_sector := startpar3;
-
-free_sectors := first_used_sector - startpar2;
-
-Label_ManSelected.Caption := '';
-
-if free_sectors < sizepar2 then
-begin
-  ScrollBar1.Min := 0;
-  ScrollBar1.Max := 0;
-  ScrollBar1.Position := 0;
-
-  Label_ManSelected.Caption :=
-    'not enough free space';
-
-  Exit;
-end;
-scrollbar_max :=
-  (free_sectors + 2047) div 2048;
-
-scrollbar_min :=
-  (sizepar2 + 2047) div 2048;
-
-ScrollBar1.Min :=0;
-ScrollBar1.Position := 0;
-ScrollBar1.Max := scrollbar_max;
-ScrollBar1.Min := scrollbar_min;
-ScrollBar1.Position := scrollbar_max;
-
-
-
-
-
-// ---------------------------------------------------------
-// neue p2 größe
-// ---------------------------------------------------------
-par2gridsize :=
-  ScrollBar1.Position * 2048;
-
-if par2gridsize > free_sectors then
-  par2gridsize := free_sectors;
-
-Grid.part[2].Size := par2gridsize;
-
-
-
-// =========================================================
-// DEVICE ID
-// =========================================================
-
-if not CheckBoxChangeDeviceID.Checked then
-  Eddeviceid.Text :=
-    IntToHex(imagembr.DiskSignature, 8);
-
-
-
-// =========================================================
-// UI
-// =========================================================
-
-Label_ManSelected.Caption :=
-  IntToStr(ScrollBar1.Position) + 'MiB';
-
-checkbox_delpartition3.Visible :=
-  grid.part[3].Name <> '';
-
-checkbox_delpartition4.Visible :=
-  grid.part[4].Name <> '';
-
-end;
-
-showgrid;
+  showgrid;
 
 end;
 
@@ -1115,7 +1101,7 @@ begin
 
   CloseMountTarget(p1mpoint);
   CloseMountTarget(p2mpoint);
-
+  timer1.Enabled := True;
 end;
 
 
@@ -1155,12 +1141,12 @@ end;
 
 procedure TForm1.SpeedButton1Click(Sender: TObject);
 begin
- edit1DblClick(self);
+  edit1DblClick(self);
 end;
 
 procedure TForm1.SpeedButton1Paint(Sender: TObject);
 begin
-    DrawComboButton(SpeedButton1.Canvas, SpeedButton1.ClientRect);
+  DrawComboButton(SpeedButton1.Canvas, SpeedButton1.ClientRect);
 end;
 
 
@@ -1175,6 +1161,13 @@ begin
   showgrid;
 end;
 
+procedure TForm1.Timer1Timer(Sender: TObject);
+begin
+  CheckForUpdates(ListBox1);
+  timer1.Enabled := False;
+end;
+
+
 
 
 procedure TForm1.ButtonCreateImageClick(Sender: TObject);
@@ -1188,6 +1181,7 @@ var
   dirpath: string;
   looppartition: string;
 begin
+
   if not RunsAsRoot then
     raise Exception.Create('This application must be run as root. Please start with sudo.');
 
@@ -1380,7 +1374,7 @@ end;
 
 procedure TForm1.btn_closeClick(Sender: TObject);
 begin
-  close;
+  Close;
 end;
 
 procedure TForm1.btn_helpClick(Sender: TObject);
@@ -1410,7 +1404,7 @@ begin
 end;
 
 
-function ReadFstabFromDeviceP2(const Device: string;var List: TStringList): Boolean;
+function ReadFstabFromDeviceP2(const Device: string; var List: TStringList): boolean;
 var
   Cmd, Output, PartDevice: string;
 begin
@@ -1423,7 +1417,7 @@ begin
 
   // richtige Partitionsbildung
 
-  PartDevice :=partitionname(Device,2);
+  PartDevice := partitionname(Device, 2);
 
   try
     // Mountpoint erstellen
@@ -1459,11 +1453,10 @@ var
   newmbr: TMbr;
   s, par2name, par1name: string;
   sig: dword;
-  newsig ,driveid: string;
+  newsig, driveid: string;
   fstabdrive: TStringList;
-  i:integer;
-  driveid_ok:boolean;
-
+  i: integer;
+  driveid_ok: boolean;
 begin
   if not RunsAsRoot then
     raise Exception.Create('This application must be run as root. Please start with sudo.');
@@ -1489,15 +1482,15 @@ begin
 
 
 
-   if combobox1.text='' then
-        begin
-          showmessage('No target device selected');
-          exit;
-        end;
+    if combobox1.Text = '' then
+    begin
+      ShowMessage('No target device selected');
+      exit;
+    end;
 
 
-     Form4.Label2.Caption:=combobox1.Text;
-     if form4.ShowModal <> mryes then exit;
+    Form4.Label2.Caption := combobox1.Text;
+    if form4.ShowModal <> mrYes then exit;
 
     ButtonWriteImagetodevice.tag := 1;
     Disablesel;
@@ -1537,32 +1530,32 @@ begin
     ImageToDeviceImgAndZstd(edit1.Text, selecteddrive, listbox1);     // keinen mbr schreiben
 
 
-     // driveid aus fstab holen
+    // driveid aus fstab holen
     try
-    fstabdrive:=tstringlist.create;
-    driveid_ok:= ReadFstabFromDeviceP2(selecteddrive,fstabdrive) ;
-    // driveid isolieren
-    if driveid_ok then
-       begin
-         driveid_ok:=false;
-         for i:=0 to fstabdrive.Count-1 do
-           begin
-             s:=trim(fstabdrive[i]);
-             if pos(' / ',s) > 0 then
-               begin
-                  if pos('PARTUUID=',s)=1 then
-                          begin
-                          s:=copy(s,10,8);
-                          driveid := s;
-                          driveid_ok:=true;
-                          break;
-                          end;
-               end;
-           end;
-       end;
+      fstabdrive := TStringList.Create;
+      driveid_ok := ReadFstabFromDeviceP2(selecteddrive, fstabdrive);
+      // driveid isolieren
+      if driveid_ok then
+      begin
+        driveid_ok := False;
+        for i := 0 to fstabdrive.Count - 1 do
+        begin
+          s := trim(fstabdrive[i]);
+          if pos(' / ', s) > 0 then
+          begin
+            if pos('PARTUUID=', s) = 1 then
+            begin
+              s := copy(s, 10, 8);
+              driveid := s;
+              driveid_ok := True;
+              break;
+            end;
+          end;
+        end;
+      end;
 
     finally
-    fstabdrive.free;
+      fstabdrive.Free;
     end;
 
 
@@ -1589,17 +1582,17 @@ begin
     s := PrexeThreadedBash('partprobe ' + selecteddrive, listbox1);
     sleep(500);
 
-      newsig := lowercase(Eddeviceid.Text);
-      sig := StrToInt('$' + newsig);
-      ListBoxaddscroll(listbox1, 'Set device signature in mbr');
-      setPartUUIDinMbr(selecteddrive, sig);
+    newsig := lowercase(Eddeviceid.Text);
+    sig := StrToInt('$' + newsig);
+    ListBoxaddscroll(listbox1, 'Set device signature in mbr');
+    setPartUUIDinMbr(selecteddrive, sig);
 
-      ListBoxaddscroll(listbox1, 'Set device signature in cmdline.txt');
-      setPartUUIDInCmdline(selecteddrive,1,sig);
+    ListBoxaddscroll(listbox1, 'Set device signature in cmdline.txt');
+    setPartUUIDInCmdline(selecteddrive, 1, sig);
 
-      ListBoxaddscroll(listbox1, 'Set Partitionuuids in fstab');
-      s:=ReplacePartUUIDInFstab(selecteddrive, sig);
-      if s > '' then ListBox1.Items.Add(s);
+    ListBoxaddscroll(listbox1, 'Set Partitionuuids in fstab');
+    s := ReplacePartUUIDInFstab(selecteddrive, sig);
+    if s > '' then ListBox1.Items.Add(s);
 
 
     if edhost.Text > '' then Changehost(selecteddrive, edhost.Text);
@@ -1618,7 +1611,7 @@ begin
     begin
       listboxaddscroll(listbox1, '❌ Error: ' + E.Message);
     end;
- end;
+  end;
 
   ButtonWriteImagetodevice.Caption := 'write image to device';
   ButtonWriteImagetodevice.tag := 0;
@@ -1680,9 +1673,8 @@ end;
 
 procedure TForm1.CheckBoxChangeDeviceIDChange(Sender: TObject);
 begin
-  if CheckBoxChangeDeviceID.Checked then  Eddeviceid.Text := inttohex(deviceid,8);
+  if CheckBoxChangeDeviceID.Checked then  Eddeviceid.Text := inttohex(deviceid, 8);
 end;
-
 
 
 
@@ -1691,11 +1683,10 @@ procedure TForm1.EddeviceidChange(Sender: TObject);
 var
   s: string;
 begin
-//  s := Eddeviceid.Text;
-//  s := copy(s, 1, 8);
-//  Eddeviceid.Text := s;
+  //  s := Eddeviceid.Text;
+  //  s := copy(s, 1, 8);
+  //  Eddeviceid.Text := s;
 end;
-
 
 
 
@@ -1704,9 +1695,7 @@ procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 var
   s: string;
 begin
-
   Listboxaddscroll(listbox1, 'The program is shutting down. This may take a moment...');
-
   terminate_all := True;
   WaitForAllThreads(basicthreads, 15000);
   PrexeThreadedBash('umount ' + device, listbox1);  // optional, wenn es gemountet war

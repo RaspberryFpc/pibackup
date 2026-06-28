@@ -1,10 +1,10 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
-## [2.0.5] – 2026-06-27
+## [2.0.5] – 2026-06-28
 
 ### Changed
-- Test release for updater system
+- updater system
 - Minor UI design adjustment
 
 ## [2.0.4]

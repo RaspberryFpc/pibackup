@@ -172,7 +172,7 @@
       </Unit>
       <Unit>
         <Filename Value="msg_dlg.pas"/>
-        <FRMtype Value="0"/>
+        <FRMtype Value="200"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form4"/>
         <HasResources Value="True"/>
@@ -180,8 +180,16 @@
       </Unit>
       <Unit>
         <Filename Value="pibackup_updater.pas"/>
-        <FRMtype Value="0"/>
         <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="updatedlg.pas"/>
+        <FRMtype Value="200"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form5"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UpdateDlg"/>
       </Unit>
     </Units>
   </ProjectOptions>
