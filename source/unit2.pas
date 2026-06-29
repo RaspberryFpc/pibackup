@@ -13,7 +13,7 @@ type
 
   TForm2 = class(TForm)
     HtmlViewer1: THtmlViewer;
-  procedure FormShow(Sender: TObject);
+    procedure FormShow(Sender: TObject);
 
   private
 
@@ -32,13 +32,12 @@ implementation
 
 procedure TForm2.FormShow(Sender: TObject);
 begin
- try
-   HtmlViewer1.LoadFromFile('/usr/share/doc/pibackup/help/intro.html');
-    finally
-   end;
+  try
+    HtmlViewer1.LoadFromFile('/usr/share/doc/pibackup/help/intro.html');
+  finally
+  end;
 end;
 
 
 
 end.
-

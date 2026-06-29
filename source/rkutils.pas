@@ -7,7 +7,6 @@ interface
 uses
   Classes, SysUtils, process, baseunix, unix, LazUTF8, fileutil, dateutils, StdCtrls, Forms, Dialogs, UnixType, ExtCtrls;
 
-
 type
   TMBRPartition = packed record
     BootFlag: byte;         // 0x0 Bootflag
@@ -71,10 +70,10 @@ function starLine(s: ansistring; len: integer): ansistring;
 function getValueAfterKeyword(s, keyword: ansistring): int64;
 procedure Listboxaddscroll(listbox: tlistbox; item: string);
 procedure Listboxupdate(listbox: tlistbox; item: string);
-procedure getDrives(sl: TStrings;excludesys:boolean);
+procedure getDrives(sl: TStrings; excludesys: boolean);
 procedure setPartuuidinmbr(device: string; NewSignature: dword);
-function setPartUUIDInCmdline(Device: string; partition:integer; sig: dword):boolean;
-function  ReplacePartUUIDInFstab(device: string; sig:dword): string;
+function setPartUUIDInCmdline(Device: string; partition: integer; sig: dword): boolean;
+function ReplacePartUUIDInFstab(device: string; sig: dword): string;
 procedure ChangeHost(device: string; newHostName: string);
 procedure enableSsh(device: string);
 procedure PrepareWLAN(const Device, SSID, PSK: string);
@@ -588,8 +587,7 @@ end;
 
 procedure EnsureEnoughSpace(const FilePath: string; NewSize: int64);
 const
-  mib=1024*1024;
-
+  mib = 1024 * 1024;
 var
   vfs: TStatVFS;
   DirPath, ExistingPath: string;
@@ -623,8 +621,7 @@ begin
   // Prüfen ob genug Platz da ist
   if NewSize > OldSize then
     if (NewSize - OldSize) > FreeBytes then
-      raise Exception.Create(Format('Not enough disk space: required %d MiB, available %d MiB', [(NewSize + mib -1) div 1024 div 1024,
-                                                  (FreeBytes + OldSize + mib -1) div 1024 div 1024]));
+      raise Exception.Create(Format('Not enough disk space: required %d MiB, available %d MiB', [(NewSize + mib - 1) div 1024 div 1024, (FreeBytes + OldSize + mib - 1) div 1024 div 1024]));
 
   // Erst jetzt die Verzeichnisse erstellen
   if not DirectoryExists(DirPath) then
@@ -948,16 +945,15 @@ var
   p, n, x: integer;
   stl: TStringList;
   v: string;
-  systemdrive,par:string;
-
- begin
-  RunCommand( 'df --output=source /',par);
-  p:=pos(#10,par);
-  delete(par,1,p);
-  delete(par,length(par),1);
+  systemdrive, par: string;
+begin
+  RunCommand('df --output=source /', par);
+  p := pos(#10, par);
+  Delete(par, 1, p);
+  Delete(par, length(par), 1);
   RunCommand('lsblk -no PKNAME ' + par, systemdrive);
-  delete(systemdrive,length(systemdrive),1);
-   systemdrive:='/dev/'+systemdrive;
+  Delete(systemdrive, length(systemdrive), 1);
+  systemdrive := '/dev/' + systemdrive;
 
   stl := TStringList.Create;
 
@@ -1052,9 +1048,9 @@ var
   begin
 
     dr := Copy(stl[x], 6, MaxInt); // → sda, sdb, ...
-    p:=pos(':',dr);
-    v:= copy(dr,1,p-1);
-    if ExcludeSys and (v=systemdrive) then Continue;  //exclude system;
+    p := pos(':', dr);
+    v := copy(dr, 1, p - 1);
+    if ExcludeSys and (v = systemdrive) then Continue;  //exclude system;
     sl.Add(dr);
   end;
 
@@ -1144,7 +1140,7 @@ var
   Rmbr: tmbr;
 begin
   FillChar(RMbr, 512, 0);
-  result:=Rmbr;
+  Result := Rmbr;
 
   if not FileExists(filename) then
     raise Exception.Create('reading mbr from: ' + filename + ' not found');
@@ -1154,15 +1150,15 @@ begin
   if IsDevice then
   begin
     try
-    F := TFileStream.Create(filename, fmOpenRead or fmShareDenyNone);
+      F := TFileStream.Create(filename, fmOpenRead or fmShareDenyNone);
 
       F.Position := 0;
       Bytesread := F.Read(Rmbr, 512);
       if bytesread <> 512 then raise Exception.Create('error reading MBR: ' + filename);
-      if (RMbr.Signature <> $aa55)  then
-        raise Exception.Create( 'reading mbr - wrong mbr signature: ' + filename + ' = 0x' + hexstr(RMbr.Signature, 4) + ' instead of 0xaa55.');
+      if (RMbr.Signature <> $aa55) then
+        raise Exception.Create('reading mbr - wrong mbr signature: ' + filename + ' = 0x' + hexstr(RMbr.Signature, 4) + ' instead of 0xaa55.');
     finally
-       if assigned(F) then F.Free;
+      if assigned(F) then F.Free;
     end;
     Result := Rmbr;
     Exit;
@@ -1188,8 +1184,8 @@ begin
       F.Position := 0;
       Bytesread := F.Read(Rmbr, 512);
       if bytesread <> 512 then raise Exception.Create('reading mbr - error reading file: ' + filename);
-      if (RMbr.Signature <> $aa55)  then
-        raise Exception.Create( 'reading mbr - wrong mbr signature: ' + filename + ' = 0x' + hexstr(RMbr.Signature, 4) + ' instead of 0xaa55.');
+      if (RMbr.Signature <> $aa55) then
+        raise Exception.Create('reading mbr - wrong mbr signature: ' + filename + ' = 0x' + hexstr(RMbr.Signature, 4) + ' instead of 0xaa55.');
       Result := Rmbr;
     finally
       if assigned(F) then F.Free;
@@ -1206,8 +1202,8 @@ begin
       Proc.Execute;
       BytesRead := Proc.Output.Read(RMbr, 512);
       if bytesread <> 512 then raise Exception.Create('reading mbr - error reading file: ' + filename);
-      if (RMbr.Signature <> $aa55)  then
-        raise Exception.Create( 'reading mbr - wrong mbr signature: ' + filename + ' = 0x' + hexstr(RMbr.Signature, 4) + ' instead of 0xaa55.');
+      if (RMbr.Signature <> $aa55) then
+        raise Exception.Create('reading mbr - wrong mbr signature: ' + filename + ' = 0x' + hexstr(RMbr.Signature, 4) + ' instead of 0xaa55.');
       Result := Rmbr;
     finally
       Proc.Free;
@@ -1302,31 +1298,26 @@ begin
 end;
 
 
-function IsMBRPartUUID(const S: string): Boolean;
+function IsMBRPartUUID(const S: string): boolean;
 var
-  p: Integer;
+  p: integer;
 begin
-  Result := (Length(S) = 10) and
-            (S[1] = '=') and
-            (S[10] = '-') and
-            TryStrToInt('$' + Copy(S, 2, 8), p);
+  Result := (Length(S) = 10) and (S[1] = '=') and (S[10] = '-') and TryStrToInt('$' + Copy(S, 2, 8), p);
 end;
 
 
 
 
-
-function setPartUUIDInCmdline(Device: string; partition: integer;
-  sig:Dword): boolean;
+function setPartUUIDInCmdline(Device: string; partition: integer; sig: Dword): boolean;
 var
-  newid:string;
+  newid: string;
   PartitionDevice, MountPoint, CommandFile: string;
   s: string;
-  p1,p2: integer;
+  p1, p2: integer;
   sl: TStringList;
 begin
 
-  newid:=inttohex(sig,8);
+  newid := inttohex(sig, 8);
 
   Result := False;
 
@@ -1347,8 +1338,7 @@ begin
     ForceDirectories(MountPoint);
 
     // mounten
-    if not RunCommand('mount',
-      ['-t', 'vfat', '-o', 'rw', PartitionDevice, MountPoint], s) then
+    if not RunCommand('mount', ['-t', 'vfat', '-o', 'rw', PartitionDevice, MountPoint], s) then
       raise Exception.Create('Failed to mount partition ' + PartitionDevice);
 
     if not FileExists(CommandFile) then
@@ -1362,12 +1352,12 @@ begin
       if sl.Count = 0 then
         raise Exception.Create('cmdline.txt is empty');
 
-      s:=sl.Text;
-      p1:=pos('root=PARTUUID=',s);
-      p2:=pos('-',s,p1);
-      delete(s,p1,p2-p1);
-      insert('root=PARTUUID='+ newid,s,p1);
-      sl.Text:=s;
+      s := sl.Text;
+      p1 := pos('root=PARTUUID=', s);
+      p2 := pos('-', s, p1);
+      Delete(s, p1, p2 - p1);
+      insert('root=PARTUUID=' + newid, s, p1);
+      sl.Text := s;
       sl.SaveToFile(CommandFile);
 
     finally
@@ -1397,21 +1387,19 @@ end;
 
 
 
-
-function  ReplacePartUUIDInFstab(device: string; sig:dword): string;
+function ReplacePartUUIDInFstab(device: string; sig: dword): string;
 var
   sl: TStringList;
-  i,p: integer;
+  i, p: integer;
   s: string;
   PartitionDevice, uMountPoint: string;
-  oldid:string;
-  newid:string;
-
+  oldid: string;
+  newid: string;
 begin
   Result := '';
   uMountPoint := '/images/tmp_mount';
 
-  newid:=inttohex(sig,8);
+  newid := inttohex(sig, 8);
 
   try
     PartitionDevice := partitionname(device, 2);
@@ -1434,32 +1422,31 @@ begin
 
 
 
-
     sl := TStringList.Create;
     try
       sl.LoadFromFile(uMountPoint + '/etc/fstab');
 
-   // alte id finden
+      // alte id finden
 
-    for i := 0 to sl.Count - 1 do
+      for i := 0 to sl.Count - 1 do
       begin
         s := sl[i];
-        if pos(' / ',s) > 0 then
-           begin
-             p:=pos('=',s);
-             delete(s,1,p-1);
-             p:=pos('-',s);
-             delete(s,p+1,maxint);
-             if length(s)=10 then break;
-          end;
-       end;
+        if pos(' / ', s) > 0 then
+        begin
+          p := pos('=', s);
+          Delete(s, 1, p - 1);
+          p := pos('-', s);
+          Delete(s, p + 1, maxint);
+          if length(s) = 10 then break;
+        end;
+      end;
 
 
-   if not IsMBRPartUUID(s) then
-  raise Exception.Create('No valid PARTUUID found in root entry');
+      if not IsMBRPartUUID(s) then
+        raise Exception.Create('No valid PARTUUID found in root entry');
 
-      oldid:=s;
-      newid:='='+newid+'-';
+      oldid := s;
+      newid := '=' + newid + '-';
       for i := 0 to sl.Count - 1 do
       begin
         s := sl[i];
@@ -1467,8 +1454,8 @@ begin
         // -----------------------------------------
         // 🔥 nur Disk-ID im PARTUUID ersetzen
         // -----------------------------------------
-        s := StringReplace( s, oldID, newID, [rfReplaceAll] );
-           sl[i] := s;
+        s := StringReplace(s, oldID, newID, [rfReplaceAll]);
+        sl[i] := s;
       end;
 
       sl.SaveToFile(uMountPoint + '/etc/fstab');
@@ -1777,7 +1764,7 @@ begin
   end;
 end;
 
-procedure ImageToDeviceStandard(Source, Destination:string; box: TListBox);
+procedure ImageToDeviceStandard(Source, Destination: string; box: TListBox);
 const
   BufferSize = 16 * 1024 * 1024;
 var
@@ -1821,7 +1808,7 @@ begin
     InitRingBuffer(ringbuffer, 48, nowTick, 0);
     lastUpdate := nowTick;
 
-    listboxaddscroll(box,'');
+    listboxaddscroll(box, '');
 
     repeat
       ReadCount := fsource.Read(ibuffer, BufferSize);
@@ -1889,7 +1876,7 @@ var
   lastline, res: integer;
   speedZMBs, speeddonembs: double;
   etaStr, status: string;
- // percent: integer;
+  // percent: integer;
   tocopy, nowtick: int64;     // , starttick
   skipBytes: integer = 512;
   sumread: int64;
@@ -1924,7 +1911,7 @@ begin
     listboxaddscroll(box, '');
     lastline := box.Count - 1;
     lastUpdate := gettickcount64;
- //   starttick := gettickcount64;
+    //   starttick := gettickcount64;
 
     initringbuffer(Ringdonebuffer, 48, starttime, 0);
     initringbuffer(ringZbuffer, 48, starttime, 0);
@@ -2003,7 +1990,7 @@ begin
 
     // Abschluss-Update nach erfolgreicher Dekompression
     speedZMBs := 0;
-//    percent := 100;
+    //    percent := 100;
     etaStr := '00:00:00';
 
     if fin.Size > 0 then

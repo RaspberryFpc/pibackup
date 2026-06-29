@@ -113,11 +113,8 @@ type
     procedure Edit1DblClick(Sender: TObject);
     procedure EddeviceidChange(Sender: TObject);
     procedure EddeviceidKeyPress(Sender: TObject; var Key: char);
-    procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
-    procedure lbl_userpasswordClick(Sender: TObject);
-    procedure Panel3Click(Sender: TObject);
     procedure RadioButton2Change(Sender: TObject);
     procedure ScrollBar1Change(Sender: TObject);
     procedure ModifyImage(mountpoint: string);
@@ -142,7 +139,7 @@ type
   end;
 
 const
-  Version = 'v2.0.5';
+  Version = 'v2.0.6';
   p2mpoint = '/pi_images/p2_pibackup_img';
   p1mpoint = '/pi_images/p1_pibackup_img';
   appname = 'PiBackup ' + version;
@@ -281,10 +278,6 @@ begin
     Key := #0;  // ungültige Taste unterdrücken
 end;
 
-procedure TForm1.FormActivate(Sender: TObject);
-begin
-
-end;
 
 
 function SecToMiB(sec: int64): int64;
@@ -1106,18 +1099,6 @@ end;
 
 
 
-procedure TForm1.lbl_userpasswordClick(Sender: TObject);
-begin
-
-end;
-
-procedure TForm1.Panel3Click(Sender: TObject);
-begin
-
-end;
-
-
-
 procedure TForm1.ModifyImage(mountpoint: string);
 begin
 
@@ -1683,9 +1664,9 @@ procedure TForm1.EddeviceidChange(Sender: TObject);
 var
   s: string;
 begin
-  //  s := Eddeviceid.Text;
-  //  s := copy(s, 1, 8);
-  //  Eddeviceid.Text := s;
+    s := Eddeviceid.Text;
+    s := copy(s, 1, 8);
+    Eddeviceid.Text := s;
 end;
 
 

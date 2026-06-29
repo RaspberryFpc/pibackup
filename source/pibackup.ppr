@@ -1,4 +1,4 @@
- program pibackup;
+program pibackup;
 {$mode objfpc}{$H+}
 
 uses
@@ -17,9 +17,11 @@ uses
   Unit2,
   Editor,
   ExcludeProcessor,
-  msg_dlg, pibackup_updater, UpdateDlg;
+  msg_dlg,
+  pibackup_updater,
+  UpdateDlg;
 
-{$R *.res}
+  {$R *.res}
 
 begin
   RequireDerivedFormResource := True;
@@ -28,21 +30,20 @@ begin
   if not RunsAsRoot then
   begin
     MessageDlg('Error',
-      'This program requires root privileges.' + LineEnding +
-      'Please run it using sudo, su, or as the root user.',
+      'This program requires root privileges.' + LineEnding + 'Please run it using sudo, su, or as the root user.',
       mtError, [mbOK], 0);
     Halt(1);
   end;
 
   // ===== Kein DPI Scaling =====
-  Application.Scaled:=True;
+  Application.Scaled := True;
 
   // ===== Qt starten =====
   Application.Initialize;
 
   // ===== Style + Font setzen =====
-// ApplyCodeTyphonStyle;  // Farben + Fusion Style
- // ApplyFont;             // feste Schrift
+  // ApplyCodeTyphonStyle;  // Farben + Fusion Style
+  // ApplyFont;             // feste Schrift
 
   // ===== Form erstellen =====
   Application.CreateForm(TForm1, Form1);

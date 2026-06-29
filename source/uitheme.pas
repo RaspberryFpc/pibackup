@@ -16,7 +16,7 @@ procedure ApplyCodeTyphonStyle;
 var
   pal: QPaletteH;
   col: QColorH;
-  s: WideString;
+  s: widestring;
 begin
   pal := QPalette_create;
   col := QColor_create;
@@ -50,16 +50,14 @@ end;
 procedure ApplyFont;
 var
   font: QFontH;
-  s:string;
+  s: string;
 begin
   // CodeTyphon / Lazarus Standard
- s:= 'DejaVu Sans';
- font := QFont_Create(PWideString(s), 10, -1, False);
+  s := 'DejaVu Sans';
+  font := QFont_Create(PWideString(s), 10, -1, False);
   QApplication_setFont(font);
 end;
 
 
 
 end.
-
-

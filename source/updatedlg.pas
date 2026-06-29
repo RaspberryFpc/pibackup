@@ -12,9 +12,9 @@ type
   { TForm5 }
 
   TForm5 = class(TForm)
-    label1:tlabel;
-    label2:tlabel;
-    label3:tlabel;
+    label1: tlabel;
+    label2: tlabel;
+    label3: tlabel;
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
@@ -42,20 +42,19 @@ implementation
 
 procedure TForm5.Button1Click(Sender: TObject);
 begin
-  modalresult:=1;
+  modalresult := 1;
 end;
 
 procedure TForm5.Button2Click(Sender: TObject);
 begin
-   modalresult:=2;
+  modalresult := 2;
 end;
 
 procedure TForm5.Button3Click(Sender: TObject);
 begin
-   modalresult:=3;
+  modalresult := 3;
 end;
 
 
 
 end.
-

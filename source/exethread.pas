@@ -20,7 +20,7 @@ type
     FTempString: ansistring;
     FProgressMode: integer;
     FFinished: boolean;
-    FExitCode: Integer;
+    FExitCode: integer;
     procedure UpdateListBox;
     procedure AddListBoxLine;
 
@@ -30,13 +30,13 @@ type
     constructor Create(const Cmd: ansistring; Params: array of string; ListBox: TListBox; ProgressBar: TProgressBar = nil; ProgressMode: integer = 0);
     property ResultText: ansistring read FResult;
     property Finished: boolean read FFinished;
-    property ExitCode: Integer read FExitCode;
+    property ExitCode: integer read FExitCode;
   end;
 
 function PrexeThreadedBash(command: ansistring; box: TListBox; progressbar: tprogressbar = nil; progressmode: integer = 0): ansistring;
 
 var
-   LastExitCode: Integer;
+  LastExitCode: integer;
 
 
 implementation
@@ -247,7 +247,7 @@ function PrexeThreadedBash(command: ansistring; box: TListBox; progressbar: tpro
 var
   th: TPrexeThreaded;
 begin
-  lastexitcode:=-1;
+  lastexitcode := -1;
 
   if terminate_all then
     Exit('');
@@ -266,7 +266,7 @@ begin
     if terminate_all then th.Terminate;
   end;
   Result := th.ResultText;
-  Lastexitcode:=th.FExitCode;
+  Lastexitcode := th.FExitCode;
   th.Free;
 end;
 

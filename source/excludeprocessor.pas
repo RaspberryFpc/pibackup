@@ -14,7 +14,7 @@ type
     exfileintree,
     exallintree,
     exdir
-  );
+    );
 
   TExcludeEntry = record
     Command: TExcludeCommand;
@@ -31,7 +31,7 @@ var
   mountpointlen: integer;
   MP: string;
 
-{ ------------------------------------------------------------ }
+  { ------------------------------------------------------------ }
 
 function RelPath(const FullPath: string): string;
 begin
@@ -49,7 +49,7 @@ end;
 function ReplaceToRealUser(usertoken: string): string;
 var
   user: string;
-  p: Integer;
+  p: integer;
 begin
   p := Pos('§user', LowerCase(usertoken));
 
@@ -75,12 +75,12 @@ end;
 function ParseCommand(const s: string): TExcludeCommand;
 begin
   case LowerCase(Trim(s)) of
-    'file':        Result := exfile;
-    'fileintree':  Result := exfileintree;
-    'allintree':   Result := exallintree;
-    'dir':         Result := exdir;
-  else
-    Result := exUnknown;
+    'file': Result := exfile;
+    'fileintree': Result := exfileintree;
+    'allintree': Result := exallintree;
+    'dir': Result := exdir;
+    else
+      Result := exUnknown;
   end;
 end;
 
@@ -92,9 +92,9 @@ end;
 
 { ------------------------------------------------------------ }
 
-function ParseLine(const Line: string; LineNo: Integer): TExcludeEntry;
+function ParseLine(const Line: string; LineNo: integer): TExcludeEntry;
 var
-  p: Integer;
+  p: integer;
   key, val, s: string;
 begin
   FillChar(Result, SizeOf(Result), 0);
@@ -230,12 +230,11 @@ end;
 
 procedure ProcessList(const FileName: string; const MountPoint: string);
 var
-  i: Integer;
+  i: integer;
   entry: TExcludeEntry;
   list: TStringList;
-  s:string;
-  p:integer;
-
+  s: string;
+  p: integer;
 begin
   MP := ExcludeTrailingPathDelimiter(MountPoint);
   mountpointlen := Length(MP);
@@ -252,16 +251,16 @@ begin
 
     for i := 0 to list.Count - 1 do
     begin
-      s:=list[i];
+      s := list[i];
       p := Pos('#', s);
       if p > 0 then
-           Delete(s, p, MaxInt);
+        Delete(s, p, MaxInt);
 
       entry := ParseLine(s, i + 1);
 
       if entry.Path = '' then Continue;
 
-//      listboxaddscroll(form1.listbox1,'Command: '+s);
+      //      listboxaddscroll(form1.listbox1,'Command: '+s);
 
       if not entry.Path.StartsWith(MP) then
         raise Exception.Create('SECURITY: escape attempt');
@@ -272,18 +271,17 @@ begin
           DeleteFileMask(
             ExtractFilePath(entry.Path),
             ExtractFileName(entry.Path)
-          );
+            );
 
         exfileintree:
           DeleteFileTreeRecursive(
             ExtractFilePath(entry.Path),
             ExtractFileName(entry.Path)
-          );
+            );
 
         exallintree:
         begin
-          if IncludeTrailingPathDelimiter(entry.Path) =
-             IncludeTrailingPathDelimiter(MP) then
+          if IncludeTrailingPathDelimiter(entry.Path) = IncludeTrailingPathDelimiter(MP) then
             raise Exception.Create('SECURITY: refusing to wipe mount root');
 
           DeleteDirContent(entry.Path);
@@ -292,8 +290,8 @@ begin
         exdir:
           DeleteTree(entry.Path);
 
-      else
-        raise Exception.Create('Unknown command');
+        else
+          raise Exception.Create('Unknown command');
       end;
     end;
 

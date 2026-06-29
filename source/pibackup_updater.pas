@@ -56,6 +56,28 @@ begin
     DeleteFile(NEWDEB);
 end;
 
+
+procedure RestartApplication;
+var
+  P: TProcess;
+begin
+  P := TProcess.Create(nil);
+  try
+    P.Executable := '/usr/lib/pibackup/pibackup';
+    P.Options := [];          // Nicht auf das neue Programm warten
+    P.Execute;
+  finally
+    P.Free;
+  end;
+    Application.MainForm.Close;
+//  Application.Terminate;
+end;
+
+
+
+
+
+
 procedure installupdate(box:tlistbox);
 var
   s:string;
@@ -97,8 +119,9 @@ begin
    0
  ) = mrYes then
  begin
-   ExecuteProcess(ParamStr(0), '');
-   Application.MainForm.Close;
+   //ExecuteProcess(ParamStr(0), '');
+   restartapplication;
+
  end;
 
 end
@@ -221,7 +244,6 @@ form5.Label4.caption:= 'Available: ' + RemoteVersion ;
 form5.ShowModal;
 
 case form5.modalresult of
-
         1: installupdate(box);
         2: exit;
         3: snoozeinstall;

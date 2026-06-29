@@ -43,13 +43,12 @@ implementation
 
 procedure TForm4.Button1Click(Sender: TObject);
 begin
-  modalresult:=mryes;
+  modalresult := mrYes;
 end;
 
 procedure TForm4.Button2Click(Sender: TObject);
 begin
-  modalresult:=mrno;
+  modalresult := mrNo;
 end;
 
 end.
-

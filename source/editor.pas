@@ -53,19 +53,23 @@ type
     exfileintree,
     exallintree,
     exdir
-  );
+    );
 
 { ------------------------------------------------------------ }
-function ParseCommand(const s: string; out Cmd: TExcludeCommand): Boolean;
+function ParseCommand(const s: string; out Cmd: TExcludeCommand): boolean;
 var
   key: string;
 begin
   key := LowerCase(Trim(s));
 
-  if key = 'file' then Cmd := exfile else
-  if key = 'fileintree' then Cmd := exfileintree else
-  if key = 'allintree' then Cmd := exallintree else
-  if key = 'dir' then Cmd := exdir else
+  if key = 'file' then Cmd := exfile
+  else
+  if key = 'fileintree' then Cmd := exfileintree
+  else
+  if key = 'allintree' then Cmd := exallintree
+  else
+  if key = 'dir' then Cmd := exdir
+  else
   begin
     Cmd := exUnknown;
     Exit(False);
@@ -75,9 +79,9 @@ begin
 end;
 
 { ------------------------------------------------------------ }
-procedure MarkLine(Memo: TMemo; LineNo: Integer);
+procedure MarkLine(Memo: TMemo; LineNo: integer);
 var
-  i, PosStart: Integer;
+  i, PosStart: integer;
 begin
   if (LineNo < 1) or (LineNo > Memo.Lines.Count) then Exit;
 
@@ -93,9 +97,9 @@ begin
 end;
 
 { ------------------------------------------------------------ }
-function ValidateLineSyntax(const Line: string; LineNo: Integer): string;
+function ValidateLineSyntax(const Line: string; LineNo: integer): string;
 var
-  p: Integer;
+  p: integer;
   key, val, s: string;
   cmd: TExcludeCommand;
 begin
@@ -140,13 +144,11 @@ begin
   case cmd of
 
     exfile:
-      if (Pos('*', ExtractFilePath(val)) > 0) or
-         (Pos('?', ExtractFilePath(val)) > 0) then
+      if (Pos('*', ExtractFilePath(val)) > 0) or (Pos('?', ExtractFilePath(val)) > 0) then
         Exit(Format('Line %d: wildcard only in filename', [LineNo]));
 
     exfileintree:
-      if (Pos('*', ExtractFilePath(val)) > 0) or
-         (Pos('?', ExtractFilePath(val)) > 0) then
+      if (Pos('*', ExtractFilePath(val)) > 0) or (Pos('?', ExtractFilePath(val)) > 0) then
         Exit(Format('Line %d: wildcard not allowed in path', [LineNo]));
 
     exallintree, exdir:
@@ -157,7 +159,7 @@ end;
 { ------------------------------------------------------------ }
 procedure ValidateMemo(Memo: TMemo);
 var
-  i: Integer;
+  i: integer;
   err: string;
 begin
   for i := 0 to Memo.Lines.Count - 1 do
@@ -177,14 +179,14 @@ end;
 procedure openfile(openfile: string);
 begin
   if changes then
-    if MessageDlg('Confirmation','Save changes?',mtConfirmation,[mbYes,mbNo],0)=mryes then
+    if MessageDlg('Confirmation', 'Save changes?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
       Form3.Memo1.Lines.SaveToFile(Filename);
 
   Form3.Memo1.Clear;
   Filename := openfile;
   Form3.Memo1.Lines.LoadFromFile(Filename);
   Form3.Caption := Filename;
-  changes := false;
+  changes := False;
 end;
 
 procedure updatecombobox;
@@ -222,7 +224,7 @@ begin
       Abort;
     end;
   end;
-  changes:=false;
+  changes := False;
 end;
 
 
@@ -239,7 +241,7 @@ begin
       Abort;
     end;
   end;
-   changes:=false;
+  changes := False;
 end;
 
 procedure TForm3.bt_openfileClick(Sender: TObject);
@@ -274,7 +276,7 @@ end;
 
 procedure TForm3.Memo1Change(Sender: TObject);
 begin
-  changes := true;
+  changes := True;
 end;
 
 procedure TForm3.bt_closeClick(Sender: TObject);

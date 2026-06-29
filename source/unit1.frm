@@ -10,7 +10,6 @@ object Form1: TForm1
   ClientWidth = 1146
   Position = poDesktopCenter
   LCLVersion = '8.9'
-  OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
   object Label2: TLabel
@@ -502,7 +501,6 @@ object Form1: TForm1
       Width = 55
       BorderSpacing.Left = 10
       Caption = 'Password'
-      OnClick = lbl_userpasswordClick
     end
   end
   object Btn_SaveLog: TButton
@@ -621,7 +619,6 @@ object Form1: TForm1
     ClientHeight = 25
     ClientWidth = 710
     TabOrder = 12
-    OnClick = Panel3Click
     object Edit1: TEdit
       AnchorSideLeft.Control = Panel3
       AnchorSideTop.Control = Panel3

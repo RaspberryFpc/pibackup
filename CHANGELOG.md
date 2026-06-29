@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
+## [2.0.6] – 2026-06-29
+
+### Bugfix
+- Fixed an issue where the application could fail to restart after a successful update.
+
+
 ## [2.0.5] – 2026-06-28
 
 ### Changed
