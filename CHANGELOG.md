@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
+## [2.0.7] – 2026-06-29
+
+### Test
+- New Version for checking updates.
+
 ## [2.0.6] – 2026-06-29
 
 ### Bugfix
