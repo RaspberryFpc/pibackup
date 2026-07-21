@@ -8,6 +8,7 @@ object Form1: TForm1
   BorderStyle = bsSingle
   ClientHeight = 561
   ClientWidth = 1146
+  Menu = MainMenu1
   Position = poDesktopCenter
   LCLVersion = '8.9'
   OnClose = FormClose
@@ -94,21 +95,38 @@ object Form1: TForm1
     ParentFont = False
     TabOrder = 3
     TabStop = True
+    OnChange = RadioButtonChange
   end
   object RadioButton2: TRadioButton
     AnchorSideLeft.Control = RadioButton1
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = RadioButton1
-    Left = 279
+    Left = 274
     Height = 23
     Top = 15
     Width = 212
-    BorderSpacing.Left = 30
+    BorderSpacing.Left = 25
     Caption = 'Restore Backup or other Image'
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 2
-    OnChange = RadioButton2Change
+    OnChange = RadioButtonChange
+  end
+  object RadioButton3: TRadioButton
+    AnchorSideLeft.Control = RadioButton2
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = RadioButton1
+    Left = 511
+    Height = 23
+    Top = 15
+    Width = 59
+    BorderSpacing.Left = 25
+    Caption = 'Clone'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 13
+    Visible = False
+    OnChange = RadioButtonChange
   end
   object Panel1: TPanel
     AnchorSideLeft.Control = StringGrid1
@@ -242,267 +260,6 @@ object Form1: TForm1
       TabOrder = 8
     end
   end
-  object Panel2: TPanel
-    AnchorSideLeft.Control = StringGrid1
-    AnchorSideTop.Control = StringGrid1
-    AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Control = StringGrid1
-    AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = Panel1
-    AnchorSideBottom.Side = asrBottom
-    Left = 8
-    Height = 100
-    Top = 246
-    Width = 1088
-    Anchors = [akTop, akLeft, akRight]
-    BorderSpacing.Top = 4
-    BevelInner = bvLowered
-    ClientHeight = 100
-    ClientWidth = 1088
-    TabOrder = 5
-    Visible = False
-    object ScrollBar1: TScrollBar
-      AnchorSideRight.Control = Eddeviceid
-      AnchorSideRight.Side = asrBottom
-      Left = 53
-      Height = 14
-      Top = 6
-      Width = 560
-      Anchors = [akTop, akRight]
-      LargeChange = 100
-      PageSize = 0
-      TabOrder = 0
-      OnChange = ScrollBar1Change
-    end
-    object Label_ManSelected: TLabel
-      AnchorSideLeft.Control = ScrollBar1
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = ScrollBar1
-      AnchorSideTop.Side = asrCenter
-      Left = 625
-      Height = 18
-      Top = 4
-      Width = 288
-      AutoSize = False
-      BorderSpacing.Left = 12
-      Caption = '0 MB'
-      Font.Height = 16
-      ParentFont = False
-    end
-    object CheckBoxChangeDeviceID: TCheckBox
-      AnchorSideTop.Control = Eddeviceid
-      AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = Eddeviceid
-      Left = 374
-      Height = 23
-      Top = 30
-      Width = 119
-      Anchors = [akTop, akRight]
-      Caption = 'change device id'
-      TabOrder = 1
-      OnChange = CheckBoxChangeDeviceIDChange
-    end
-    object Eddeviceid: TEdit
-      AnchorSideTop.Control = CheckBox_DelPartition3
-      AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = EDuserpassword
-      AnchorSideRight.Side = asrBottom
-      Left = 493
-      Height = 25
-      Top = 29
-      Width = 120
-      Alignment = taCenter
-      Anchors = [akRight]
-      TabOrder = 2
-      OnChange = EddeviceidChange
-      OnKeyPress = EddeviceidKeyPress
-    end
-    object CheckBox_DelPartition4: TCheckBox
-      AnchorSideLeft.Control = CheckBox_DelPartition3
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = Eddeviceid
-      AnchorSideTop.Side = asrCenter
-      Left = 223
-      Height = 23
-      Top = 30
-      Width = 122
-      Caption = 'delete partition 4'
-      TabOrder = 3
-      OnChange = GridUpdate
-    end
-    object CheckBox_DelPartition3: TCheckBox
-      AnchorSideLeft.Control = EDusername
-      AnchorSideTop.Control = Eddeviceid
-      AnchorSideTop.Side = asrCenter
-      Left = 95
-      Height = 23
-      Top = 30
-      Width = 128
-      Caption = 'delete  partition 3 '
-      DoubleBuffered = False
-      ParentDoubleBuffered = False
-      TabOrder = 4
-      OnChange = GridUpdate
-    end
-    object ButtonWriteImagetodevice: TButton
-      AnchorSideTop.Control = CheckBox_DelPartition3
-      AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = Panel2
-      AnchorSideRight.Side = asrBottom
-      AnchorSideBottom.Control = edit_wlanpassword
-      Left = 877
-      Height = 30
-      Top = 33
-      Width = 164
-      Anchors = [akRight, akBottom]
-      BorderSpacing.Right = 45
-      BorderSpacing.Bottom = 9
-      Caption = 'Write image to device'
-      TabOrder = 5
-      OnClick = ButtonWriteImagetodeviceClick
-    end
-    object CBEnableSSH: TCheckBox
-      AnchorSideLeft.Control = EDuserpassword
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = lbl_user
-      AnchorSideTop.Side = asrCenter
-      Left = 623
-      Height = 23
-      Top = 53
-      Width = 89
-      BorderSpacing.Left = 10
-      Caption = 'Enable SSH'
-      TabOrder = 6
-    end
-    object edit_wlanssid: TEdit
-      AnchorSideLeft.Control = lbl_ssid
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = lbl_host
-      AnchorSideTop.Side = asrCenter
-      Left = 349
-      Height = 25
-      Top = 72
-      Width = 264
-      BorderSpacing.Left = 10
-      TabOrder = 7
-    end
-    object edit_wlanpassword: TEdit
-      AnchorSideLeft.Control = lbl_passphrase
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = lbl_host
-      AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = Panel2
-      AnchorSideRight.Side = asrBottom
-      Left = 729
-      Height = 25
-      Top = 72
-      Width = 347
-      Anchors = [akTop, akLeft, akRight]
-      BorderSpacing.Left = 10
-      BorderSpacing.Right = 10
-      TabOrder = 8
-    end
-    object EDusername: TEdit
-      AnchorSideLeft.Control = lbl_user
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = lbl_user
-      AnchorSideTop.Side = asrCenter
-      Left = 95
-      Height = 25
-      Top = 52
-      Width = 179
-      BorderSpacing.Left = 10
-      TabOrder = 9
-    end
-    object EDuserpassword: TEdit
-      AnchorSideLeft.Control = lbl_userpassword
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = lbl_userpassword
-      AnchorSideTop.Side = asrCenter
-      Left = 349
-      Height = 25
-      Top = 52
-      Width = 264
-      BorderSpacing.Left = 10
-      TabOrder = 10
-    end
-    object EDhost: TEdit
-      AnchorSideLeft.Control = lbl_host
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = lbl_host
-      AnchorSideTop.Side = asrCenter
-      Left = 95
-      Height = 25
-      Top = 72
-      Width = 180
-      BorderSpacing.Left = 10
-      TabOrder = 11
-    end
-    object lbl_host: TLabel
-      AnchorSideLeft.Control = CBEnableSSH
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = EDhost
-      AnchorSideTop.Side = asrCenter
-      Left = 26
-      Height = 17
-      Top = 76
-      Width = 59
-      Anchors = []
-      BorderSpacing.Left = 10
-      Caption = 'Hostname'
-    end
-    object lbl_ssid: TLabel
-      AnchorSideLeft.Control = EDhost
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = lbl_host
-      AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = lbl_userpassword
-      AnchorSideRight.Side = asrBottom
-      Left = 313
-      Height = 17
-      Top = 76
-      Width = 26
-      Anchors = [akTop, akRight]
-      BorderSpacing.Left = 10
-      Caption = 'SSID'
-    end
-    object lbl_passphrase: TLabel
-      AnchorSideLeft.Control = edit_wlanssid
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = lbl_host
-      AnchorSideTop.Side = asrCenter
-      Left = 623
-      Height = 17
-      Top = 76
-      Width = 96
-      BorderSpacing.Left = 10
-      Caption = 'Passphrase (PSK)'
-    end
-    object lbl_user: TLabel
-      AnchorSideLeft.Control = lbl_host
-      AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = lbl_host
-      AnchorSideRight.Side = asrBottom
-      Left = 58
-      Height = 17
-      Top = 56
-      Width = 27
-      Anchors = [akTop, akRight]
-      Caption = 'User'
-    end
-    object lbl_userpassword: TLabel
-      AnchorSideLeft.Control = EDusername
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = EDusername
-      AnchorSideTop.Side = asrCenter
-      Left = 284
-      Height = 17
-      Top = 56
-      Width = 55
-      BorderSpacing.Left = 10
-      Caption = 'Password'
-    end
-  end
   object Btn_SaveLog: TButton
     AnchorSideTop.Control = RadioButton2
     AnchorSideTop.Side = asrCenter
@@ -602,6 +359,17 @@ object Form1: TForm1
     Anchors = [akTop, akRight]
     Caption = 'image file'
   end
+  object ComboBox2: TComboBox
+    Left = 176
+    Height = 25
+    Top = 73
+    Width = 710
+    ItemHeight = 17
+    TabOrder = 15
+    OnChange = ComboBox1Change
+    OnCloseUp = ComboBox1CloseUp
+    OnDropDown = ComboBox1DropDown
+  end
   object Panel3: TPanel
     AnchorSideLeft.Control = ComboBox1
     AnchorSideTop.Control = ComboBox1
@@ -653,6 +421,357 @@ object Form1: TForm1
       OnPaint = SpeedButton1Paint
     end
   end
+  object Panel4: TPanel
+    AnchorSideLeft.Control = StringGrid1
+    AnchorSideTop.Control = StringGrid1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = StringGrid1
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Panel1
+    AnchorSideBottom.Side = asrBottom
+    Left = 8
+    Height = 100
+    Top = 246
+    Width = 1088
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Top = 4
+    BevelInner = bvLowered
+    ClientHeight = 100
+    ClientWidth = 1088
+    TabOrder = 14
+    Visible = False
+    object CheckBoxChangeDeviceID1: TCheckBox
+      AnchorSideLeft.Control = CleanCClonTarget
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = CleanCClonTarget
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = Eddeviceid1
+      Left = 361
+      Height = 23
+      Top = 48
+      Width = 119
+      BorderSpacing.Left = 20
+      Caption = 'change device id'
+      TabOrder = 0
+      OnChange = CheckBoxChangeDeviceID1Change
+    end
+    object Eddeviceid1: TEdit
+      AnchorSideLeft.Control = CheckBoxChangeDeviceID1
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = CleanCClonTarget
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Side = asrBottom
+      Left = 480
+      Height = 25
+      Top = 47
+      Width = 250
+      Alignment = taCenter
+      TabOrder = 1
+      OnChange = Eddeviceid1Change
+      OnKeyPress = Eddeviceid1KeyPress
+    end
+    object ButtonWriteClonetodevice: TButton
+      AnchorSideLeft.Control = Eddeviceid1
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = CleanCClonTarget
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = Panel4
+      AnchorSideRight.Side = asrBottom
+      Left = 770
+      Height = 30
+      Top = 44
+      Width = 134
+      BorderSpacing.Left = 40
+      Caption = 'Clone to device'
+      TabOrder = 2
+      OnClick = ButtonWriteClonetodeviceClick
+    end
+    object CleanCClonTarget: TCheckBox
+      Left = 96
+      Height = 23
+      Top = 48
+      Width = 245
+      Caption = 'Delete extra partitions on target device'
+      TabOrder = 3
+      OnChange = CleanCClonTargetChange
+    end
+  end
+  object Panel2: TPanel
+    AnchorSideLeft.Control = StringGrid1
+    AnchorSideTop.Control = StringGrid1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = StringGrid1
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Panel1
+    AnchorSideBottom.Side = asrBottom
+    Left = 8
+    Height = 100
+    Top = 246
+    Width = 1088
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Top = 4
+    BevelInner = bvLowered
+    ClientHeight = 100
+    ClientWidth = 1088
+    TabOrder = 5
+    Visible = False
+    object ScrollBar1: TScrollBar
+      AnchorSideLeft.Control = EDusername
+      AnchorSideRight.Control = ButtonWriteImagetodevice
+      Left = 95
+      Height = 14
+      Top = 78
+      Width = 782
+      Anchors = [akTop, akLeft, akRight]
+      LargeChange = 100
+      PageSize = 0
+      TabOrder = 0
+      OnChange = ScrollBar1Change
+    end
+    object Label_ManSelected: TLabel
+      AnchorSideLeft.Control = ScrollBar1
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ScrollBar1
+      AnchorSideTop.Side = asrCenter
+      Left = 889
+      Height = 18
+      Top = 76
+      Width = 176
+      AutoSize = False
+      BorderSpacing.Left = 12
+      Caption = '0 MB'
+      Font.Height = 16
+      ParentFont = False
+    end
+    object CheckBoxChangeDeviceID: TCheckBox
+      AnchorSideTop.Control = Eddeviceid
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = Eddeviceid
+      Left = 374
+      Height = 23
+      Top = 4
+      Width = 119
+      Anchors = [akTop, akRight]
+      Caption = 'change device id'
+      TabOrder = 1
+      OnChange = EddeviceidChange
+    end
+    object Eddeviceid: TEdit
+      AnchorSideTop.Control = CheckBox_DelPartition3
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = EDuserpassword
+      AnchorSideRight.Side = asrBottom
+      Left = 493
+      Height = 25
+      Top = 3
+      Width = 120
+      Alignment = taCenter
+      Anchors = [akRight]
+      ParentFont = False
+      TabOrder = 2
+      OnChange = EddeviceidChange
+      OnKeyPress = EddeviceidKeyPress
+    end
+    object CheckBox_DelPartition4: TCheckBox
+      AnchorSideLeft.Control = CheckBox_DelPartition3
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = Eddeviceid
+      AnchorSideTop.Side = asrCenter
+      Left = 223
+      Height = 23
+      Top = 4
+      Width = 122
+      Caption = 'delete partition 4'
+      TabOrder = 3
+      OnChange = GridUpdate
+    end
+    object CheckBox_DelPartition3: TCheckBox
+      AnchorSideLeft.Control = EDusername
+      AnchorSideTop.Control = Eddeviceid
+      AnchorSideTop.Side = asrCenter
+      Left = 95
+      Height = 23
+      Top = 4
+      Width = 128
+      Caption = 'delete  partition 3 '
+      DoubleBuffered = False
+      ParentDoubleBuffered = False
+      TabOrder = 4
+      OnChange = GridUpdate
+    end
+    object ButtonWriteImagetodevice: TButton
+      AnchorSideTop.Control = CheckBox_DelPartition3
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = Panel2
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = edit_wlanpassword
+      Left = 877
+      Height = 30
+      Top = 9
+      Width = 164
+      Anchors = [akRight, akBottom]
+      BorderSpacing.Right = 45
+      BorderSpacing.Bottom = 9
+      Caption = 'Write image to device'
+      TabOrder = 5
+      OnClick = ButtonWriteImagetodeviceClick
+    end
+    object CBEnableSSH: TCheckBox
+      AnchorSideLeft.Control = EDuserpassword
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = lbl_user
+      AnchorSideTop.Side = asrCenter
+      Left = 623
+      Height = 23
+      Top = 29
+      Width = 89
+      BorderSpacing.Left = 10
+      Caption = 'Enable SSH'
+      TabOrder = 6
+    end
+    object edit_wlanssid: TEdit
+      AnchorSideLeft.Control = lbl_ssid
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = lbl_host
+      AnchorSideTop.Side = asrCenter
+      Left = 349
+      Height = 25
+      Top = 48
+      Width = 264
+      BorderSpacing.Left = 10
+      TabOrder = 7
+    end
+    object edit_wlanpassword: TEdit
+      AnchorSideLeft.Control = lbl_passphrase
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = lbl_host
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = Panel2
+      AnchorSideRight.Side = asrBottom
+      Left = 729
+      Height = 25
+      Top = 48
+      Width = 347
+      Anchors = [akTop, akLeft, akRight]
+      BorderSpacing.Left = 10
+      BorderSpacing.Right = 10
+      TabOrder = 8
+    end
+    object EDusername: TEdit
+      AnchorSideLeft.Control = lbl_user
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = lbl_user
+      AnchorSideTop.Side = asrCenter
+      Left = 95
+      Height = 25
+      Top = 28
+      Width = 179
+      BorderSpacing.Left = 10
+      TabOrder = 9
+    end
+    object EDuserpassword: TEdit
+      AnchorSideLeft.Control = lbl_userpassword
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = lbl_userpassword
+      AnchorSideTop.Side = asrCenter
+      Left = 349
+      Height = 25
+      Top = 28
+      Width = 264
+      BorderSpacing.Left = 10
+      TabOrder = 10
+    end
+    object EDhost: TEdit
+      AnchorSideLeft.Control = lbl_host
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = lbl_host
+      AnchorSideTop.Side = asrCenter
+      Left = 95
+      Height = 25
+      Top = 48
+      Width = 180
+      BorderSpacing.Left = 10
+      TabOrder = 11
+    end
+    object lbl_host: TLabel
+      AnchorSideLeft.Control = CBEnableSSH
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = EDhost
+      AnchorSideTop.Side = asrCenter
+      Left = 26
+      Height = 17
+      Top = 52
+      Width = 59
+      Anchors = []
+      BorderSpacing.Left = 10
+      Caption = 'Hostname'
+      OnClick = lbl_hostClick
+    end
+    object lbl_ssid: TLabel
+      AnchorSideLeft.Control = EDhost
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = lbl_host
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = lbl_userpassword
+      AnchorSideRight.Side = asrBottom
+      Left = 313
+      Height = 17
+      Top = 52
+      Width = 26
+      Anchors = [akTop, akRight]
+      BorderSpacing.Left = 10
+      Caption = 'SSID'
+    end
+    object lbl_passphrase: TLabel
+      AnchorSideLeft.Control = edit_wlanssid
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = lbl_host
+      AnchorSideTop.Side = asrCenter
+      Left = 623
+      Height = 17
+      Top = 52
+      Width = 96
+      BorderSpacing.Left = 10
+      Caption = 'Passphrase (PSK)'
+    end
+    object lbl_user: TLabel
+      AnchorSideLeft.Control = lbl_host
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = lbl_host
+      AnchorSideRight.Side = asrBottom
+      Left = 58
+      Height = 17
+      Top = 32
+      Width = 27
+      Anchors = [akTop, akRight]
+      Caption = 'User'
+    end
+    object lbl_userpassword: TLabel
+      AnchorSideLeft.Control = EDusername
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = EDusername
+      AnchorSideTop.Side = asrCenter
+      Left = 284
+      Height = 17
+      Top = 32
+      Width = 55
+      BorderSpacing.Left = 10
+      Caption = 'Password'
+    end
+    object Label4: TLabel
+      AnchorSideLeft.Control = ScrollBar1
+      AnchorSideTop.Control = ScrollBar1
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = ScrollBar1
+      Left = 23
+      Height = 17
+      Top = 77
+      Width = 61
+      Anchors = [akTop, akRight]
+      BorderSpacing.Right = 11
+      Caption = 'Target size'
+    end
+  end
   object SaveDialog1: TSaveDialog
     DefaultExt = '.img'
     Left = 376
@@ -671,5 +790,17 @@ object Form1: TForm1
     OnTimer = Timer1Timer
     Left = 32
     Top = 56
+  end
+  object PopupMenu1: TPopupMenu
+    Left = 597
+    Top = 48
+  end
+  object MainMenu1: TMainMenu
+    Left = 626
+    Top = 48
+  end
+  object PopupMenu2: TPopupMenu
+    Left = 24
+    Top = 392
   end
 end

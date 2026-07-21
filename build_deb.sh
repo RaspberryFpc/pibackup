@@ -1,9 +1,21 @@
 #!/bin/bash
 set -euo pipefail
 
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 <version>"
+    echo "Example:  $02.0.8"
+    exit 1
+fi
+
+version="$1"
+#version="2.0.7"
+
 PKG="pibackup_pkg"
-version="2.0.7"
+
 OUTDIR="/home/pi/git/pibackup/bin"
+
+echo "v$version" > "$OUTDIR/version.txt"
+
 
 SRC_BIN="/home/pi/git/pibackup/source/pibackup"
 ICON="/home/pi/git/pibackup/source/pibackup.png"

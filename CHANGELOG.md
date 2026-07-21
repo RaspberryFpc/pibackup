@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
+## [2.0.8] – 2026-07-21
+
+### Bugfix
+- Fixed an issue where writing the device ID in uppercase to fstab and cmdline.txt could result in a non-bootable system
+
+
 ## [2.0.7] – 2026-06-29
 
 ### Test

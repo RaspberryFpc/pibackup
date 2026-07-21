@@ -5,16 +5,10 @@ unit ExcludeProcessor;
 interface
 
 uses
-  Classes, SysUtils, fileutil, rkutils;
+  Classes, SysUtils, fileutil, rkutils, baseunix;
 
 type
-  TExcludeCommand = (
-    exUnknown,
-    exfile,
-    exfileintree,
-    exallintree,
-    exdir
-    );
+  TExcludeCommand = (exUnknown, exfile, exfileintree, exallintree, exdir);
 
   TExcludeEntry = record
     Command: TExcludeCommand;
@@ -182,37 +176,17 @@ end;
 { ------------------------------------------------------------ }
 
 procedure DeleteDirContent(const ADir: string);
+
 var
-  SR: TSearchRec;
-  Path: string;
+  st: Stat;
 begin
-  Path := IncludeTrailingPathDelimiter(ADir);
-
-  if not DirectoryExists(ADir) then Exit;
-
-  if FindFirst(Path + '*', faAnyFile, SR) = 0 then
-  try
-    repeat
-      if (SR.Name <> '.') and (SR.Name <> '..') then
-      begin
-        if (SR.Attr and faDirectory) <> 0 then
-        begin
-          DeleteDirectory(Path + SR.Name, True);
-          listboxaddscroll(form1.ListBox1,
-            'deleted dir: ' + RelPath(Path + SR.Name));
-        end
-        else
-        begin
-          if not SysUtils.DeleteFile(Path + SR.Name) then
-            raise Exception.Create('Failed: ' + RelPath(Path + SR.Name));
-
-          listboxaddscroll(form1.ListBox1,
-            'deleted file: ' + RelPath(Path + SR.Name));
-        end;
-      end;
-    until FindNext(SR) <> 0;
-  finally
-    FindClose(SR);
+   if not DirectoryExists(ADir) then Exit;
+  if fpStat(ADir, st) = 0 then
+  begin
+  if not DeleteDirectory(ADir, True) then
+    raise Exception.Create('Failed to delete all in tree: ' + RelPath(ADir));
+    CreateDir(ADir);
+    fpChmod(ADir, st.st_mode and $FFF);
   end;
 end;
 
