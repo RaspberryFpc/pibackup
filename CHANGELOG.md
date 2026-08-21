@@ -7,6 +7,9 @@ All notable changes to this project are documented in this file.
 
 - Added intelligent cloning. Existing additional partitions are overwritten only after user confirmation.
 
+### Bugfix
+- Fixed an issue where the application could fail to download.
+
 
 ## [2.0.8] – 2026-07-21
 
