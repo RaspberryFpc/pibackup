@@ -271,8 +271,7 @@ end;
 
 
 procedure CheckForUpdates(Box: TListBox);
-var
-  remoteversion: string;
+
 begin
 
   if IsSnoozed then exit;

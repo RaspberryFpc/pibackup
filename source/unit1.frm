@@ -6,11 +6,11 @@ object Form1: TForm1
   Width = 1146
   Anchors = []
   BorderStyle = bsSingle
-  ClientHeight = 561
-  ClientWidth = 1146
+  ClientHeight = 240
+  ClientWidth = 320
   Menu = MainMenu1
   Position = poDesktopCenter
-  LCLVersion = '8.9'
+  LCLVersion = '9.0'
   OnClose = FormClose
   OnCreate = FormCreate
   object Label2: TLabel
@@ -34,7 +34,7 @@ object Form1: TForm1
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 8
-    Height = 184
+    Height = 0
     Top = 373
     Width = 1088
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -85,7 +85,7 @@ object Form1: TForm1
     AnchorSideTop.Side = asrBottom
     Left = 40
     Height = 23
-    Top = 15
+    Top = 0
     Width = 209
     Anchors = [akLeft]
     BorderSpacing.Top = 3
@@ -103,7 +103,7 @@ object Form1: TForm1
     AnchorSideTop.Control = RadioButton1
     Left = 274
     Height = 23
-    Top = 15
+    Top = 0
     Width = 145
     BorderSpacing.Left = 25
     Caption = 'Restore from Image'
@@ -118,7 +118,7 @@ object Form1: TForm1
     AnchorSideTop.Control = RadioButton1
     Left = 444
     Height = 23
-    Top = 15
+    Top = 0
     Width = 59
     BorderSpacing.Left = 25
     Caption = 'Clone'
@@ -265,7 +265,7 @@ object Form1: TForm1
     AnchorSideRight.Control = btn_help
     Left = 823
     Height = 25
-    Top = 14
+    Top = -1
     Width = 103
     Anchors = [akTop, akRight]
     Caption = 'Save Log'
@@ -309,7 +309,7 @@ object Form1: TForm1
     AnchorSideRight.Control = btn_close
     Left = 926
     Height = 25
-    Top = 14
+    Top = -1
     Width = 78
     Anchors = [akTop, akRight]
     Caption = 'Help'
@@ -323,7 +323,7 @@ object Form1: TForm1
     AnchorSideRight.Side = asrBottom
     Left = 1004
     Height = 25
-    Top = 14
+    Top = -1
     Width = 80
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 12
@@ -339,7 +339,7 @@ object Form1: TForm1
     AnchorSideRight.Control = Btn_SaveLog
     Left = 697
     Height = 25
-    Top = 14
+    Top = -1
     Width = 126
     Anchors = [akTop, akRight]
     Caption = 'Edit exclude files'

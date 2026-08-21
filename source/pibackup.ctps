@@ -26,9 +26,11 @@
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
         <UsageCount Value="201"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <CursorPos Y="2118"/>
+        <TopLine Value="159"/>
+        <CursorPos X="60" Y="160"/>
         <Bookmarks Count="1">
           <Item0 X="18" Y="1875" Left="1" Top="1869" ID="6"/>
         </Bookmarks>
@@ -52,7 +54,6 @@
         <UnitName Value="Zstd"/>
         <Loaded Value="True"/>
         <UsageCount Value="200"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="220"/>
@@ -156,8 +157,7 @@
         <UsageCount Value="200"/>
         <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="12"/>
-        <CursorPos X="3" Y="18"/>
+        <CursorPos X="30" Y="15"/>
       </Unit>
       <Unit>
         <Filename Value="updatedlg.pas"/>
@@ -172,7 +172,6 @@
         <UsageCount Value="200"/>
         <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="43"/>
         <CursorPos Y="28"/>
       </Unit>
       <Unit>
@@ -529,82 +528,6 @@
     </Units>
     <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="727" Column="13" TopLine="711"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="728" Column="49" TopLine="712"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="885" Column="58" TopLine="869"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="924" Column="13" TopLine="908"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="925" Column="100" TopLine="909"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="1159" Column="67" TopLine="1142"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="1148" Column="41" TopLine="1139"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="1149" Column="41" TopLine="1140"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="1150" Column="41" TopLine="1141"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="1152" Column="41" TopLine="1143"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="1153" Column="41" TopLine="1144"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="1154" Column="41" TopLine="1145"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="1153" Column="41" TopLine="1144"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="1152" Column="41" TopLine="1143"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="1151" Column="41" TopLine="1142"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="1150" Column="41" TopLine="1141"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="101" Column="15" TopLine="98"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="100" Column="32" TopLine="98"/>
-      </Position>
-      <Position>
-        <Filename Value="pibackup_updater.pas"/>
-        <Caret Line="122" Column="3" TopLine="119"/>
-      </Position>
-      <Position>
         <Filename Value="pibackup_updater.pas"/>
         <Caret Line="36" Column="68" TopLine="25"/>
       </Position>
@@ -647,6 +570,82 @@
       <Position>
         <Filename Value="zstd.pas"/>
         <Caret Line="112" Column="34" TopLine="105"/>
+      </Position>
+      <Position>
+        <Filename Value="pibackup_updater.pas"/>
+        <Caret Line="22" TopLine="18"/>
+      </Position>
+      <Position>
+        <Filename Value="pibackup_updater.pas"/>
+        <Caret Line="36" TopLine="29"/>
+      </Position>
+      <Position>
+        <Filename Value="pibackup_updater.pas"/>
+        <Caret Line="23" Column="13" TopLine="14"/>
+      </Position>
+      <Position>
+        <Filename Value="pibackup_updater.pas"/>
+        <Caret Line="25" Column="23" TopLine="14"/>
+      </Position>
+      <Position>
+        <Filename Value="pibackup_updater.pas"/>
+        <Caret Line="125" Column="111" TopLine="109"/>
+      </Position>
+      <Position>
+        <Filename Value="pibackup_updater.pas"/>
+        <Caret Line="274" TopLine="262"/>
+      </Position>
+      <Position>
+        <Filename Value="pibackup_updater.pas"/>
+        <Caret Line="277" Column="40" TopLine="263"/>
+      </Position>
+      <Position>
+        <Filename Value="pibackup_updater.pas"/>
+        <Caret Line="279" Column="33" TopLine="263"/>
+      </Position>
+      <Position>
+        <Filename Value="pibackup_updater.pas"/>
+        <Caret Line="280" Column="16" TopLine="264"/>
+      </Position>
+      <Position>
+        <Filename Value="pibackup_updater.pas"/>
+        <Caret Line="282" Column="31" TopLine="266"/>
+      </Position>
+      <Position>
+        <Filename Value="pibackup_updater.pas"/>
+        <Caret Line="289" Column="53" TopLine="273"/>
+      </Position>
+      <Position>
+        <Filename Value="pibackup_updater.pas"/>
+        <Caret Line="23" Column="13" TopLine="14"/>
+      </Position>
+      <Position>
+        <Filename Value="pibackup_updater.pas"/>
+        <Caret Line="25" Column="23" TopLine="14"/>
+      </Position>
+      <Position>
+        <Filename Value="pibackup_updater.pas"/>
+        <Caret Line="125" Column="111" TopLine="109"/>
+      </Position>
+      <Position>
+        <Filename Value="pibackup_updater.pas"/>
+        <Caret Line="282" Column="58" TopLine="273"/>
+      </Position>
+      <Position>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="159" Column="16" TopLine="150"/>
+      </Position>
+      <Position>
+        <Filename Value="pibackup_updater.pas"/>
+        <Caret Line="294" Column="17" TopLine="284"/>
+      </Position>
+      <Position>
+        <Filename Value="pibackup_updater.pas"/>
+        <Caret Line="286" TopLine="208"/>
+      </Position>
+      <Position>
+        <Filename Value="pibackup_updater.pas"/>
+        <Caret Line="23" Column="26" TopLine="14"/>
       </Position>
     </JumpHistory>
     <RunParams>
