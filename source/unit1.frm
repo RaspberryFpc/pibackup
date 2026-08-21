@@ -104,9 +104,9 @@ object Form1: TForm1
     Left = 274
     Height = 23
     Top = 15
-    Width = 212
+    Width = 145
     BorderSpacing.Left = 25
-    Caption = 'Restore Backup or other Image'
+    Caption = 'Restore from Image'
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 2
@@ -116,7 +116,7 @@ object Form1: TForm1
     AnchorSideLeft.Control = RadioButton2
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = RadioButton1
-    Left = 511
+    Left = 444
     Height = 23
     Top = 15
     Width = 59
@@ -125,7 +125,6 @@ object Form1: TForm1
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 13
-    Visible = False
     OnChange = RadioButtonChange
   end
   object Panel1: TPanel
@@ -368,7 +367,7 @@ object Form1: TForm1
     TabOrder = 15
     OnChange = ComboBox1Change
     OnCloseUp = ComboBox1CloseUp
-    OnDropDown = ComboBox1DropDown
+    OnDropDown = ComboBox2DropDown
   end
   object Panel3: TPanel
     AnchorSideLeft.Control = ComboBox1
@@ -445,7 +444,7 @@ object Form1: TForm1
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = CleanCClonTarget
       AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = Eddeviceid1
+      AnchorSideRight.Control = Eddeviceidclone
       Left = 361
       Height = 23
       Top = 48
@@ -455,7 +454,7 @@ object Form1: TForm1
       TabOrder = 0
       OnChange = CheckBoxChangeDeviceID1Change
     end
-    object Eddeviceid1: TEdit
+    object Eddeviceidclone: TEdit
       AnchorSideLeft.Control = CheckBoxChangeDeviceID1
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = CleanCClonTarget
@@ -467,11 +466,11 @@ object Form1: TForm1
       Width = 250
       Alignment = taCenter
       TabOrder = 1
-      OnChange = Eddeviceid1Change
-      OnKeyPress = Eddeviceid1KeyPress
+      OnChange = EddeviceidcloneChange
+      OnKeyPress = EddeviceidcloneKeyPress
     end
     object ButtonWriteClonetodevice: TButton
-      AnchorSideLeft.Control = Eddeviceid1
+      AnchorSideLeft.Control = Eddeviceidclone
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = CleanCClonTarget
       AnchorSideTop.Side = asrCenter
@@ -515,27 +514,13 @@ object Form1: TForm1
     ClientWidth = 1088
     TabOrder = 5
     Visible = False
-    object ScrollBar1: TScrollBar
-      AnchorSideLeft.Control = EDusername
-      AnchorSideRight.Control = ButtonWriteImagetodevice
-      Left = 95
-      Height = 14
-      Top = 78
-      Width = 782
-      Anchors = [akTop, akLeft, akRight]
-      LargeChange = 100
-      PageSize = 0
-      TabOrder = 0
-      OnChange = ScrollBar1Change
-    end
     object Label_ManSelected: TLabel
-      AnchorSideLeft.Control = ScrollBar1
       AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = ScrollBar1
+      AnchorSideTop.Control = plScrollbar1
       AnchorSideTop.Side = asrCenter
       Left = 889
       Height = 18
-      Top = 76
+      Top = 80
       Width = 176
       AutoSize = False
       BorderSpacing.Left = 12
@@ -553,8 +538,8 @@ object Form1: TForm1
       Width = 119
       Anchors = [akTop, akRight]
       Caption = 'change device id'
-      TabOrder = 1
-      OnChange = EddeviceidChange
+      TabOrder = 0
+      OnChange = CheckBoxChangeDeviceIDChange
     end
     object Eddeviceid: TEdit
       AnchorSideTop.Control = CheckBox_DelPartition3
@@ -568,7 +553,7 @@ object Form1: TForm1
       Alignment = taCenter
       Anchors = [akRight]
       ParentFont = False
-      TabOrder = 2
+      TabOrder = 1
       OnChange = EddeviceidChange
       OnKeyPress = EddeviceidKeyPress
     end
@@ -582,7 +567,7 @@ object Form1: TForm1
       Top = 4
       Width = 122
       Caption = 'delete partition 4'
-      TabOrder = 3
+      TabOrder = 2
       OnChange = GridUpdate
     end
     object CheckBox_DelPartition3: TCheckBox
@@ -596,7 +581,7 @@ object Form1: TForm1
       Caption = 'delete  partition 3 '
       DoubleBuffered = False
       ParentDoubleBuffered = False
-      TabOrder = 4
+      TabOrder = 3
       OnChange = GridUpdate
     end
     object ButtonWriteImagetodevice: TButton
@@ -613,7 +598,7 @@ object Form1: TForm1
       BorderSpacing.Right = 45
       BorderSpacing.Bottom = 9
       Caption = 'Write image to device'
-      TabOrder = 5
+      TabOrder = 4
       OnClick = ButtonWriteImagetodeviceClick
     end
     object CBEnableSSH: TCheckBox
@@ -627,7 +612,7 @@ object Form1: TForm1
       Width = 89
       BorderSpacing.Left = 10
       Caption = 'Enable SSH'
-      TabOrder = 6
+      TabOrder = 5
     end
     object edit_wlanssid: TEdit
       AnchorSideLeft.Control = lbl_ssid
@@ -639,7 +624,7 @@ object Form1: TForm1
       Top = 48
       Width = 264
       BorderSpacing.Left = 10
-      TabOrder = 7
+      TabOrder = 6
     end
     object edit_wlanpassword: TEdit
       AnchorSideLeft.Control = lbl_passphrase
@@ -655,7 +640,7 @@ object Form1: TForm1
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Left = 10
       BorderSpacing.Right = 10
-      TabOrder = 8
+      TabOrder = 7
     end
     object EDusername: TEdit
       AnchorSideLeft.Control = lbl_user
@@ -667,7 +652,7 @@ object Form1: TForm1
       Top = 28
       Width = 179
       BorderSpacing.Left = 10
-      TabOrder = 9
+      TabOrder = 8
     end
     object EDuserpassword: TEdit
       AnchorSideLeft.Control = lbl_userpassword
@@ -679,7 +664,7 @@ object Form1: TForm1
       Top = 28
       Width = 264
       BorderSpacing.Left = 10
-      TabOrder = 10
+      TabOrder = 9
     end
     object EDhost: TEdit
       AnchorSideLeft.Control = lbl_host
@@ -691,7 +676,7 @@ object Form1: TForm1
       Top = 48
       Width = 180
       BorderSpacing.Left = 10
-      TabOrder = 11
+      TabOrder = 10
     end
     object lbl_host: TLabel
       AnchorSideLeft.Control = CBEnableSSH
@@ -705,7 +690,6 @@ object Form1: TForm1
       Anchors = []
       BorderSpacing.Left = 10
       Caption = 'Hostname'
-      OnClick = lbl_hostClick
     end
     object lbl_ssid: TLabel
       AnchorSideLeft.Control = EDhost
@@ -759,17 +743,29 @@ object Form1: TForm1
       Caption = 'Password'
     end
     object Label4: TLabel
-      AnchorSideLeft.Control = ScrollBar1
-      AnchorSideTop.Control = ScrollBar1
+      AnchorSideLeft.Control = lbl_host
+      AnchorSideTop.Control = plScrollbar1
       AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = ScrollBar1
-      Left = 23
+      Left = 26
       Height = 17
-      Top = 77
-      Width = 61
-      Anchors = [akTop, akRight]
+      Top = 81
+      Width = 88
       BorderSpacing.Right = 11
-      Caption = 'Target size'
+      Caption = 'Target size root'
+    end
+    object plScrollbar1: TplScrollbar
+      AnchorSideLeft.Control = Label4
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = Label_ManSelected
+      Left = 125
+      Height = 22
+      Top = 78
+      Width = 752
+      Max = 10000
+      LargeChange = 5
+      OnScroll = plScrollbar1Scroll
+      ParentColor = False
     end
   end
   object SaveDialog1: TSaveDialog

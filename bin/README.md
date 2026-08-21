@@ -1,13 +1,14 @@
-# 🚀 pibackup -- Raspberry Pi Backup & Restore Tool
+# 🚀 pibackup -- Raspberry Pi Backup,Restore & Clone Tool
 
-pibackup is a portable 64-bit backup and restore tool with a simple
+Pibackup is a 64-bit backup,restore and clone tool with a simple
 graphical user interface,  
 designed for Raspberry Pi and Linux systems.
 It can create, shrink, compress (Zstandard) and restore images of SD
 cards, SSDs and HDDs.  
 Backups are safe, flexible, and can be restored directly from .img or
 .img.zst files.
-👉 Unlike typical SD card tools, pibackup works with large storagedevices (SSD/HDD) as well as smaller SD cards.
+ Unlike typical SD card tools, pibackup works with large storagedevices (SSD/HDD) as well as smaller SD cards.
+ The new cloning feature automatically checks whether changes to the partition layout are required and prompts you to confirm any necessary adjustments.
 
 ## ✨ Features
 

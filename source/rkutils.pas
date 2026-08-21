@@ -55,7 +55,8 @@ type
     val: array of qword;
   end;
 
-
+const
+tempmountpoint='/tmp/tempworkmountpoint';
 
 procedure EnsureEnoughSpace(const FilePath: string; NewSize: int64);
 function statvfs(path: pchar; var buf: TStatVFS): cint; cdecl; external 'c';
@@ -73,11 +74,11 @@ procedure Listboxaddscroll(listbox: tlistbox; item: string);
 procedure Listboxupdate(listbox: tlistbox; item: string);
 procedure getDrives(sl: TStrings; excludesys: boolean);
 procedure setPartuuidinmbr(device: string; NewSignature: dword);
-function setPartUUIDInCmdline(Device: string; partition: integer; sig: dword): boolean;
-function ReplacePartUUIDInFstab(device: string; sig: dword): string;
-procedure ChangeHost(device: string; newHostName: string);
-procedure enableSsh(device: string);
-procedure PrepareWLAN(const Device, SSID, PSK: string);
+function SetPartUUIDInCmdline(Mountpoint:string; Sig: DWord): Boolean;
+function ReplacePartUUIDInFstab(mountpoint: string; sig: dword): string;
+procedure ChangeHost(mountpoint: string; newHostName: string);
+procedure enableSsh(mountpoint: string);
+procedure PrepareWLAN(mountpoint, SSID, PSK: string);
 procedure Write_mbr(const mbr: TMbr; const Filename: string);
 procedure MakeImagefirst2partitions(Sourcedrive, Filename: ansistring; listbox: tlistbox);
 procedure ImageToDeviceImgAndZstd(Source, Destination: string; box: TListBox);
@@ -92,6 +93,11 @@ function TryUnmount(const Mp: string): boolean;
 function IsMountedExact(const Mp: string): boolean;
 procedure ParseMountLine(const L: string; out Device, Mp: string);
 procedure ClonePart(Source, Destination: string; box: TListBox);
+function CreateDeviceUUID:longword; //Dword;
+function DecodeDeviceUUID(Value: DWORD): QWORD;
+
+
+
 
 var
   terminate_all: boolean;
@@ -182,7 +188,6 @@ begin
   else
     Result := False;
 end;
-
 
 
 
@@ -581,7 +586,6 @@ begin
  // mbr := Read_Mbr(Device);
  if not  Read_MBR(device,errormsg,mbr) then  exit;
 
- //          fillchar(mbr.PartitionEntries,sizeof(mbr.PartitionEntries),0);
 
 
 
@@ -1144,91 +1148,6 @@ begin
 end;
 
 
-//function Read_Mbr(const filename: string): tmbr;
-//var
-//  Header: array[0..3] of byte;
-//  IsZstd, IsDevice: boolean;
-//  F: TFileStream = nil;
-//  BytesRead: ssize_t;
-//  Proc: TProcess;
-//  Rmbr: tmbr;
-//begin
-//  FillChar(RMbr, 512, 0);
-//  Result := Rmbr;
-//
-//  if not FileExists(filename) then
-//    raise Exception.Create('reading mbr from: ' + filename + ' not found');
-//
-//  IsDevice := Pos('/dev/', filename) = 1;
-//
-//  if IsDevice then
-//  begin
-//    try
-//      F := TFileStream.Create(filename, fmOpenRead or fmShareDenyNone);
-//
-//      F.Position := 0;
-//      Bytesread := F.Read(Rmbr, 512);
-//      if bytesread <> 512 then raise Exception.Create('error reading MBR: ' + filename);
-//      if (RMbr.Signature <> $aa55) then
-//        raise Exception.Create('reading mbr - wrong mbr signature: ' + filename + ' = 0x' + hexstr(RMbr.Signature, 4) + ' instead of 0xaa55.');
-//    finally
-//      if assigned(F) then F.Free;
-//    end;
-//    Result := Rmbr;
-//    Exit;
-//  end;
-//
-//  // Zstandard-Magic prüfen
-//  F := TFileStream.Create(filename, fmOpenRead or fmShareDenyNone);
-//  try
-//    if F.Read(Header, 4) <> 4 then Exit;   // 4byte lesen
-//    IsZstd := (Header[0] = $28) and (Header[1] = $B5) and (Header[2] = $2F) and (Header[3] = $FD);
-//  finally
-//    if assigned(F) then F.Free;
-//  end;
-//
-//  ////////////////////////////  ist Datei  ////////////////////////////////////////////////
-//  if not IsZstd then
-//  begin
-//    F := TFileStream.Create(filename, fmOpenRead or fmShareDenyNone);
-//    try
-//      if F.Size < 512 then
-//        raise Exception.Create('reading mbr - file to small: ' + filename);
-//
-//      F.Position := 0;
-//      Bytesread := F.Read(Rmbr, 512);
-//      if bytesread <> 512 then raise Exception.Create('reading mbr - error reading file: ' + filename);
-//      if (RMbr.Signature <> $aa55) then
-//        raise Exception.Create('reading mbr - wrong mbr signature: ' + filename + ' = 0x' + hexstr(RMbr.Signature, 4) + ' instead of 0xaa55.');
-//      Result := Rmbr;
-//    finally
-//      if assigned(F) then F.Free;
-//    end;
-//  end
-//  else
-//  begin
-//    try
-//      Proc := TProcess.Create(nil);
-//      Proc.Executable := '/bin/sh';
-//      Proc.Parameters.Add('-c');
-//      Proc.Parameters.Add(Format('zstd -dc "%s" | head -c 512', [filename]));
-//      Proc.Options := [poUsePipes];
-//      Proc.Execute;
-//      BytesRead := Proc.Output.Read(RMbr, 512);
-//      if bytesread <> 512 then raise Exception.Create('reading mbr - error reading file: ' + filename);
-//      if (RMbr.Signature <> $aa55) then
-//        raise Exception.Create('reading mbr - wrong mbr signature: ' + filename + ' = 0x' + hexstr(RMbr.Signature, 4) + ' instead of 0xaa55.');
-//      Result := Rmbr;
-//    finally
-//      Proc.Free;
-//    end;
-//  end;
-//end;
-
-
-
-
-
 
    function Read_Mbr(const filename:string; out ErrorMsg: string; out MBR: TMbr): Boolean;
 var
@@ -1397,10 +1316,8 @@ end;
 
 
 
-procedure PrepareWLAN(const Device, SSID, PSK: string);
+procedure PrepareWLAN(mountpoint, SSID, PSK: string);
 var
-  P1, P2: string;
-  M1, M2: string;
   s: ansistring;
   NMDir, NMFile: string;
   UUID: string;
@@ -1419,29 +1336,9 @@ var
   end;
 
 begin
-  // Partitionen ermitteln
-  P1 := partitionname(Device, 1);
-  P2 := partitionname(Device, 2);
-
-  M1 := '/images/tmp_boot';
-  M2 := '/images/tmp_root';
-
-  ForceDirectories(M1);
-  ForceDirectories(M2);
-
-  try
-    // Vorherige Mounts entfernen
-    RunCommand('umount', [M1], s);
-    RunCommand('umount', [M2], s);
-
-    // Partitionen mounten
-    if not RunCommand('mount', [P1, M1], s) then
-      raise Exception.Create('Failed to mount boot: ' + s);
-    if not RunCommand('mount', [P2, M2], s) then
-      raise Exception.Create('Failed to mount root: ' + s);
 
     // --- NetworkManager File ---
-    NMDir := M2 + '/etc/NetworkManager/system-connections';
+    NMDir := mountpoint + '/etc/NetworkManager/system-connections';
     NMFile := NMDir + '/' + SSID + '.nmconnection';
     UUID := GenerateUUID;
 
@@ -1453,16 +1350,10 @@ begin
     RunCommand('chown', ['root:root', NMFile], s);
 
     // --- NetworkManager State setzen ---
-    WriteTextFile(M2 + '/var/lib/NetworkManager/NetworkManager.state', ['[main]', 'NetworkingEnabled=true', 'WirelessEnabled=true', 'WWANEnabled=true']);
+    WriteTextFile(mountpoint + '/var/lib/NetworkManager/NetworkManager.state', ['[main]', 'NetworkingEnabled=true', 'WirelessEnabled=true', 'WWANEnabled=true']);
 
-  finally
     RunCommand('sync', s);
-    RunCommand('umount', [M1], s);
-    RunCommand('umount', [M2], s);
-    RemoveDir(M1);
-    RemoveDir(M2);
   end;
-end;
 
 
 function IsMBRPartUUID(const S: string): boolean;
@@ -1473,43 +1364,22 @@ begin
 end;
 
 
-
-function SetPartUUIDInCmdline(Device: string; Partition: Integer; Sig: DWord): Boolean;
+function SetPartUUIDInCmdline(Mountpoint:string; Sig: DWord): Boolean;
 var
   NewID: string;
-  PartitionDevice, MountPoint, CommandFile: string;
+  CommandFile: string;
   s: string;
   p1, p2: Integer;
   fs: TFileStream;
 begin
   Result := False;
   NewID := lowercase(IntToHex(Sig, 8));
-
-  MountPoint := '/tmp/tmp_mount';
-  PartitionDevice := PartitionName(Device, Partition);
   CommandFile := MountPoint + '/cmdline.txt';
-
-  try
-    // Altes Mount aufräumen
-    if DirectoryExists(MountPoint) then
-    begin
-      RunCommand('sync', s);
-      RunCommand('umount', [MountPoint], s);
-      Sleep(500);
-      DeleteDirectory(MountPoint, False);
-    end;
-
-    ForceDirectories(MountPoint);
-
-    // Partition mounten
-    if not RunCommand('mount', ['-t', 'vfat', '-o', 'rw', PartitionDevice, MountPoint], s) then
-      raise Exception.Create('Failed to mount partition ' + PartitionDevice);
-
     if not FileExists(CommandFile) then
       raise Exception.Create('cmdline.txt not found');
 
     // Datei komplett einlesen
-    fs := TFileStream.Create(CommandFile, fmOpenRead or fmShareDenyWrite);
+   fs := TFileStream.Create(CommandFile, fmOpenRead or fmShareDenyWrite);
     try
       SetLength(s, fs.Size);
       if fs.Size > 0 then
@@ -1544,160 +1414,103 @@ begin
     finally
       fs.Free;
     end;
-
     RunCommand('sync', s);
-    RunCommand('umount', [MountPoint], s);
-    DeleteDirectory(MountPoint, False);
 
-    Result := True;
-
-  except
-    on E: Exception do
-    begin
-      RunCommand('sync', s);
-      RunCommand('umount', [MountPoint], s);
-
-      if DirectoryExists(MountPoint) then
-        RemoveDir(MountPoint);
-
-      Result := False;
     end;
-  end;
-end;
 
 
 
-
-
-function ReplacePartUUIDInFstab(device: string; sig: dword): string;
+function ReplacePartUUIDInFstab(mountpoint: string; sig: dword): string;
 var
   sl: TStringList;
-  i, p: integer;
+  i, p: Integer;
   s: string;
-  PartitionDevice, uMountPoint: string;
-  oldid: string;
-  newid: string;
+  oldid, newid: string;
 begin
-  Result := '';
-  uMountPoint := '/images/tmp_mount';
-
-  newid := lowercase(inttohex(sig, 8));
+  newid := LowerCase(IntToHex(sig, 8));
 
   try
-    PartitionDevice := partitionname(device, 2);
-
-    RunCommand('sync', s);
-    RunCommand('umount', [uMountPoint], s);
-    Sleep(500);
-
-    if not DirectoryExists(uMountPoint) then
-      ForceDirectories(uMountPoint);
-
-    fpchmod(uMountPoint, &777);
-
-
-
-    if not RunCommand('mount', [PartitionDevice, uMountPoint], s) then
-      raise Exception.Create('Mount failed');
-
-    if not FileExists(uMountPoint + '/etc/fstab') then
+     if not FileExists(MountPoint + '/etc/fstab') then
       raise Exception.Create('fstab not found');
-
-
-
 
     sl := TStringList.Create;
     try
-      sl.LoadFromFile(uMountPoint + '/etc/fstab');
+      sl.LoadFromFile(MountPoint + '/etc/fstab');
 
-      // alte id finden
+      // Alte PARTUUID-Disk-ID finden
+      oldid := '';
 
       for i := 0 to sl.Count - 1 do
       begin
         s := sl[i];
-        if pos(' / ', s) > 0 then
+
+        if Pos(' / ', s) > 0 then
         begin
-          p := pos('=', s);
-          Delete(s, 1, p - 1);
-          p := pos('-', s);
-          Delete(s, p + 1, maxint);
-          if length(s) = 10 then break;
+          p := Pos('=', s);
+
+          if p > 0 then
+          begin
+            Delete(s, 1, p - 1);
+
+            p := Pos('-', s);
+
+            if p > 0 then
+            begin
+              Delete(s, p + 1, MaxInt);
+
+              if Length(s) = 10 then
+              begin
+                oldid := s;
+                Break;
+              end;
+            end;
+          end;
         end;
       end;
 
-
-      if not IsMBRPartUUID(s) then
+      if not IsMBRPartUUID(oldid) then
         raise Exception.Create('No valid PARTUUID found in root entry');
 
-      oldid := s;
       newid := '=' + newid + '-';
+
+      // Nur Disk-ID in PARTUUID ersetzen
       for i := 0 to sl.Count - 1 do
       begin
         s := sl[i];
-
-        // -----------------------------------------
-        // 🔥 nur Disk-ID im PARTUUID ersetzen
-        // -----------------------------------------
-        s := StringReplace(s, oldID, newID, [rfReplaceAll]);
+        s := StringReplace(s, oldid, newid, [rfReplaceAll]);
         sl[i] := s;
       end;
 
-      sl.SaveToFile(uMountPoint + '/etc/fstab');
+      sl.SaveToFile(MountPoint + '/etc/fstab');
 
     finally
       sl.Free;
     end;
 
     RunCommand('sync', s);
-    RunCommand('umount', [uMountPoint], s);
-
 
   except
-    on E: Exception do
-    begin
-      RunCommand('umount', [uMountPoint], s);
-
-      Result := E.Message;
-    end;
   end;
 end;
 
 
-
-
-procedure ChangeHost(device: string; newHostName: string);
+procedure ChangeHost(mountpoint: string; newHostName: string);
 var
   sl: TStringList;
   i: integer;
   line: string;
-  PartitionDevice: ansistring;
-  uMountPoint: ansistring;
-  s: ansistring;
+   s: ansistring;
 begin
-  uMountPoint := '/images/tmp_mount';
+
   sl := TStringList.Create;
 
   try
-    // Partition Device 2 ermitteln
-    PartitionDevice := PartitionName(device, 2);
-
-    // Mountpoint vorbereiten
-    if not DirectoryExists(uMountPoint) then
-      if not ForceDirectories(uMountPoint) then
-        raise Exception.Create('Failed to create mount directory: ' + uMountPoint);
-
-    fpchmod(uMountPoint, &777);
-
-    // Partition mounten
-    if not RunCommand('mount', [PartitionDevice, uMountPoint], s) then
-      raise Exception.Create('Failed to mount partition ' + PartitionDevice + ': ' + s);
-
-    // Prüfen ob /etc/hosts existiert
-    if not FileExists(uMountPoint + '/etc/hosts') then
+     // Prüfen ob /etc/hosts existiert
+    if not FileExists(MountPoint + '/etc/hosts') then
       raise Exception.Create('/etc/hosts not found on partition');
 
     // /etc/hosts laden
-    sl.LoadFromFile(uMountPoint + '/etc/hosts');
+    sl.LoadFromFile(MountPoint + '/etc/hosts');
 
     // Zeile ersetzen
     for i := 0 to sl.Count - 1 do
@@ -1712,38 +1525,29 @@ begin
       end;
     end;
 
-    sl.SaveToFile(uMountPoint + '/etc/hosts');
+    sl.SaveToFile(mountPoint + '/etc/hosts');
 
     // /etc/hostname neu schreiben
     sl.Clear;
     sl.Add(newHostName);
-    sl.SaveToFile(uMountPoint + '/etc/hostname');
+    sl.SaveToFile(MountPoint + '/etc/hostname');
 
   finally
     sl.Free;
     RunCommand('sync', s);
-    RunCommand('umount', [uMountPoint], s);
-    RunCommand('sync', s);
-    RemoveDir(uMountPoint);
   end;
 end;
 
-procedure EnableSSH(device: string);
+procedure EnableSSH(mountpoint: string);
 var
   s: ansistring;
-  MountPoint: ansistring;
   F: TextFile;
 begin
-  MountPoint := '/images/tmp_mount1';
-  Tryunmount(Mountpoint);
-
-  mountpartition(device, 1, mountpoint);
   // ssh Datei anlegen
   AssignFile(F, MountPoint + '/ssh');
   Rewrite(F);
   CloseFile(F);
   RunCommand('sync', s);
-  Tryunmount(mountpoint);
 end;
 
 
@@ -1907,7 +1711,7 @@ begin
 
     // overwrite space between partitions mit $ff
 
-    ListBoxaddscroll(listbox, 'overwriting space between partitions');
+//    ListBoxaddscroll(listbox, 'overwriting space between partitions');
     fillchar(buffer[0],buffersize,$ff);
 
     //tocopy:= (mbr.PartitionEntries[1].FirstLBA -2)*512;
@@ -2307,12 +2111,11 @@ end;
 
 
 procedure ClonePart(Source, Destination: string; box: TListBox);
-const
-  BufferSize = 16 * 1024 * 1024;
+
 var
   fsource: TFileStream = nil;
   fdest: TFileStream = nil;
-  ibuffer: array of byte;
+
 
   Done: int64;
   TotalSize: int64;
@@ -2342,10 +2145,6 @@ begin
   if not  Read_MBR(source,errormsg,mbr) then
            raise exception.Create('failed reading mbr from sourcedrive');
 
-
-
-
-
   TotalSize := ((MBR.PartitionEntries[2].FirstLBA + MBR.PartitionEntries[2].PartitionSize) * 512) - 512;
 
   Remaining := TotalSize;
@@ -2354,10 +2153,10 @@ begin
   fdest := TFileStream.Create(Destination, fmOpenWrite or fmShareDenyNone);
 
   try
-    SetLength(ibuffer, BufferSize);
+    SetLength(buffer, BufferSize);
 
-    fsource.Position := 512;
-    fdest.Position := 512;
+    fsource.Position := 512; //512;
+    fdest.Position := 512;   //512;
 
     Done := 0;
     Speed := 0;
@@ -2375,12 +2174,12 @@ begin
       else
         ToRead := Remaining;
 
-      ReadCount := fsource.Read(ibuffer, ToRead);
+      ReadCount := fsource.Read(buffer, ToRead);
 
       if ReadCount <= 0 then
         Break;
 
-      WrittenCount := fdest.Write(ibuffer, ReadCount);
+      WrittenCount := fdest.Write(buffer, ReadCount);
 
       if WrittenCount <> ReadCount then
         raise Exception.Create('Write error: Bytes written do not match bytes read.');
@@ -2426,6 +2225,12 @@ begin
     if Terminate_All then
       raise Exception.Create('Writing to device: process terminated.');
 
+
+  //   if not  Read_MBR(source,errormsg,mbr) then
+  //         raise exception.Create('failed reading mbr from sourcedrive');
+
+
+
   finally
     if Assigned(fdest) then
       FpFsync(fdest.Handle);
@@ -2440,6 +2245,64 @@ begin
 end;
 
 
+
+
+
+
+
+
+
+const
+UUID_EPOCH = 1577836800; // 01.01.2020 UTC
+
+function CreateDeviceUUID: DWORD;
+var
+value:dword;
+begin
+  value:=DWORD(DateTimeToUnix(Now, False) - UUID_EPOCH);
+
+  Value := Value xor $A5C39F27;
+
+  Value := Value * $9E3779B1;
+  Value := RolDWord(Value, 11);
+
+  Value := Value xor (Value shr 16);
+
+  Value := Value * $85EBCA6B;
+  Value := RolDWord(Value, 17);
+
+  Result := Value xor $C2B2AE35;
+end;
+
+
+function DecodeDeviceUUID(Value: DWORD): qWORD;
+
+begin
+  // letztes XOR rückgängig
+  Value := Value xor $C2B2AE35;
+
+  // Rotation 17 rückgängig
+  Value := RolDWord(Value, 15);
+
+  // Multiplikation mit $85EBCA6B rückgängig
+  // Inverses: $A5CB9243
+  Value := Value * $A5CB9243;
+
+  // Value := Value xor (Value shr 16) rückgängig
+  Value := Value xor (Value shr 16);
+
+  // Rotation 11 rückgängig
+  Value := RolDWord(Value, 21);
+
+  // Multiplikation mit $9E3779B1 rückgängig
+  // Inverses: $0E8B2F51
+  Value := Value * $0E8B2F51;
+
+  // erstes XOR rückgängig
+  Value := Value xor $A5C39F27;
+
+  result:=value  + UUID_EPOCH;
+end;
 
 
 end.

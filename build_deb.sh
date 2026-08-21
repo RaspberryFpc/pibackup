@@ -8,7 +8,7 @@ if [ $# -ne 1 ]; then
 fi
 
 version="$1"
-#version="2.0.7"
+#version="2.1.0"
 
 PKG="pibackup_pkg"
 

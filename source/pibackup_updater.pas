@@ -28,8 +28,7 @@ var
   J: TJSONData;
   res: boolean;
   dotcount, x: integer;
-const
-  repro = 'raspberryfpc/pibackup';
+
 begin
   Result := '';
   res := True;

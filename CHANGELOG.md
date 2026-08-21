@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
+## [2.1.0] – 2026-08-21
+
+### New features
+
+- Added intelligent cloning. Existing additional partitions are overwritten only after user confirmation.
+
+
 ## [2.0.8] – 2026-07-21
 
 ### Bugfix
@@ -11,6 +18,7 @@ All notable changes to this project are documented in this file.
 
 ### Test
 - New Version for checking updates.
+
 
 ## [2.0.6] – 2026-06-29
 
@@ -24,9 +32,11 @@ All notable changes to this project are documented in this file.
 - updater system
 - Minor UI design adjustment
 
+
 ## [2.0.4]
  
  - added updater
+
 
 ## [2.0.3] – 2026-06-12
 

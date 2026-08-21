@@ -19,7 +19,7 @@ uses
   ExcludeProcessor,
   msg_dlg,
   pibackup_updater,
-  UpdateDlg;
+  UpdateDlg, TplScrollbarUnit;
 
   {$R *.res}
 

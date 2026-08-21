@@ -1,125 +1,152 @@
-# 🚀 pibackup -- Raspberry Pi Backup & Restore Tool
+# 🚀 pibackup – Raspberry Pi Backup, Restore & Cloning Tool
 
-pibackup is a portable 64-bit backup and restore tool with a simple
-graphical user interface,  
-designed for Raspberry Pi and Linux systems.
-It can create, shrink, compress (Zstandard) and restore images of SD
-cards, SSDs and HDDs.  
-Backups are safe, flexible, and can be restored directly from .img or
-.img.zst files.
-👉 Unlike typical SD card tools, pibackup works with large storagedevices (SSD/HDD) as well as smaller SD cards.
+> Fast, intelligent backup, restore and cloning for Raspberry Pi storage devices.
 
-## ✨ Features
+pibackup is a portable 64-bit Linux application with a simple graphical user interface, designed for Raspberry Pi systems.
 
-🖥️ Simple graphical user interface (GUI)\
-⚡ 64-bit Linux application (ARM64)\
-💾 Backup of first two partitions (/boot + /root)\
-🚫 Configurable exclude file\
-🔐 Optional removal of SSH & DHCP configs\
-📉 Automatic image shrinking\
-🗜️ Compression with Zstandard (.zst)\
-💽 Supports SD, SSD, HDD and other block devices\
-🧠 Unused sectors are overwritten with 0xFF to improve compression efficiency and remove unwanted residual data.
+It creates compressed backup images, restores existing images, and intelligently clones SD cards, SSDs and HDDs.
 
-## 🔄 Restore Features
+Unlike many SD card imaging tools, **pibackup** supports both small SD cards and large storage devices while automatically adapting partition layouts during restore and cloning.
 
-📂 Restore from .img or .img.zst\
-🎯 Device selection via dropdown list\
-📏 Adjustable partition size\
-👀 Live partition preview\
-🧱 Optional partition deletion\
-📐 Filesystem auto-resize
-
-## ⚙️ Headless Setup Options
-
- For fresh Raspberry Pi setups:
-- enable SSH on first boot
-- Set username & password
-- Configure WiFi (SSID + PSK)
 ---
-## 📦 Download and Installation
-📥 Install (Recommended)
-``` bash
-# Download latest release, unzip, and install
-# Automatically installs all dependencies (e.g. zstd)
+
+# ✨ Features
+
+* 🖥️ Simple graphical user interface (GUI)
+* ⚡ Native ARM64 Linux application
+* 💾 Backup of the first two Raspberry Pi partitions (`/boot` + `/`)
+* 🧠 Intelligent device cloning with automatic partition detection
+* 🔄 Restore directly from `.img` and `.img.zst` images
+* 📉 Automatic image shrinking
+* 🗜️ Fast Zstandard (`.zst`) compression
+* 💽 Supports SD cards, SSDs, HDDs and other block devices
+* 📏 Adjustable target partition size
+* 👀 Live partition preview before restoring
+* 🧱 Optional deletion of existing additional partitions
+* ⚠️ Existing additional partitions are overwritten only after user confirmation
+* 🚫 Configurable exclude list
+* 🔐 Optional removal of SSH and DHCP configuration
+* 🧹 Unused sectors are overwritten with `0xFF` to improve compression efficiency and remove residual data
+
+---
+
+# ⚙️ Headless Setup Options
+
+For fresh Raspberry Pi installations:
+
+* Enable SSH on first boot
+* Set username and password
+* Configure Wi-Fi (SSID and PSK)
+
+---
+
+# 📦 Download & Installation
+
+### Recommended
+
+```bash
+# Download the latest release, extract it and install.
+# Required dependencies (e.g. zstd) are installed automatically.
+
 rm -rf /tmp/pibackup /tmp/pibackup.zip && \
 wget -O /tmp/pibackup.zip "https://sourceforge.net/projects/pibackup/files/latest/download" && \
 unzip -o /tmp/pibackup.zip -d /tmp/pibackup && \
 sudo apt install /tmp/pibackup/*/bin/pibackup.deb
 ```
 
-## ▶️ Start
-``` bash
+---
+
+# ▶️ Run
+
+```bash
 sudo /path/to/pibackup
 ```
-Or via menu:
-``` text
+
+or start it from the desktop menu:
+
+```text
 Utility → PiBackup
 ```
----
-## ⚙️ Alternative Installation (Fallback)
-``` bash
-sudo dpkg -i pibackup.deb
-sudo apt -f install
 
+---
+
+# ⚙️ Alternative Installation
+
+```bash
+sudo apt install ./pibackup.deb
 ```
 
-or
+---
 
-``` bash
-sudo apt install pibackup.de
+# 🧰 Requirements
 
-```
-
-
-# 🧰 Requirements  
-
-Linux (ARM64)  
-No manual dependency installation required  
-All dependencies are handled via .deb
+* Linux (ARM64)
+* Raspberry Pi OS / Debian Bookworm or newer
+* No manual dependency installation required
+* All dependencies are handled automatically by the Debian package
 
 ---
-## 🛠️ Build Information  
 
-Developed with CodeTyphon
-Gui:Qt5
-Target: 64-bit ARM (arm64) 
-Tested on: 
-Raspberry Pi 4  
-Raspberry Pi 5  
-Debian Bookworm / Trixie (X11) 
+# 🛠️ Build Information
 
----
-## 📜 License
+* Developed with CodeTyphon
+* GUI: Qt5
+* Target: ARM64 (64-bit)
 
-MIT License -- see LICENSE
+**Tested on**
 
-
-## ⚠️ Disclaimer:
-
-This tool works directly on storage devices.  
-Incorrect usage may result in data loss.
+* Raspberry Pi 4
+* Raspberry Pi 5
+* Raspberry Pi OS Trixie (X11)
 
 ---
-## 👤 Author
-RaspberryFpc
 
----
-## 🛟 Emergency Recovery
+# 🛟 Emergency Recovery
 
-💡 Create a rescue SD card with Linux + pibackup.
+Create a rescue SD card with Linux and **pibackup**.
 
 In case of system failure:
 
-- Boot rescue system
-- Restore your backup image
-- Get your system back instantly
+1. Boot the rescue system.
+2. Restore your backup image.
+3. Continue working within minutes.
 
 ---
-## 🔗 Other Projects
 
-- [raspberry-udp_audio_receiver](https://github.com/RaspberryFpc/raspberry-udp_audio_receiver) -- Low latency audio sender and receiver over UDP  
-- [DS18B20-FPC-Pi-GUI](https://github.com/RaspberryFpc/DS18B20-FPC-Pi-GUI) -- Temperature sensor GUI  
-- [RaspberryPi-BME280-GUI](https://github.com/RaspberryFpc/RaspberryPi-BME280-GUI) -- Sensor access GUI  
-- [RaspberryPi-GPIOv2-FPC](https://github.com/RaspberryFpc/RaspberryPi-GPIOv2-FPC) -- GPIO control unit  
+# 📜 License
+
+MIT License – see **LICENSE**.
+
+---
+
+# ⚠️ Disclaimer
+
+This application writes directly to storage devices.
+
+Always verify that the correct target device is selected before starting a restore or cloning operation.
+
+Incorrect usage may result in data loss.
+
+---
+
+# 👤 Author
+
+**RaspberryFpc**
+
+---
+
+# 🔗 Other Projects
+
+* **raspberry-udp_audio_receiver** – Low-latency audio sender and receiver over UDP
+  https://github.com/RaspberryFpc/raspberry-udp_audio_receiver
+
+* **DS18B20-FPC-Pi-GUI** – GUI for DS18B20 temperature sensors
+  https://github.com/RaspberryFpc/DS18B20-FPC-Pi-GUI
+
+* **RaspberryPi-BME280-GUI** – GUI for BME280 environmental sensors
+  https://github.com/RaspberryFpc/RaspberryPi-BME280-GUI
+
+* **RaspberryPi-GPIOv2-FPC** – GPIO library for Free Pascal
+  https://github.com/RaspberryFpc/RaspberryPi-GPIOv2-FPC
+
 

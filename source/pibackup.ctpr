@@ -85,6 +85,9 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="pl_ExControls"/>
+      </Item>
+      <Item>
         <PackageName Value="pl_HtmlViewer"/>
       </Item>
       <Item>
@@ -190,6 +193,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UpdateDlg"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tplscrollbarunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TplScrollbarUnit"/>
       </Unit>
     </Units>
   </ProjectOptions>

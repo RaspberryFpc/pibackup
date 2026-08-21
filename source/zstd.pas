@@ -109,7 +109,6 @@ var
   compressionRatio: double;
   s: string;
 
-
   procedure Compressblock(endMode: cardinal);
   begin
     repeat

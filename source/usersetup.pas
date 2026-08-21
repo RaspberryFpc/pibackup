@@ -12,7 +12,7 @@ type
 
 procedure EnsureUserConfigured(const Device: string; const NewUserName: string; const NewPassword: string; Log: TListBox);
 
-procedure CreateUserConfFromDevice(const Device: string; const UserName: string; const Password: string; Log: TListBox);
+procedure CreateUserConfFromDevice(mountpoint: string; const UserName: string; const Password: string; Log: TListBox);
 
 
 
@@ -89,12 +89,10 @@ end;
 // ---------------------------------------------------------------
 // Create userconf.txt on boot partition
 // ---------------------------------------------------------------
-procedure CreateUserConfFromDevice(const Device: string; const UserName: string; const Password: string; Log: TListBox);
+procedure CreateUserConfFromDevice(mountpoint: string; const UserName: string; const Password: string; Log: TListBox);
 var
   Hash, FileName: string;
 begin
-
-  mountpartition(Device, 1, p1mpoint);
 
   try
     if not RunCommand('openssl passwd -6 "' + Password + '"', Hash) then
@@ -105,7 +103,7 @@ begin
     if (Hash = '') or (Pos('$6$', Hash) = 0) then
       raise Exception.Create('Invalid SHA-512 hash!');
 
-    FileName := p1mpoint + '/userconf.txt';
+    FileName := mountpoint + '/userconf.txt';
 
     ForceDirectories(ExtractFileDir(FileName));
     with TStringList.Create do
@@ -118,7 +116,6 @@ begin
 
     LogMsg(Log, 'Created userconf.txt');
   finally
-    CloseMountTarget(p1mpoint);
   end;
 end;
 
@@ -167,7 +164,7 @@ var
 begin
   LogMsg(Log, '--- User Setup on ' + Device + ' ---');
 
-  RootMount := '/images/tmp_root_user';
+  RootMount := '/tmp/tmp_root_user';
   mountpartition(Device, 2, RootMount);
 
   //  if not MountPartition(Part2, RootMount) then
@@ -190,8 +187,6 @@ begin
     CloseMountTarget(RootMount);
   end;
 end;
-
-
 
 
 procedure ReadUserInfo(filename: string);
@@ -228,6 +223,8 @@ var
     Result[p] := Copy(S, last, MaxInt);
   end;
 
+
+
 begin
   // -------------------------------
   // Init
@@ -237,6 +234,14 @@ begin
   ui.HostName := '';
   ui.PasswordHash := '';
   ui.WLANKey := '';
+   with form1 do
+  begin
+    edhost.Text := '';
+    edusername.Text := '';
+    eduserpassword.Text := '';
+    edit_wlanssid.Text := '';
+    edit_wlanpassword.Text := '';
+  end;
 
   if lowercase(extractfileext(filename)) = '.zst' then exit;
 
