@@ -143,7 +143,7 @@ Incorrect usage may result in data loss.
 * **DS18B20-FPC-Pi-GUI** – GUI for DS18B20 temperature sensors
   https://github.com/RaspberryFpc/DS18B20-FPC-Pi-GUI
 
-* **RaspberryPi-BME280-GUI** – GUI for BME280 environmental sensors
+* **RaspberryPi-BME280-GUI** – GUI and driverfor BME280 environmental sensors
   https://github.com/RaspberryFpc/RaspberryPi-BME280-GUI
 
 * **RaspberryPi-GPIOv2-FPC** – GPIO library for Free Pascal
