@@ -95,17 +95,31 @@
       </ul>
     </section>
 
-    <section id="install" style="background:#f1f8e9; padding:1em; border-radius:8px;">
+    
+    
+  <section id="install" style="background:#f1f8e9; padding:1em; border-radius:8px;">
       <h2>Direct Installation</h2>
       <p>Download the latest release, extract the archive, and install the Debian package automatically:</p>
 
-      <pre># Download latest release, unzip, and install
-wget -O /tmp/pibackup.zip https://sourceforge.net/projects/pibackup/files/latest/download \
-&& unzip -o /tmp/pibackup.zip -d /tmp/pibackup \
-&& sudo apt install /tmp/pibackup/bin/pibackup_*.deb</pre>
+```
+  <pre># Remove old temporary files, download latest release, unzip, and install
+```
 
-      <p>The installation uses the <code>/tmp</code> directory, so no files remain in your home directory.</p>
-    </section>
+rm -rf /tmp/pibackup /tmp/pibackup.zip 
+&& wget -O /tmp/pibackup.zip "https://sourceforge.net/projects/pibackup/files/latest/download" 
+&& unzip -o /tmp/pibackup.zip -d /tmp/pibackup 
+&& sudo apt install -y "$(find /tmp/pibackup -type f -name 'pibackup.deb' -print -quit)"</pre>
+
+```
+  <p>The installation uses the <code>/tmp</code> directory, so no files remain in your home directory.</p>
+</section>
+```
+  
+ 
+    
+    
+    
+    
 
     <section id="screenshot" style="padding:2em 0; text-align:center;">
       <h2>Raspberry Pi Backup – Screenshot</h2>

@@ -95,17 +95,32 @@
       </ul>
     </section>
 
-    <section id="install" style="background:#f1f8e9; padding:1em; border-radius:8px;">
+
+
+<section id="install" style="background:#f1f8e9; padding:1em; border-radius:8px;">
       <h2>Direkte Installation</h2>
       <p>Laden Sie die neueste Version herunter, entpacken Sie das Archiv und installieren Sie das Debian-Paket automatisch:</p>
 
-      <pre># Download latest release, unzip, and install
-wget -O /tmp/pibackup.zip https://sourceforge.net/projects/pibackup/files/latest/download \
-&& unzip -o /tmp/pibackup.zip -d /tmp/pibackup \
-&& sudo apt install /tmp/pibackup/bin/pibackup_*.deb</pre>
+```
+  <pre># Alte temporäre Dateien entfernen, neueste Version herunterladen, entpacken und installieren
+```
 
-      <p>Die Installation verwendet den Ordner <code>/tmp</code>, sodass keine Dateien im Home-Verzeichnis zurückbleiben.</p>
-    </section>
+rm -rf /tmp/pibackup /tmp/pibackup.zip 
+&& wget -O /tmp/pibackup.zip "https://sourceforge.net/projects/pibackup/files/latest/download" 
+&& unzip -o /tmp/pibackup.zip -d /tmp/pibackup 
+&& sudo apt install -y "$(find /tmp/pibackup -type f -name 'pibackup.deb' -print -quit)"</pre>
+
+```
+  <p>Die Installation verwendet den Ordner <code>/tmp</code>, sodass keine Dateien im Home-Verzeichnis zurückbleiben.</p>
+</section>
+```
+
+
+
+
+
+
+
 
     <section id="screenshot" style="padding:2em 0; text-align:center;">
       <h2>Screenshot</h2>

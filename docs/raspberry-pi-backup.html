@@ -169,17 +169,18 @@
         <a href="https://github.com/raspberryfpc/pibackup/releases" target="_blank" rel="noopener">Download from GitHub</a>
       </div>
   
-   
-  
    <section id="install" style="background:#e6f7e6; padding:1em; border-radius:8px;">
-    <h2>Direct Installation</h2>
-    <p>Download the latest release, extract the archive, and install the Debian package automatically:</p>
-    <pre># Download latest release, unzip, and install
-     wget -O /tmp/pibackup.zip https://sourceforge.net/projects/pibackup/files/latest/download \
+  <h2>Direct Installation</h2>
+  <p>Download the latest release, extract the archive, and install the Debian package automatically:</p>
+  <pre># Remove previous temporary files, download latest release, unzip, and install
+     rm -rf /tmp/pibackup /tmp/pibackup.zip \
+     && wget -O /tmp/pibackup.zip "https://sourceforge.net/projects/pibackup/files/latest/download" \
      && unzip -o /tmp/pibackup.zip -d /tmp/pibackup \
-     && sudo apt install /tmp/pibackup/bin/pibackup_*.deb</pre>
-    <p>The installation uses the <code>/tmp</code> directory, so no files remain in your home directory.</p>
-  </section>  
+     && sudo apt install -y "$(find /tmp/pibackup -type f -name 'pibackup.deb' -print -quit)"</pre>
+  <p>The installation uses the <code>/tmp</code> directory, so no files remain in your home directory.</p>
+</section>
+
+    
     </section>       
    
 
