@@ -43,10 +43,7 @@ Backups are safe, flexible, and can be restored directly from .img or
 ``` bash
 # Download latest release, unzip, and install
 # Automatically installs all dependencies (e.g. zstd)
-rm -rf /tmp/pibackup /tmp/pibackup.zip && \
-wget -O /tmp/pibackup.zip "https://sourceforge.net/projects/pibackup/files/latest/download" && \
-unzip -o /tmp/pibackup.zip -d /tmp/pibackup && \
-sudo apt install /tmp/pibackup/*/bin/pibackup.deb
+rm -rf /tmp/pibackup /tmp/pibackup.zip && wget -O /tmp/pibackup.zip "https://sourceforge.net/projects/pibackup/files/latest/download" && unzip -o /tmp/pibackup.zip -d /tmp/pibackup && sudo apt install -y "$(find /tmp/pibackup -type f -name 'pibackup.deb' -print -quit)"
 ```
 
 ## ▶️ Start
