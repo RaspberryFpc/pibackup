@@ -1,14 +1,17 @@
 #!/bin/bash
 set -euo pipefail
 
-if [ $# -ne 1 ]; then
-    echo "Usage: $0 <version>"
-    echo "Example:  $02.0.8"
+# Fehler abfangen, damit das Terminal offen bleibt
+trap 'echo; echo "❌ Build abgebrochen!"; read -rp "Enter drücken zum Schließen..."' ERR
+
+# Version abfragen
+read -rp "Bitte Version eingeben (z.B. 2.1.0): " version
+
+if [ -z "$version" ]; then
+    echo "❌ Keine Version eingegeben!"
+    read -rp "Enter drücken zum Schließen..."
     exit 1
 fi
-
-version="$1"
-#version="2.1.0"
 
 PKG="pibackup_pkg"
 
@@ -25,6 +28,7 @@ echo "🚀 Build pibackup.deb"
 # Prüfen ob Binary existiert
 if [ ! -f "$SRC_BIN" ]; then
     echo "❌ Binary nicht gefunden: $SRC_BIN"
+    read -rp "Enter drücken zum Schließen..."
     exit 1
 fi
 
@@ -42,12 +46,6 @@ mkdir -p "$PKG/usr/share/doc/pibackup/help"
 # Binary
 install -Dm755 "$SRC_BIN" \
     "$PKG/usr/lib/pibackup/pibackup"
-    
-#install -Dm755 /usr/lib/aarch64-linux-gnu/libQt5Pas.so.1 \
-#    "$PKG/usr/lib/pibackup/libQt5Pas.so.1"
-
-#install -Dm755 /usr/lib/aarch64-linux-gnu/libQt5Pas.so.1.2.14 \
-#    "$PKG/usr/lib/pibackup/libQt5Pas.so.1.2.14"    
 
 # Exclude-Dateien → /etc
 install -Dm644 /home/pi/git/pibackup/source/dhcp-cleanup.exclude \
@@ -90,7 +88,6 @@ ChangeDeviceID=0
 EOF
 
 
-
 # Desktop Entry
 cat > "$PKG/usr/share/applications/pibackup.desktop" <<EOF
 [Desktop Entry]
@@ -103,9 +100,11 @@ Type=Application
 Categories=Utility;System;
 EOF
 
+
 # Icon
 install -Dm644 "$ICON" \
     "$PKG/usr/share/icons/hicolor/256x256/apps/pibackup.png"
+
 
 # Control-Datei
 cat > "$PKG/DEBIAN/control" <<EOF
@@ -121,20 +120,26 @@ Description: Raspberry Pi Backup Tool
 EOF
 
 
-# 👉 conffiles (wichtig!)
+# conffiles
 cat > "$PKG/DEBIAN/conffiles" <<EOF
 /etc/pibackup/pibackup.ini
 /etc/pibackup/dhcp-cleanup.exclude
 /etc/pibackup/raspberry.exclude
 /etc/pibackup/ssh-cleanup.exclude
 EOF
-#/etc/pibackup/pibackup.ini
 
 
-# Paket bauen
-dpkg-deb --build --root-owner-group "$PKG" "$OUTDIR/pibackup.deb"
+# Debian-Paket erstellen
+#dpkg-deb --build "$PKG"
+dpkg-deb --build --root-owner-group "$PKG"
 
-# Cleanup
-rm -rf "$PKG"
-
-echo "✔ Fertig: $OUTDIR/pibackup.deb"
+echo
+echo "========================================"
+echo "✅ Build erfolgreich abgeschlossen!"
+echo "Version: v$version"
+echo "========================================"
+echo
+echo "Paket erstellt:"
+echo "$PKG.deb"
+echo
+read -rp "Enter drücken zum Schließen..."

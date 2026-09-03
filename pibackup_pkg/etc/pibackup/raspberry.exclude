@@ -1,0 +1,136 @@
+# Raspberry Pi Image Cleanup Exclude File (v2)
+
+#
+# ------------------------------------------------------------
+# COMMANDS (aktuelles System)
+# ------------------------------------------------------------
+# file           = löscht eine einzelne Datei
+# fileintree  = löscht Dateien rekursiv im Verzeichnisbaum
+# allintree   = löscht ALLE Inhalte unter einem Pfad (Startordner bleibt)
+# dir            = löscht ein Verzeichnis (nur wenn leer bzw. erlaubt)
+#
+# Regeln:
+# - Wildcards (*) sind nur in file/fileintree im Dateinamen erlaubt
+# - Pfade dürfen keine ".." enthalten
+# - Schutz gegen Root-/Mount-Escape aktiv
+# ------------------------------------------------------------
+
+# ------------------------------------------------------------
+# General temporary and system data
+# ------------------------------------------------------------
+
+allintree = /var/cache/apt/archives
+allintree = /var/cache/man
+allintree = /var/tmp
+allintree = /tmp
+
+# SYSTEM (niemals löschen, nur leeren!)
+allintree = /proc
+allintree = /sys
+allintree = /run
+
+dir = /lost+found
+
+allintree = /var/spool
+allintree = /var/lock
+allintree = /var/lib/apt/lists
+allintree = /var/lib/apt/lists/partial
+
+file = /var/lib/systemd/random-seed
+allintree = /var/lib/systemd/coredump
+allintree = /var/lib/systemd/tmpfiles
+
+file = /var/swap
+
+
+# ------------------------------------------------------------
+# Logs & diagnostics
+# ------------------------------------------------------------
+
+allintree = /var/log
+allintree = /var/log/journal
+allintree = /var/crash
+
+fileintree = /var/backups/*
+
+
+# ------------------------------------------------------------
+# User temporary & cache data
+# ------------------------------------------------------------
+
+allintree = /home/§USER/.cache
+allintree = /home/§USER/.local/share/Trash
+allintree = /home/§USER/.thumbnails
+
+# gvfs kann problematisch sein → besser nur Inhalt löschen
+allintree = /home/§USER/.gvfs
+
+allintree = /home/§USER/.local/share/wayland-sessions
+allintree = /home/§USER/.local/share/xorg
+
+allintree = /home/§USER/.local/share/gvfs-metadata
+allintree = /home/§USER/.local/share/zeitgeist
+
+allintree = /home/§USER/Downloads
+
+
+# ------------------------------------------------------------
+# User history & traces
+# ------------------------------------------------------------
+
+file = /home/§USER/.bash_history
+file = /home/§USER/.xsession-errors
+file = /home/§USER/.xsession-errors.old
+file = /home/§USER/.recently-used
+file = /home/§USER/.local/share/recently-used.xbel
+
+fileintree = /home/§USER/.*.swp
+fileintree = /home/§USER/*~
+fileintree = /home/§USER/wget-log*
+
+
+# ------------------------------------------------------------
+# Browsers (komplett entfernen)
+# ------------------------------------------------------------
+
+dir = /home/§USER/.mozilla
+dir = /home/§USER/.config/chromium
+
+
+# ------------------------------------------------------------
+# Snap / Flatpak / sandbox systems
+# ------------------------------------------------------------
+
+dir = /var/lib/snapd
+dir = /snap
+dir = /home/§USER/snap
+
+allintree = /var/tmp/flatpak-cache
+dir = /home/§USER/.var/app
+
+
+# ------------------------------------------------------------
+# dpkg / package leftovers
+# ------------------------------------------------------------
+
+fileintree = /var/lib/dpkg/*.old
+fileintree = /var/lib/dpkg/*.bak
+
+
+# ------------------------------------------------------------
+# Optional: large software leftovers
+# ------------------------------------------------------------
+
+#dir = /opt/Wolfram
+#dir = /usr/lib/libreoffice
+
+
+# ------------------------------------------------------------
+# Optional: documentation / extras
+# ------------------------------------------------------------
+
+#allintree = /usr/share/doc
+#allintree = /usr/share/man
+#allintree = /usr/share/info
+#allintree = /usr/share/examples
+#allintree = /usr/lib/python*/test

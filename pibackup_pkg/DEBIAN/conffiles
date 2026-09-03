@@ -1,0 +1,4 @@
+/etc/pibackup/pibackup.ini
+/etc/pibackup/dhcp-cleanup.exclude
+/etc/pibackup/raspberry.exclude
+/etc/pibackup/ssh-cleanup.exclude

@@ -105,10 +105,10 @@
   <pre># Alte temporäre Dateien entfernen, neueste Version herunterladen, entpacken und installieren
 ```
 
-rm -rf /tmp/pibackup /tmp/pibackup.zip 
-&& wget -O /tmp/pibackup.zip "https://sourceforge.net/projects/pibackup/files/latest/download" 
-&& unzip -o /tmp/pibackup.zip -d /tmp/pibackup 
-&& sudo apt install -y "$(find /tmp/pibackup -type f -name 'pibackup.deb' -print -quit)"</pre>
+rm -rf /tmp/pibackup /tmp/pibackup.zip && \
+wget -O /tmp/pibackup.zip "https://sourceforge.net/projects/pibackup/files/latest/download" && \
+unzip -o /tmp/pibackup.zip -d /tmp/pibackup && \
+sudo apt install -y "$(find /tmp/pibackup -type f -name 'pibackup.deb' -print -quit)"
 
 ```
   <p>Die Installation verwendet den Ordner <code>/tmp</code>, sodass keine Dateien im Home-Verzeichnis zurückbleiben.</p>

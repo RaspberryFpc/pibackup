@@ -1,0 +1,43 @@
+# ------------------------------------------------------------
+# SSH deaktivieren (Service-Link entfernen)
+# ------------------------------------------------------------
+#
+# ------------------------------------------------------------
+# COMMANDS (aktuelles System)
+# ------------------------------------------------------------
+# file           = löscht eine einzelne Datei
+# fileintree  = löscht Dateien rekursiv im Verzeichnisbaum
+# allintree   = löscht ALLE Inhalte unter einem Pfad (Startordner bleibt)
+# dir            = löscht ein Verzeichnis (nur wenn leer bzw. erlaubt)
+#
+# Regeln:
+# - Wildcards (*) sind nur in file/fileintree im Dateinamen erlaubt
+# - Pfade dürfen keine ".." enthalten
+# - Schutz gegen Root-/Mount-Escape aktiv
+# ------------------------------------------------------------
+
+
+file = /etc/systemd/system/multi-user.target.wants/ssh.service
+
+
+# ------------------------------------------------------------
+# SSH Host Keys entfernen
+# ------------------------------------------------------------
+
+fileintree = /etc/ssh/ssh_host_*
+
+
+# ------------------------------------------------------------
+# Root SSH-Konfiguration bereinigen
+# ------------------------------------------------------------
+
+file = /root/.ssh/config
+file = /root/.ssh/known_hosts
+
+
+# ------------------------------------------------------------
+# Benutzer SSH-Konfiguration bereinigen
+# ------------------------------------------------------------
+
+fileintree = /home/§user/.ssh/config
+fileintree = /home/§user/.ssh/known_hosts

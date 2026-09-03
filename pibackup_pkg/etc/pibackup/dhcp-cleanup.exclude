@@ -1,0 +1,56 @@
+# dhcp-cleanup.exclude
+# Bereinigt DHCP, Netzwerk-Cache und System-Netzwerkkonfigurationen
+#
+# ------------------------------------------------------------
+# COMMANDS (aktuelles System)
+# ------------------------------------------------------------
+# file           = löscht eine einzelne Datei
+# fileintree  = löscht Dateien rekursiv im Verzeichnisbaum
+# allintree   = löscht ALLE Inhalte unter einem Pfad (Startordner bleibt)
+# dir            = löscht ein Verzeichnis (nur wenn leer bzw. erlaubt)
+#
+# Regeln:
+# - Wildcards (*) sind nur in file/fileintree im Dateinamen erlaubt
+# - Pfade dürfen keine ".." enthalten
+# - Schutz gegen Root-/Mount-Escape aktiv
+# ------------------------------------------------------------
+
+
+# ------------------------------------------------------------
+# DHCP / Netzwerk-Cache
+# ------------------------------------------------------------
+
+fileintree = /var/lib/dhcp/*
+fileintree = /var/lib/dhcpcd5/*
+fileintree = /var/lib/NetworkManager/*
+
+fileintree = /run/dhcp/*
+fileintree = /run/dhcpcd/*
+
+
+# ------------------------------------------------------------
+# System Resolver
+# ------------------------------------------------------------
+
+file = /etc/resolv.conf
+
+
+# ------------------------------------------------------------
+# NetworkManager Verbindungen
+# ------------------------------------------------------------
+
+fileintree = /etc/NetworkManager/system-connections/*
+
+
+# ------------------------------------------------------------
+# klassische Netzwerk-Konfiguration
+# ------------------------------------------------------------
+
+file = /etc/network/interfaces
+
+
+# ------------------------------------------------------------
+# Netplan Konfiguration
+# ------------------------------------------------------------
+
+fileintree = /etc/netplan/*             
