@@ -1,5 +1,5 @@
 Package: pibackup
-Version: 2.1.0
+Version: 2.1.2
 Section: utils
 Priority: optional
 Architecture: arm64

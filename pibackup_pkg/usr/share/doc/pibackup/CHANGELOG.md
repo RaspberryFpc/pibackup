@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
+## [2.1.1] - 2026-09-13
+
+### Bugfix
+
+* Removed disabling of automount (udiskie).
+* During the restore process, target partitions are unmounted and removed from the partition table to prevent them from being automatically mounted again.
+* Restore did not confirm completion when no SSID was entered.
+
+
+
 ## [2.1.0] – 2026-08-21
 
 ### New features

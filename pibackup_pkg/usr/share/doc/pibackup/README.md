@@ -47,8 +47,11 @@ For fresh Raspberry Pi installations:
 ```bash
 # Download the latest release, extract it and install.
 # Required dependencies (e.g. zstd) are installed automatically.
+rm -rf /tmp/pibackup /tmp/pibackup.zip && \
+wget -O /tmp/pibackup.zip "https://sourceforge.net/projects/pibackup/files/latest/download" && \
+unzip -o /tmp/pibackup.zip -d /tmp/pibackup && \
+sudo apt install -y "$(find /tmp/pibackup -type f -name 'pibackup.deb' -print -quit)"
 
-rm -rf /tmp/pibackup /tmp/pibackup.zip && wget -O /tmp/pibackup.zip "https://sourceforge.net/projects/pibackup/files/latest/download" && unzip -o /tmp/pibackup.zip -d /tmp/pibackup && sudo apt install -y "$(find /tmp/pibackup -type f -name 'pibackup.deb' -print -quit)"
 ```
 
 ---
