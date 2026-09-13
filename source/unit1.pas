@@ -156,7 +156,7 @@ type
   end;
 
 const
-  Version = 'v2.1.2';
+  Version = 'v2.1.3';
   p2mpoint = '/tmp/p2_pibackup_img';
   p1mpoint = '/tmp/p1_pibackup_img';
   appname = 'PiBackup ' + version;
