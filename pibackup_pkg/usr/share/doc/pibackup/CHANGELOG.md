@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
+## [2.1.2] - 2026-09-13
+
+### Bugfix
+
+* Eliminated HTTP 404 errors during automatic updates
+* Latest GitHub release is detected automatically
+* Download URL is generated automatically from the detected release tag
+* No manual version update in the updater is required
+
+
 ## [2.1.1] - 2026-09-13
 
 ### Bugfix

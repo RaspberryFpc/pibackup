@@ -131,8 +131,8 @@ EOF
 
 # Debian-Paket erstellen
 #dpkg-deb --build "$PKG"
-dpkg-deb --build --root-owner-group "$PKG"
-
+#dpkg-deb --build --root-owner-group "$PKG"
+dpkg-deb --build --root-owner-group "$PKG" "$OUTDIR/pibackup.deb"
 echo
 echo "========================================"
 echo "✅ Build erfolgreich abgeschlossen!"
@@ -140,6 +140,7 @@ echo "Version: v$version"
 echo "========================================"
 echo
 echo "Paket erstellt:"
-echo "$PKG.deb"
+echo "$OUTDIR/pibackup.deb"
 echo
+read -rp "Enter drücken zum Schließen..."
 read -rp "Enter drücken zum Schließen..."
