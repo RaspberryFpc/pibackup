@@ -26,10 +26,11 @@
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
         <UsageCount Value="201"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="148"/>
-        <CursorPos X="20" Y="159"/>
+        <TopLine Value="154"/>
+        <CursorPos X="51" Y="163"/>
         <Bookmarks Count="1">
           <Item0 X="18" Y="1877" Left="1" Top="1871" ID="6"/>
         </Bookmarks>
@@ -154,10 +155,9 @@
         <IsPartOfProject Value="True"/>
         <Loaded Value="True"/>
         <UsageCount Value="200"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="270"/>
+        <TopLine Value="37"/>
         <CursorPos X="31" Y="279"/>
       </Unit>
       <Unit>
