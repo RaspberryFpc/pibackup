@@ -498,6 +498,8 @@ var
     end;
   end;
 
+
+
 begin
   sl := TStringList.Create;
   try
@@ -620,6 +622,9 @@ begin
   // Zielverzeichnis
   DirPath := ExtractFileDir(FilePath);
 
+  if not directoryexists(dirpath) then
+       raise Exception.Create('No existing directory found for "' + FilePath + '"');
+
   // Nächstexistierendes Verzeichnis suchen
   ExistingPath := DirPath;
   while (ExistingPath <> '') and (not DirectoryExists(ExistingPath)) do
@@ -724,6 +729,8 @@ begin
   end;
 end;
 
+
+
 procedure ParseMountLine(const L: string; out Device, Mp: string);
 var
   tmp: TStringList;
@@ -809,6 +816,8 @@ begin
   Result := Format('%.3f %s', [Sizef, S]);
 end;
 
+
+
 function getValueAfterKeyword(s, keyword: ansistring): int64;
 var
   p: integer;
@@ -826,6 +835,7 @@ begin
   Result := 0;
   tryStrToInt64(st, Result);
 end;
+
 
 
 function IsProgInstalled(progname: string): boolean;
@@ -847,6 +857,7 @@ begin
     if s = '/usr/bin/' + progname then Result := True;
   end;
 end;
+
 
 
 function padleft(s: string; Count: integer): string;
@@ -879,6 +890,7 @@ begin
 end;
 
 
+
 function GetExistingParent(const path: string): string;
 var
   current: string;
@@ -895,6 +907,8 @@ begin
   if Result = '' then
     Result := GetEnvironmentVariable('USER');  // Falls nicht via sudo, normalen User holen
 end;
+
+
 
 
 function runbash(command: ansistring): string;

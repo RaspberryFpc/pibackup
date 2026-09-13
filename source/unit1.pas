@@ -156,7 +156,7 @@ type
   end;
 
 const
-  Version = 'v2.1.0';
+  Version = 'v2.1.1';
   p2mpoint = '/tmp/p2_pibackup_img';
   p1mpoint = '/tmp/p1_pibackup_img';
   appname = 'PiBackup ' + version;
@@ -1169,7 +1169,7 @@ var
 begin
   Application.QueueAsyncCall(@SetBaseThreadCount, 0);
 
-  runcommand('sudo systemctl stop udisks2', s);
+//  runcommand('sudo systemctl stop udisks2', s);
   form1.Caption := appname;
 
   for x := 0 to 5 do
@@ -1189,7 +1189,6 @@ begin
   stringgrid1.Height := h;
   getdrives(combobox1.Items, False);
   combobox1.ItemIndex := 0;
-
 
   ini := tinifile.Create(ininame);
 
@@ -1581,6 +1580,8 @@ var
   fstabdrive: TStringList;
   i: integer;
   driveid_ok: boolean;
+  mbr:tmbr;
+
 begin
   if not RunsAsRoot then
     raise Exception.Create('This application must be run as root. Please start with sudo.');
@@ -1636,6 +1637,8 @@ begin
     // delete partition1 and partition2
     Listboxaddscroll(listbox1, '---------- preparing destination: ' + selecteddrive + ' ----------');
 
+    runcommand('sync', s);
+
     par2name := PartitionName(selecteddrive, 2);
     par1name := PartitionName(selecteddrive, 1);
     CloseMountTarget(par2name);
@@ -1643,9 +1646,15 @@ begin
     CloseMountTarget(par1name);
     sleep(1000);
 
-    runcommand('sync', s);
+   // partitionen zu null schreiben
 
+    read_mbr(selecteddrive,s,mbr);
+
+    fillchar(mbr.PartitionEntries[1],sizeof(mbr.PartitionEntries[1]),0);
+    fillchar(mbr.PartitionEntries[2],sizeof(mbr.PartitionEntries[2]),0);
+    write_mbr(mbr,selecteddrive);
     s := PrexeThreadedBash('partprobe ' + selecteddrive, listbox1);
+
 
     Listboxaddscroll(listbox1, '---------- write image to device: ' + selecteddrive + ' ----------');
     Listboxaddscroll(listbox1, '');
@@ -1742,18 +1751,11 @@ begin
       Edit_wlanssid.Text := trim(Edit_wlanssid.Text);
       Edit_wlanpassword.Text := trim(Edit_wlanpassword.Text);
 
-      if Edit_wlanssid.Text = '' then
-      begin
-        ListBoxaddscroll(listbox1, 'SSID missing - no changes to network done');
-        exit;
-      end;
-      if Edit_wlanpassword.Text = '' then
-      begin
-        ListBoxaddscroll(listbox1, 'Wlan password missing - no changes to network done');
-        exit;
-      end;
+//      if Edit_wlanssid.Text = '' then  ListBoxaddscroll(listbox1, 'SSID missing');
+//      if Edit_wlanpassword.Text = '' then ListBoxaddscroll(listbox1, 'Wlan password missing');
 
-      PrepareWLAN(tempmountpoint, edit_wlanssid.Text, edit_wlanpassword.Text);
+      if   (Edit_wlanssid.Text > '') and  (Edit_wlanpassword.Text > '') then
+                                 PrepareWLAN(tempmountpoint, edit_wlanssid.Text, edit_wlanpassword.Text);
 
 
       Runcommand('umount', [tempmountpoint], s);
@@ -1892,7 +1894,7 @@ begin
   PrexeThreadedBash('umount ' + device, listbox1);  // optional, wenn es gemountet war
   PrexeThreadedBash('losetup -d ' + device, listbox1);
   PrexeThreadedBash('rm -rf ' + p2mpoint, listbox1);
-  runcommand('sudo systemctl start udisks2', s);
+//  runcommand('sudo systemctl start udisks2', s);
 end;
 
 
