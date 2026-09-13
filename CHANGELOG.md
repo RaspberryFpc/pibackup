@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
-## [2.1.2] - 2026-09-13
+## [2.1.3] - 2026-09-13
 
 ### Bugfix
 
