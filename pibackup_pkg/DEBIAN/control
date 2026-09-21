@@ -1,9 +1,0 @@
-Package: pibackup
-Version: 2.1.3
-Section: utils
-Priority: optional
-Architecture: arm64
-Maintainer: RaspberryFpc
-Depends: zstd, e2fsprogs, sudo, libqt5pas1
-Description: Raspberry Pi Backup Tool
- Fast backup and restore tool with ZSTD compression.

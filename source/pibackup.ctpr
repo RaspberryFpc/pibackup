@@ -199,6 +199,12 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="TplScrollbarUnit"/>
       </Unit>
+      <Unit>
+        <Filename Value="udiskiecontrol.pas"/>
+        <FRMtype Value="0"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UdiskieControl"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
+## [2.1.4] - 2026-09-21
+
+### Bugfix
+
+* During the clone process, target partitions are unmounted and removed from the partition table to prevent them from being automatically mounted again.
+' Temporarily stop udiskie during critical image-processing operations to prevent automatic mounting of image partitions, unnecessary password prompts, and issues on systems where udiskie is installed. udiskie is disabled only for the critical section and reliably restarted afterward, including when an error occurs.
+
+
 ## [2.1.3] - 2026-09-13
 
 ### Bugfix

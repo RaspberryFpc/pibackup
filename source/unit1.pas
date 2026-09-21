@@ -9,7 +9,7 @@ uses
   baseunix, LCLIntf, rkutils, zstd, ExcludeProcessor, LCLType, MaskEdit,
   ExtCtrls, ComCtrls, Buttons, DateUtils, fpjson, jsonparser, Types, exethread,
   usersetup, pibackup_updater, msg_dlg, unit2, Editor, Themes, Menus,
-  CustomDrawn_common;
+  CustomDrawn_common,udiskiecontrol;
 
 type
   partitioninfo = record
@@ -152,11 +152,12 @@ type
   private
     procedure SetBaseThreadCount(Data: PtrInt);
   public
+     clonedeleteP3, clonedeleteP4: boolean;
 
   end;
 
 const
-  Version = 'v2.1.3';
+  Version = 'v2.1.4';
   p2mpoint = '/tmp/p2_pibackup_img';
   p1mpoint = '/tmp/p1_pibackup_img';
   appname = 'PiBackup ' + version;
@@ -197,7 +198,6 @@ var
   drivembr: tmbr;
   lastcombotext: string = '';
   Deviceid: Dword;
-  clonedeleteP3, clonedeleteP4: boolean;
   scrollposition:dword;
   org_size_p2:dword;
 
@@ -1169,7 +1169,7 @@ var
 begin
   Application.QueueAsyncCall(@SetBaseThreadCount, 0);
 
-//  runcommand('sudo systemctl stop udisks2', s);
+
   form1.Caption := appname;
 
   for x := 0 to 5 do
@@ -1353,6 +1353,9 @@ begin
 
     MakeImageFirst2Partitions(sourcedrive, filename, listbox1);
 
+    try
+    stopudiskie;
+
     //    mbrwork := Read_MBR(sourcedrive);
     if not Read_MBR(sourcedrive, errormsg, mbrwork) then
       fillchar(mbrwork.PartitionEntries, sizeof(mbrwork.PartitionEntries), 0);
@@ -1362,6 +1365,8 @@ begin
     Write_MBR(mbrwork, filename);
 
     // check image
+
+
     looppartition := CreateLoopPartition(FileName, 2);
     s := PrexeThreadedBash('/sbin/e2fsck -fy ' + looppartition, listbox1);
     if Pos('errors', LowerCase(s)) > 0 then
@@ -1458,6 +1463,8 @@ begin
     fpchmod(filename, &666);
 
 
+
+
     if (not terminate_all) and (CheckBox1.Checked) then
     begin
       Listboxaddscroll(listbox1, '');
@@ -1467,10 +1474,17 @@ begin
       if checkbox_Delimg.Checked and (not terminate_all) then deletefile(filename);
     end;
 
+  finally
+        startudiskie;
+  end;
+
+
   except
     on E: Exception do
       Listboxaddscroll(listbox1, E.Message);
   end;
+
+
 
   fpchown(filename + '.zst', 1000, 1000);
   fpchmod(filename + '.zst', &666);
@@ -1942,20 +1956,20 @@ begin
   Msg :=
     'The destination device will be overwritten:' + LineEnding + LineEnding + '• Partition 1 will be overwritten' + LineEnding + '• Partition 2 will be overwritten' + LineEnding + LineEnding;
 
-  if clonedeleteP3 or clonedeleteP4 then
+  if form1.clonedeleteP3 or form1.clonedeleteP4 then
   begin
     Msg := Msg + 'Additional changes required:' + LineEnding;
 
-    if clonedeleteP3 then
+    if form1.clonedeleteP3 then
     begin
       Msg := Msg + '• Partition 3 will be deleted' + LineEnding;
-      result:=result and del_p3;
+      result:=result or del_p3;
     end;
 
-    if clonedeleteP4 then
+    if form1.clonedeleteP4 then
     begin
       Msg := Msg + '• Partition 4 will be deleted' + LineEnding;
-       result:=result and del_p4;    ;
+       result:=result or del_p4;    ;
     end;
 
     Msg := Msg + LineEnding;

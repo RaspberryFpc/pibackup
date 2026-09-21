@@ -1,4 +1,5 @@
 # Debug-Dateien
 source/pibackup.dbg
 source/lib/
+pibackup_pkg/
 build_deb.sh

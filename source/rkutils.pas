@@ -65,7 +65,6 @@ function padleft(s: string; Count: integer): string;
 function RunsAsRoot: boolean;
 function IsProgInstalled(progname: string): boolean;
 function GetMBRPartitionTypeName(PartType: byte): string;
-//function Read_Mbr(const filename: string): tmbr;
 function Read_Mbr(const filename:string; out ErrorMsg: string; out MBR: TMbr): Boolean;
 function GetMountPointFromProc(const path: string): string;
 function starLine(s: ansistring; len: integer): ansistring;
@@ -2133,6 +2132,7 @@ var
 
   Done: int64;
   TotalSize: int64;
+  totalsec:int64;
   Remaining: int64;
   ToRead: int64;
 
@@ -2146,31 +2146,53 @@ var
 
   EtaStr: string;
   Status: string;
-  St,errormsg: string;
+  St,errormsg,s: string;
 
   RingBuffer: rngbuffer;
-  MBR: TMbr;
+  s_MBR,d_mbr,f_mbr: TMbr;
 begin
 
   Form1.ProgressBar1.Max := 1000;
   Form1.ProgressBar1.Position := 0;
 
   //MBR := Read_MBR(Source);
-  if not  Read_MBR(source,errormsg,mbr) then
+  if not  Read_MBR(source,errormsg,s_mbr) then
            raise exception.Create('failed reading mbr from sourcedrive');
 
-  TotalSize := ((MBR.PartitionEntries[2].FirstLBA + MBR.PartitionEntries[2].PartitionSize) * 512) - 512;
+  TotalSec := s_MBR.PartitionEntries[2].FirstLBA + s_MBR.PartitionEntries[2].PartitionSize  - 1;
+  TotalSize:=totalsec * 512 ;
 
-  Remaining := TotalSize;
+  if not Read_MBR(destination, errormsg, d_mbr) then
+                    raise Exception.Create('failed reading mbr from destination drive');
 
-  fsource := TFileStream.Create(Source, fmOpenRead or fmShareDenyNone);
-  fdest := TFileStream.Create(Destination, fmOpenWrite or fmShareDenyNone);
+
+   fillchar(d_mbr.PartitionEntries[1],32,0);
+
+  if form1.clonedeleteP3 then
+  fillchar(d_mbr.PartitionEntries[3],16,0);
+
+  if form1.clonedeleteP4 then
+  fillchar(d_mbr.PartitionEntries[4],16,0);
+
+
+
+//  if d_mbr.PartitionEntries[3].FirstLBA < TotalSec then fillchar(d_mbr.PartitionEntries[3],16,0);
+//  if d_mbr.PartitionEntries[4].FirstLBA < TotalSec then fillchar(d_mbr.PartitionEntries[4],16,0);
+  write_mbr(d_mbr,destination);
+  RunCommand('sync', s);
+  runcommand('partprobe ' + destination,s);
 
   try
-    SetLength(buffer, BufferSize);
+  fsource := TFileStream.Create(Source, fmOpenRead or fmShareDenyNone);
+  fdest := TFileStream.Create(Destination, fmOpenWrite or fmShareDenyNone);
+  fsource.Position:=512;
+  fdest.position:=512;
 
-    fsource.Position := 512; //512;
-    fdest.Position := 512;   //512;
+  SetLength(buffer, BufferSize);
+
+    fsource.Position := 512;
+    fdest.Position := 512;
+    Remaining := TotalSize -512;
 
     Done := 0;
     Speed := 0;
@@ -2223,11 +2245,15 @@ begin
 
       Form1.ProgressBar1.Position := Done * 1000 div TotalSize;
 
-      Application.ProcessMessages;
+    //  Application.ProcessMessages;
 
     until (Remaining = 0) or Terminate_All;
 
     Speed := AddRingBuffer(RingBuffer, GetTickCount64, Done);
+
+
+
+
 
     if not Terminate_All then
     begin
@@ -2242,6 +2268,13 @@ begin
 
   //   if not  Read_MBR(source,errormsg,mbr) then
   //         raise exception.Create('failed reading mbr from sourcedrive');
+
+  f_mbr:=s_mbr;
+
+
+  f_mbr.PartitionEntries[3]:=  d_mbr.PartitionEntries[3];
+  f_mbr.PartitionEntries[4]:=  d_mbr.PartitionEntries[4];
+  write_mbr(f_mbr,destination);
 
 
 
