@@ -2175,9 +2175,6 @@ begin
   fillchar(d_mbr.PartitionEntries[4],16,0);
 
 
-
-//  if d_mbr.PartitionEntries[3].FirstLBA < TotalSec then fillchar(d_mbr.PartitionEntries[3],16,0);
-//  if d_mbr.PartitionEntries[4].FirstLBA < TotalSec then fillchar(d_mbr.PartitionEntries[4],16,0);
   write_mbr(d_mbr,destination);
   RunCommand('sync', s);
   runcommand('partprobe ' + destination,s);
@@ -2251,23 +2248,17 @@ begin
 
     Speed := AddRingBuffer(RingBuffer, GetTickCount64, Done);
 
-
-
-
-
     if not Terminate_All then
     begin
       Status := Format('%.1f MiB  %.2f MB/s', [Done / 1048576, Speed / 1048576]);
-
       ListBoxUpdate(Box, Status);
+      listboxaddscroll(box,'writing buffers to device');
+
     end;
 
     if Terminate_All then
       raise Exception.Create('Writing to device: process terminated.');
 
-
-  //   if not  Read_MBR(source,errormsg,mbr) then
-  //         raise exception.Create('failed reading mbr from sourcedrive');
 
   f_mbr:=s_mbr;
 

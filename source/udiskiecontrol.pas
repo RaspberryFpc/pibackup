@@ -1,11 +1,11 @@
-  unit UdiskieControl;
+unit UdiskieControl;
 
 {$mode objfpc}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, process;
+  Classes, SysUtils, Process;
 
 function StopUdiskie: Boolean;
 procedure StartUdiskie;
@@ -17,6 +17,22 @@ var
   UdiskieUser: string = '';
   UdiskieCommand: string = '';
 
+function GetUserUID(const UserName: string): string;
+var
+  S: string;
+begin
+  Result := '';
+  if RunCommand('id -u ' + QuotedStr(UserName), S) then
+    Result := Trim(S);
+end;
+
+function IsProcessRunning(const PID: string): Boolean;
+var
+  S: string;
+begin
+  Result := RunCommand('kill -0 ' + PID, S);
+end;
+
 function StopUdiskie: Boolean;
 var
   S: string;
@@ -26,6 +42,7 @@ var
   P: Integer;
   UserName: string;
   CommandLine: string;
+  N: Integer;
 begin
   Result := False;
   UdiskieWasRunning := False;
@@ -46,7 +63,6 @@ begin
       if S = '' then
         Continue;
 
-      { USER }
       P := Pos(' ', S);
       if P = 0 then
         Continue;
@@ -55,7 +71,6 @@ begin
       Delete(S, 1, P);
       S := TrimLeft(S);
 
-      { PID }
       P := Pos(' ', S);
       if P = 0 then
         Continue;
@@ -64,7 +79,6 @@ begin
       Delete(S, 1, P);
       CommandLine := TrimLeft(S);
 
-      { nur den udiskie-Prozess suchen }
       if Pos('/usr/bin/udiskie', CommandLine) = 0 then
         Continue;
 
@@ -75,12 +89,22 @@ begin
       UdiskieCommand := CommandLine;
       UdiskieWasRunning := True;
 
-      { nur diese udiskie-Instanz beenden }
-      RunCommand('kill ' + PID, S);
+      RunCommand('kill -TERM ' + PID, S);
 
-      Sleep(200);
+      for N := 1 to 20 do
+      begin
+        Sleep(100);
+        if not IsProcessRunning(PID) then
+          Break;
+      end;
 
-      Result := True;
+      if IsProcessRunning(PID) then
+      begin
+        RunCommand('kill -KILL ' + PID, S);
+        Sleep(200);
+      end;
+
+      Result := not IsProcessRunning(PID);
       Break;
     end;
   finally
@@ -90,6 +114,10 @@ end;
 
 procedure StartUdiskie;
 var
+  UID: string;
+  RuntimeDir: string;
+  DBusAddress: string;
+  HomeDir: string;
   Cmd: string;
   S: string;
 begin
@@ -99,9 +127,24 @@ begin
   if (UdiskieUser = '') or (UdiskieCommand = '') then
     Exit;
 
+  UID := GetUserUID(UdiskieUser);
+
+  if UID = '' then
+    Exit;
+
+  HomeDir := '/home/' + UdiskieUser;
+  RuntimeDir := '/run/user/' + UID;
+  DBusAddress := 'unix:path=' + RuntimeDir + '/bus';
+
   Cmd := 'runuser -u ' + QuotedStr(UdiskieUser) +
-         ' -- sh -c ' +
-         QuotedStr(UdiskieCommand + ' >/dev/null 2>&1 &');
+         ' -- env' +
+         ' HOME=' + QuotedStr(HomeDir) +
+         ' USER=' + QuotedStr(UdiskieUser) +
+         ' LOGNAME=' + QuotedStr(UdiskieUser) +
+         ' DISPLAY=:0.0' +
+         ' XDG_RUNTIME_DIR=' + QuotedStr(RuntimeDir) +
+         ' DBUS_SESSION_BUS_ADDRESS=' + QuotedStr(DBusAddress) +
+         ' sh -c ' + QuotedStr(UdiskieCommand + ' >/dev/null 2>&1 &');
 
   RunCommand(Cmd, S);
 

@@ -157,7 +157,7 @@ type
   end;
 
 const
-  Version = 'v2.1.4';
+  Version = 'v2.1.5';
   p2mpoint = '/tmp/p2_pibackup_img';
   p1mpoint = '/tmp/p1_pibackup_img';
   appname = 'PiBackup ' + version;
@@ -2060,14 +2060,24 @@ begin
       exit;
     end;
 
+
+
+
     re:=tryunmount(PartitionName(target, 1));
     re:=tryunmount(PartitionName(target, 2));
     re:=tryunmount(PartitionName(target, 3));
     re:=tryunmount(PartitionName(target, 4));
 
+     stopudiskie;
+
+
     fillchar(newmbr.PartitionEntries[3], sizeof(newmbr.PartitionEntries[3]), 0);
     fillchar(newmbr.PartitionEntries[4], sizeof(newmbr.PartitionEntries[4]), 0);
     write_mbr(newmbr,target);
+    runcommand('sync', s);
+     s := PrexeThreadedBash('partprobe ' + selecteddrive, listbox1);
+     sleep(2000);
+
     ClonePart(Source, target, ListBox1); // ohne mbr
 
     re:= tryunmount(PartitionName(target, 2));
@@ -2129,6 +2139,10 @@ begin
   EnableSel;
   Listboxaddscroll(listbox1, starline('all done', 80));
   Listboxaddscroll(listbox1, '');
+  runcommand('sync', s);
+  s := PrexeThreadedBash('partprobe ' + selecteddrive, listbox1);
+  sleep(2000);
+    startudiskie;
   end;
 end;
 

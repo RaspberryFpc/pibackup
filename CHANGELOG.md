@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project are documented in this file.
 
+## [2.1.5] - 2026-09-27
+
+### Bugfix
+ Temporarily stop udiskie during all critical image-processing operations to prevent automatic mounting of image partitions,
+ unnecessary password prompts, and issues on systems where udiskie is installed. udiskie is disabled only for the critical section
+ and reliably restarted afterward, including when an error occurs.
+
+
+
 ## [2.1.4] - 2026-09-21
 
 ### Bugfix
